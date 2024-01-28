@@ -24,6 +24,7 @@ const Input = ({
       {label && (
         <label htmlFor={name} className={classNameLabel}>
           {label}
+          <span className="text-red">{required ? "*" : ""}</span>
         </label>
       )}
 
@@ -48,11 +49,13 @@ const Input = ({
       {type === "password" && (
         <div
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute inset-y-0 right-0 flex items-center mr-3 cursor-pointer"
+          className={`absolute ${
+            error ? "bottom-8" : "bottom-1.5"
+          } right-0 flex items-center mr-3 cursor-pointer`}
         >
           <ImageNext
             alt="icon"
-            src={showPassword ? "/visibility.png" : "/visibility_off.png"}
+            src={showPassword ? "/visibility.svg" : "/visibility_off.svg"}
             width={24}
             height={24}
           />
