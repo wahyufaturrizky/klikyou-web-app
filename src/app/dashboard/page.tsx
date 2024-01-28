@@ -286,18 +286,18 @@ export default function DashboardPage() {
     }
   };
 
-  // useEffect(() => {
-  //   const handleCheckIsLogin = () => {
-  //     const access_token = localStorage.getItem("access_token");
+  useEffect(() => {
+    const handleCheckIsLogin = () => {
+      const access_token = localStorage.getItem("access_token");
 
-  //     if (!access_token) {
-  //       router.push("/");
-  //     }
-  //   };
+      if (!access_token) {
+        router.push("/");
+      }
+    };
 
-  //   handleCheckIsLogin();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+    handleCheckIsLogin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const handleInterest = () => {
