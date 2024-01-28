@@ -1,4 +1,4 @@
-import { OptionInterface } from "@/app/profile/page";
+import { OptionInterface } from "@/app/dashboard/page";
 import { ChangeEventHandler, FocusEventHandler } from "react";
 
 export interface InputSelectInterface {

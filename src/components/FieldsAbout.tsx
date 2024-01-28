@@ -1,4 +1,4 @@
-import { FieldsAboutInterface, fieldsAboutOjbInterface } from "@/app/profile/page";
+import { FieldsAboutInterface, fieldsAboutOjbInterface } from "@/app/dashboard/page";
 import Input from "@/components/Input";
 import Text from "@/components/Text";
 import { Controller } from "react-hook-form";

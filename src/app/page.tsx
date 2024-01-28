@@ -30,7 +30,7 @@ export default function Home() {
         const { access_token } = data;
         localStorage.setItem("access_token", access_token);
 
-        router.push("/profile");
+        router.push("/dashboard");
       },
     },
   });
@@ -44,7 +44,7 @@ export default function Home() {
       const access_token = localStorage.getItem("access_token");
 
       if (access_token) {
-        router.push("/profile");
+        router.push("/dashboard");
       }
     };
 

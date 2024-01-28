@@ -1,10 +1,7 @@
 "use client";
-import { CardComponent } from "@/components/CardComponent";
-import ImageNext from "@/components/Image";
-import Text from "@/components/Text";
 import { useProfile, useUpdateProfile } from "@/services/profile/useProfile";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState, Fragment } from "react";
 import {
   Control,
   SubmitHandler,
@@ -13,6 +10,7 @@ import {
   UseFormWatch,
   useForm,
 } from "react-hook-form";
+import { theme } from "antd";
 
 export interface DTOProfile {
   name: string;
@@ -145,7 +143,7 @@ export interface FieldsAboutInterface {
     | undefined;
 }
 
-export default function ProfilePage() {
+export default function DashboardPage() {
   const [isEditAbout, setIsEditAbout] = useState(false);
   const [isEditInterest, setIsEditInterest] = useState(false);
 
@@ -288,18 +286,18 @@ export default function ProfilePage() {
     }
   };
 
-  useEffect(() => {
-    const handleCheckIsLogin = () => {
-      const access_token = localStorage.getItem("access_token");
+  // useEffect(() => {
+  //   const handleCheckIsLogin = () => {
+  //     const access_token = localStorage.getItem("access_token");
 
-      if (!access_token) {
-        router.push("/");
-      }
-    };
+  //     if (!access_token) {
+  //       router.push("/");
+  //     }
+  //   };
 
-    handleCheckIsLogin();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //   handleCheckIsLogin();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   useEffect(() => {
     const handleInterest = () => {
@@ -316,122 +314,29 @@ export default function ProfilePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
+
   return (
-    <section>
-      <div className="flex min-h-full flex-1 flex-col justify-center lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm h-dvh bg-[#09141A] px-5 overflow-auto">
-          {isPendingProfile || isPendingUpdate ? (
-            <Text
-              label="Loading..."
-              className="font-bold not-italic text-2xl text-white text-center mt-6"
-            />
-          ) : (
-            <div>
-              <div className="p-2 flex items-center justify-between">
-                <div
-                  onClick={() => {
-                    const confirm = window.confirm("Are you want to log out ?");
-                    if (confirm) {
-                      localStorage.removeItem("access_token");
-                      router.push("/");
-                    }
-                  }}
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <ImageNext
-                    onClick={() => router.push("/")}
-                    src="/back.svg"
-                    alt="back"
-                    width={10}
-                    height={10}
-                    className="w-auto"
-                  />
-                  <Text label="Back" className="font-bold not-italic text-sm text-white" />
-                </div>
-
-                <Text
-                  label={`@${dataProfile?.data?.data?.username}`}
-                  className="font-bold not-italic text-sm text-white"
-                />
-
-                <ImageNext
-                  src={"/setting.svg"}
-                  alt="setting"
-                  className="cursor-pointer w-auto"
-                  width={20}
-                  height={20}
-                />
-              </div>
-
-              <div className="p-x-0 py-6">
-                {/* Card Start */}
-                <div className="relative bg-[#162329] rounded-md h-[190px] w-full">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={(localStorage.getItem("banner") as string) || "/sample_banner.jpeg"}
-                    alt="setting"
-                    className=" h-[190px] w-full rounded-md bg-cover object-cover object-center bg-center bg-no-repeat"
-                  />
-
-                  <label className="cursor-pointer absolute top-2 right-2">
-                    <ImageNext
-                      src="/pencil.svg"
-                      className="shadow-2xl drop-shadow-xl"
-                      alt="pencil"
-                      width={20}
-                      height={20}
-                    />
-
-                    <input
-                      onChange={(e: any) => handleChangeImageBase64(e, "banner")}
-                      id="file-upload"
-                      name="file-upload"
-                      type="file"
-                      className="sr-only"
-                    />
-                  </label>
-
-                  <Text
-                    label={`@${dataProfile?.data?.data?.username}`}
-                    className="shadow-2xl drop-shadow-xl font-bold not-italic text-sm text-white absolute bottom-2 left-2"
-                  />
-                </div>
-                {/* Card End */}
-
-                {/* Card Start */}
-                <CardComponent
-                  onClick={() => setIsEditAbout(true)}
-                  title="About"
-                  desc="Add in your your to help others know you better"
-                  isEditAbout={isEditAbout}
-                  setIsEditAbout={setIsEditAbout}
-                  handleChangeImageBase64={handleChangeImageBase64}
-                  control={control}
-                  fieldsAbout={fieldsAbout}
-                  onSubmitAbout={onSubmitAbout}
-                  handleSubmit={handleSubmit}
-                  getValues={getValues}
-                  watch={watch}
-                />
-                {/* Card End */}
-
-                {/* Card Start */}
-                <CardComponent
-                  onClick={() => router.push("/interest")}
-                  title="Interest"
-                  desc="Add in your interest to find a better match"
-                  isEditInterest={isEditInterest}
-                  setIsEditInterest={setIsEditInterest}
-                  handleChangeImageBase64={handleChangeImageBase64}
-                  control={control}
-                  watch={watch}
-                />
-                {/* Card End */}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
+    <div
+      style={{
+        padding: 24,
+        textAlign: "center",
+        background: colorBgContainer,
+        borderRadius: borderRadiusLG,
+      }}
+    >
+      <p>long content</p>
+      {
+        // indicates very long content
+        Array.from({ length: 100 }, (_, index) => (
+          <Fragment key={index}>
+            {index % 20 === 0 && index ? "more" : "..."}
+            <br />
+          </Fragment>
+        ))
+      }
+    </div>
   );
 }

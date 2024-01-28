@@ -1,4 +1,4 @@
-import { CardComponentInterface } from "@/app/profile/page";
+import { CardComponentInterface } from "@/app/dashboard/page";
 import ImageNext from "@/components/Image";
 import Text from "@/components/Text";
 import { FieldsAbout } from "./FieldsAbout";

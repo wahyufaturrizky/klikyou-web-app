@@ -1,4 +1,4 @@
-import { OptionInterface } from "@/app/profile/page";
+import { OptionInterface } from "@/app/dashboard/page";
 import { InputSelectInterface } from "@/interface/InputSelect";
 import Text from "./Text";
 
