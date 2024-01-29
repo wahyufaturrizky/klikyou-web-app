@@ -2,22 +2,23 @@
 import { LayoutInterface } from "@/interface/Layout";
 
 import {
+  ApprovalsIcon,
   DashboardIcon,
   DocumentIcon,
-  ApprovalsIcon,
-  ToReviewIcon,
   HistoryIcon,
-  ReceivedIcon,
   MasterIcon,
-  TagIcon,
-  UserIcon,
+  NotifIcon,
+  ReceivedIcon,
   SettingIcon,
+  TagIcon,
+  ToReviewIcon,
+  UserIcon,
 } from "@/style/icon";
 import type { MenuProps } from "antd";
 import { ConfigProvider, Layout as LayoutAntd, Menu, theme } from "antd";
 import { createElement } from "react";
-import Text from "./Text";
 import ImageNext from "./Image";
+import Text from "./Text";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
@@ -111,6 +112,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
         </Sider>
         <LayoutAntd style={{ marginLeft: 220 }}>
           <Header
+            className="drop-shadow-xl"
             style={{
               padding: 24,
               background: colorBgContainer,
@@ -120,15 +122,41 @@ const Layout = ({ ...props }: LayoutInterface) => {
               width: "100%",
               display: "flex",
               alignItems: "center",
+              justifyContent: "space-between",
             }}
           >
             <div className="flex items-center gap-4">
               <Text className="text-secondary-blue font-bold text-3xl" label="Dashboard" />
 
               <Text
-                className="text-black font-bold text-2xl border-l-2 border-[#9CB1C6] pl-4"
+                className="text-black font-bold text-2xl border-l-2 border-primary-gray pl-4"
                 label="PT Wahyu Zikri Tech"
               />
+            </div>
+
+            <div className="flex items-center gap-7">
+              <div className="flex items-center gap-2 bg-primary-gray p-3 rounded-full">
+                <NotifIcon
+                  style={{
+                    color: "white",
+                  }}
+                />
+                <Text className="text-white font-bold text-base" label="0" />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <ImageNext
+                  src="/placeholder-avatar-header.svg"
+                  width={32}
+                  height={32}
+                  alt="placeholder-avatar-header"
+                  className="mx-auto h-auto w-auto"
+                />
+                <div>
+                  <Text className="text-black font-normal text-xl" label="Wahyu Fatur Rizki" />
+                  <Text className="text-primary-gray font-bold text-sm" label="Super Admin" />
+                </div>
+              </div>
             </div>
           </Header>
           <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>{props.children}</Content>
