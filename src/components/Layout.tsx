@@ -16,10 +16,11 @@ import {
   LogoutIcon,
 } from "@/style/icon";
 import type { MenuProps } from "antd";
-import { ConfigProvider, Dropdown, Layout as LayoutAntd, Menu, theme } from "antd";
-import { createElement } from "react";
+import { Badge, ConfigProvider, Dropdown, Layout as LayoutAntd, Menu, theme } from "antd";
+import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
+import { useRouter } from "next/navigation";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
@@ -68,22 +69,55 @@ const items: MenuProps["items"] = [
   };
 });
 
-const itemsProfile: MenuProps["items"] = [
-  {
-    label: "My Profile",
-    key: "1",
-  },
-  {
-    label: <Text className="text-primary-blue font-normal" label="Logout" />,
-    key: "2",
-    icon: createElement(LogoutIcon),
-  },
-];
-
 const Layout = ({ ...props }: LayoutInterface) => {
+  const router = useRouter();
+  const [isShowNotif, setIsShowNotif] = useState<boolean>(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: any) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setIsShowNotif(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const itemsProfile: MenuProps["items"] = [
+    {
+      label: "My Profile",
+      key: "1",
+    },
+    {
+      label: <Text className="text-primary-blue font-normal" label="Logout" />,
+      key: "2",
+      icon: createElement(LogoutIcon),
+      onClick: () => {
+        localStorage.removeItem("access_token");
+        router.push("/");
+      },
+    },
+  ];
+
+  useEffect(() => {
+    const handleCheckIsLogin = () => {
+      const access_token = localStorage.getItem("access_token");
+
+      if (!access_token) {
+        router.push("/");
+      }
+    };
+
+    handleCheckIsLogin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <ConfigProvider
@@ -148,7 +182,10 @@ const Layout = ({ ...props }: LayoutInterface) => {
             </div>
 
             <div className="flex items-center gap-7">
-              <div className="flex items-center gap-2 bg-primary-gray p-3 rounded-full">
+              <div
+                onClick={() => setIsShowNotif(!isShowNotif)}
+                className="flex items-center gap-2 bg-primary-gray p-3 rounded-full cursor-pointer"
+              >
                 <NotifIcon
                   style={{
                     color: "white",
@@ -180,6 +217,37 @@ const Layout = ({ ...props }: LayoutInterface) => {
           </Footer>
         </LayoutAntd>
       </LayoutAntd>
+
+      {/* Container Notification */}
+      {isShowNotif && (
+        <div
+          ref={ref}
+          style={{
+            transform: "translate3d(-15px, 60px, 0px)",
+            animation: "all 0.3s ease 1",
+          }}
+          className="z-50 fixed top-0 right-0 bottom-auto left-auto m-0 flex flex-col list-none w-[300px] rounded-md bg-white shadow-lg "
+        >
+          {[1, 2, 3, 4].map((_, index) => (
+            <div key={index} className="py-2 px-3.5">
+              <div className="flex gap-2">
+                <Badge color="red" />
+
+                <div>
+                  <Text
+                    className="text-black font-normal text-base"
+                    label="1 new document to approve"
+                  />
+                  <Text
+                    className="text-primary-gray font-normal text-sm"
+                    label="30 Jun 2023 17:00"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </ConfigProvider>
   );
 };
