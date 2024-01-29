@@ -15,7 +15,7 @@ function useRegister({ options }: any) {
 function useSignIn({ options }: any) {
   return useMutation({
     mutationFn: (reqBody) =>
-      client("/login", {
+      client("/auth/login", {
         method: "POST",
         data: reqBody,
       }),

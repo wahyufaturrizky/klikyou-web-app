@@ -28,7 +28,7 @@ export default function Home() {
       onSuccess: (res: any) => {
         const { data } = res;
         const { access_token } = data;
-        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("access_token", "access_token");
 
         router.push("/dashboard");
       },
