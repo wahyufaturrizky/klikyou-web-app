@@ -76,7 +76,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  const ref = useRef(null);
+  const ref = useRef<any>(null);
 
   useEffect(() => {
     function handleClickOutside(event: any) {
