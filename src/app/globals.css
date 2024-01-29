@@ -6,4 +6,12 @@
   .bg-img-login {
     @apply bg-[url('/bg-img-login.svg')] bg-no-repeat bg-cover bg-center;
   }
+
+  .bg-img-logo-sider {
+    background: linear-gradient(
+      180deg,
+      rgba(10.27, 172.68, 223.98, 0.6) 0%,
+      rgba(10.27, 172.68, 223.98, 0) 100%
+    );
+  }
 }

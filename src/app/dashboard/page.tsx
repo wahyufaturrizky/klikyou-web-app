@@ -2,7 +2,6 @@
 import { theme } from "antd";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect } from "react";
-import { Control } from "react-hook-form";
 
 export interface OptionInterface {
   label: string;
