@@ -78,6 +78,10 @@ export default function Home() {
               control={control}
               rules={{
                 required: "Email is required",
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: "Invalid email address",
+                },
               }}
               name="email"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
@@ -122,14 +126,13 @@ export default function Home() {
             />
 
             <div>
-              <button
+              <Button
                 type="submit"
                 onClick={handleSubmit(onSubmit)}
+                label="Login"
                 disabled={isPendingLogin}
-                className="flex w-full justify-center rounded-md bg-primary-blue px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Login
-              </button>
+                className="flex w-full justify-center items-center rounded-md bg-primary-blue px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              />
             </div>
           </div>
         </div>
