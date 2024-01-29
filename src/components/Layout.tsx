@@ -13,9 +13,10 @@ import {
   TagIcon,
   ToReviewIcon,
   UserIcon,
+  LogoutIcon,
 } from "@/style/icon";
 import type { MenuProps } from "antd";
-import { ConfigProvider, Layout as LayoutAntd, Menu, theme } from "antd";
+import { ConfigProvider, Dropdown, Layout as LayoutAntd, Menu, theme } from "antd";
 import { createElement } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
@@ -66,6 +67,18 @@ const items: MenuProps["items"] = [
     }) as MenuProps["items"],
   };
 });
+
+const itemsProfile: MenuProps["items"] = [
+  {
+    label: "My Profile",
+    key: "1",
+  },
+  {
+    label: <Text className="text-primary-blue font-normal" label="Logout" />,
+    key: "2",
+    icon: createElement(LogoutIcon),
+  },
+];
 
 const Layout = ({ ...props }: LayoutInterface) => {
   const {
@@ -144,19 +157,21 @@ const Layout = ({ ...props }: LayoutInterface) => {
                 <Text className="text-white font-bold text-base" label="0" />
               </div>
 
-              <div className="flex items-center gap-2">
-                <ImageNext
-                  src="/placeholder-avatar-header.svg"
-                  width={32}
-                  height={32}
-                  alt="placeholder-avatar-header"
-                  className="mx-auto h-auto w-auto"
-                />
-                <div>
-                  <Text className="text-black font-normal text-xl" label="Wahyu Fatur Rizki" />
-                  <Text className="text-primary-gray font-bold text-sm" label="Super Admin" />
+              <Dropdown menu={{ items: itemsProfile }} trigger={["click"]}>
+                <div className="flex items-center gap-2 cursor-pointer">
+                  <ImageNext
+                    src="/placeholder-avatar-header.svg"
+                    width={32}
+                    height={32}
+                    alt="placeholder-avatar-header"
+                    className="mx-auto h-auto w-auto"
+                  />
+                  <div>
+                    <Text className="text-black font-normal text-xl" label="Wahyu Fatur Rizki" />
+                    <Text className="text-primary-gray font-bold text-sm" label="Super Admin" />
+                  </div>
                 </div>
-              </div>
+              </Dropdown>
             </div>
           </Header>
           <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>{props.children}</Content>
