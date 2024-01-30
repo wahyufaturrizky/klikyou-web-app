@@ -23,6 +23,8 @@ const Button = ({ ...props }: ButtonInterface) => {
         </svg>
       )}
 
+      {props.icon}
+
       {props.label || "Text goes here"}
     </button>
   );

@@ -14,69 +14,78 @@ import {
   ToReviewIcon,
   UserIcon,
   LogoutIcon,
+  BackIcon,
 } from "@/style/icon";
 import type { MenuProps } from "antd";
 import { Badge, ConfigProvider, Dropdown, Layout as LayoutAntd, Menu, theme } from "antd";
 import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
-const items: MenuProps["items"] = [
-  { icon: DashboardIcon, label: "Dashboard" },
-  { icon: DocumentIcon, label: "Documents" },
-  {
-    icon: ApprovalsIcon,
-    label: "Approvals",
-    children: [
-      { icon: ToReviewIcon, label: "To Review" },
-      { icon: HistoryIcon, label: "History" },
-    ],
-  },
-  {
-    icon: ReceivedIcon,
-    label: "Received",
-    children: [
-      { icon: ToReviewIcon, label: "To Do" },
-      { icon: HistoryIcon, label: "Processed" },
-    ],
-  },
-  {
-    icon: MasterIcon,
-    label: "Master",
-    children: [{ icon: TagIcon, label: "Document Tags" }],
-  },
-  { icon: UserIcon, label: "User Management" },
-  { icon: SettingIcon, label: "Settings" },
-].map((item, index) => {
-  const { icon, label, children } = item;
-
-  return {
-    key: String(index + 1),
-    icon: createElement(icon),
-    label: <Text label={label} className="font-bold" />,
-    children: children?.map((child, indexChild) => {
-      const { icon, label: subLabel } = child;
-
-      return {
-        key: String(subLabel + indexChild + 1),
-        icon: createElement(icon),
-        label: <Text label={subLabel} className="font-bold" />,
-      };
-    }) as MenuProps["items"],
-  };
-});
-
 const Layout = ({ ...props }: LayoutInterface) => {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const pathNameList: any = {
+    "/dashboard": "Dashboard",
+    "/profile": "Profile",
+  };
+
   const [isShowNotif, setIsShowNotif] = useState<boolean>(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
   const ref = useRef<any>(null);
+
+  const items: MenuProps["items"] = [
+    { icon: DashboardIcon, label: <Link href="/dashboard">Dashboard</Link> },
+    { icon: DocumentIcon, label: "Documents" },
+    {
+      icon: ApprovalsIcon,
+      label: <Link href="/approvals">Approvals</Link>,
+      children: [
+        { icon: ToReviewIcon, label: "To Review" },
+        { icon: HistoryIcon, label: "History" },
+      ],
+    },
+    {
+      icon: ReceivedIcon,
+      label: "Received",
+      children: [
+        { icon: ToReviewIcon, label: "To Do" },
+        { icon: HistoryIcon, label: "Processed" },
+      ],
+    },
+    {
+      icon: MasterIcon,
+      label: "Master",
+      children: [{ icon: TagIcon, label: "Document Tags" }],
+    },
+    { icon: UserIcon, label: "User Management" },
+    { icon: SettingIcon, label: "Settings" },
+  ].map((item, index) => {
+    const { icon, label, children } = item;
+
+    return {
+      key: String(index + 1),
+      icon: createElement(icon),
+      label: <Text label={label} className="font-bold" />,
+      children: children?.map((child, indexChild) => {
+        const { icon, label: subLabel } = child;
+
+        return {
+          key: String(subLabel + indexChild + 1),
+          icon: createElement(icon),
+          label: <Text label={subLabel} className="font-bold" />,
+        };
+      }) as MenuProps["items"],
+    };
+  });
 
   useEffect(() => {
     function handleClickOutside(event: any) {
@@ -94,6 +103,9 @@ const Layout = ({ ...props }: LayoutInterface) => {
     {
       label: "My Profile",
       key: "1",
+      onClick: () => {
+        router.push("/profile");
+      },
     },
     {
       label: <Text className="text-primary-blue font-normal" label="Logout" />,
@@ -173,7 +185,13 @@ const Layout = ({ ...props }: LayoutInterface) => {
             }}
           >
             <div className="flex items-center gap-4">
-              <Text className="text-secondary-blue font-bold text-3xl" label="Dashboard" />
+              {pathname === "/profile" && (
+                <BackIcon style={{ color: "#2379AA" }} onClick={() => router.back()} />
+              )}
+              <Text
+                className="text-secondary-blue font-bold text-3xl"
+                label={pathNameList[pathname]}
+              />
 
               <Text
                 className="text-black font-bold text-2xl border-l-2 border-primary-gray pl-4"
@@ -213,7 +231,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
           </Header>
           <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>{props.children}</Content>
           <Footer style={{ textAlign: "center" }}>
-            Ant Design ©{new Date().getFullYear()} Created by Ant UED
+            {/* Ant Design ©{new Date().getFullYear()} Created by Ant UED */}
           </Footer>
         </LayoutAntd>
       </LayoutAntd>
@@ -226,26 +244,35 @@ const Layout = ({ ...props }: LayoutInterface) => {
             transform: "translate3d(-15px, 60px, 0px)",
             animation: "all 0.3s ease 1",
           }}
-          className="z-50 fixed top-0 right-0 bottom-auto left-auto m-0 flex flex-col list-none w-[300px] rounded-md bg-white shadow-lg "
+          className="z-50 fixed top-0 right-0 bottom-auto left-auto m-0 flex flex-col list-none w-[300px] rounded-md bg-white shadow-lg"
         >
-          {[1, 2, 3, 4].map((_, index) => (
-            <div key={index} className="py-2 px-3.5">
-              <div className="flex gap-2">
-                <Badge color="red" />
+          <div className="overflow-auto h-[200px]">
+            {[1, 2, 3, 4].map((_, index) => (
+              <div key={index} className="py-2 px-3.5">
+                <div className="flex gap-2">
+                  <Badge color="red" />
 
-                <div>
-                  <Text
-                    className="text-black font-normal text-base"
-                    label="1 new document to approve"
-                  />
-                  <Text
-                    className="text-primary-gray font-normal text-sm"
-                    label="30 Jun 2023 17:00"
-                  />
+                  <div>
+                    <Text
+                      className="text-black font-normal text-base"
+                      label="1 new document to approve"
+                    />
+                    <Text
+                      className="text-primary-gray font-normal text-sm"
+                      label="30 Jun 2023 17:00"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <div className="">
+            <Text
+              className="text-primary-blue font-medium text-lg text-center py-2 cursor-pointer hover:text-primary-blue/70 active:text-primary-blue/90"
+              label="Mark all as read"
+            />
+          </div>
         </div>
       )}
     </ConfigProvider>

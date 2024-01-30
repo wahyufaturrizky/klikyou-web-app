@@ -13,6 +13,10 @@ type FormLoginValues = {
   password: string;
 };
 
+interface ResLogin {
+  data: any;
+}
+
 export default function Home() {
   const router = useRouter();
 
@@ -25,10 +29,10 @@ export default function Home() {
 
   const { mutate: loginUser, isPending: isPendingLogin } = useSignIn({
     options: {
-      onSuccess: (res: any) => {
+      onSuccess: (res: ResLogin) => {
         const { data } = res;
-        const { access_token } = data;
-        localStorage.setItem("access_token", access_token);
+        const { token } = data;
+        localStorage.setItem("access_token", token);
 
         router.push("/dashboard");
       },
@@ -36,7 +40,10 @@ export default function Home() {
   });
 
   const onSubmit: SubmitHandler<FormLoginValues> = (data) => {
-    loginUser(data);
+    loginUser({
+      username: data.email,
+      password: data.password,
+    });
   };
 
   useEffect(() => {
@@ -78,10 +85,10 @@ export default function Home() {
               control={control}
               rules={{
                 required: "Email is required",
-                pattern: {
-                  value: /^\S+@\S+$/i,
-                  message: "Invalid email address",
-                },
+                // pattern: {
+                //   value: /^\S+@\S+$/i,
+                //   message: "Invalid email address",
+                // },
               }}
               name="email"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (

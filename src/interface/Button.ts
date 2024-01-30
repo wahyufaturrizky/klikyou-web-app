@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export type ButtonType = "submit" | "reset" | "button";
 
 export interface ButtonInterface {
@@ -6,4 +8,5 @@ export interface ButtonInterface {
   className: string;
   type: ButtonType;
   disabled?: boolean;
+  icon?: ReactNode;
 }

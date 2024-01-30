@@ -115,6 +115,24 @@ const IconLogout = () => (
   </svg>
 );
 
+const IconBack = () => (
+  <svg width="36" height="37" viewBox="0 0 36 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M30 17H11.745L20.13 8.615L18 6.5L6 18.5L18 30.5L20.115 28.385L11.745 20H30V17Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+const IconPencil = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M18.7452 12.0267L19.9719 13.2533L7.89187 25.3333H6.6652V24.1067L18.7452 12.0267ZM23.5452 4C23.2119 4 22.8652 4.13333 22.6119 4.38667L20.1719 6.82667L25.1719 11.8267L27.6119 9.38667C28.1319 8.86667 28.1319 8.02667 27.6119 7.50667L24.4919 4.38667C24.2252 4.12 23.8919 4 23.5452 4ZM18.7452 8.25333L3.99854 23V28H8.99853L23.7452 13.2533L18.7452 8.25333Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
 export const DashboardIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={IconDashboard} {...props} />
 );
@@ -161,4 +179,12 @@ export const NotifIcon = (props: Partial<CustomIconComponentProps>) => (
 
 export const LogoutIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={IconLogout} {...props} />
+);
+
+export const BackIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconBack} {...props} />
+);
+
+export const PencilIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconPencil} {...props} />
 );
