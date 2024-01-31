@@ -1,6 +1,5 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client";
-import { useRegister } from "@/services/auth/useAuth";
 
 const fetchProfile = async ({ query = {} }) => {
   return client("/getProfile", {
@@ -40,4 +39,4 @@ function useUpdateProfile({ options }: any) {
   });
 }
 
-export { useProfile, useCreateProfile, useUpdateProfile };
+export { useCreateProfile, useProfile, useUpdateProfile };

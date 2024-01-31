@@ -16,6 +16,7 @@ const Input = ({
   value,
   placeholder,
   error,
+  prefixIcon,
 }: InputInterface) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -26,6 +27,12 @@ const Input = ({
           {label}
           <span className="text-red">{required ? "*" : ""}</span>
         </label>
+      )}
+
+      {prefixIcon && (
+        <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+          {prefixIcon}
+        </div>
       )}
 
       <div className={label ? "mt-2" : "mt-0"}>

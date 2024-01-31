@@ -176,7 +176,7 @@ export default function DashboardPage() {
         {summaryCard.map((data) => {
           const { className, icon, label, value } = data;
           return (
-            <div className={className}>
+            <div key={label} className={className}>
               <div className="gap-4 flex">
                 {icon}
 

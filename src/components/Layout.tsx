@@ -33,6 +33,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
   const pathNameList: any = {
     "/dashboard": "Dashboard",
     "/profile": "Profile",
+    "/documents": "Documents",
   };
 
   const [isShowNotif, setIsShowNotif] = useState<boolean>(false);
@@ -44,7 +45,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
 
   const items: MenuProps["items"] = [
     { icon: DashboardIcon, label: <Link href="/dashboard">Dashboard</Link> },
-    { icon: DocumentIcon, label: "Documents" },
+    { icon: DocumentIcon, label: <Link href="/documents">Documents</Link> },
     {
       icon: ApprovalsIcon,
       label: "Approvals",
@@ -104,6 +105,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
       label: "My Profile",
       key: "1",
       onClick: () => {
+        localStorage.setItem("currentMenu", "");
         router.push("/profile");
       },
     },
@@ -130,6 +132,10 @@ const Layout = ({ ...props }: LayoutInterface) => {
     handleCheckIsLogin();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const onClickMenu: MenuProps["onClick"] = (e) => {
+    localStorage.setItem("currentMenu", e.key);
+  };
 
   return (
     <ConfigProvider
@@ -167,7 +173,13 @@ const Layout = ({ ...props }: LayoutInterface) => {
               className="mx-auto h-auto w-auto"
             />
           </div>
-          <Menu theme="light" mode="inline" defaultSelectedKeys={["1"]} items={items} />
+          <Menu
+            onClick={onClickMenu}
+            selectedKeys={[localStorage.getItem("currentMenu") as string]}
+            theme="light"
+            mode="inline"
+            items={items}
+          />
         </Sider>
         <LayoutAntd style={{ marginLeft: 220 }}>
           <Header
@@ -247,8 +259,8 @@ const Layout = ({ ...props }: LayoutInterface) => {
           className="z-50 fixed top-0 right-0 bottom-auto left-auto m-0 flex flex-col list-none w-[300px] rounded-md bg-white shadow-lg"
         >
           <div className="overflow-auto h-[200px]">
-            {[1, 2, 3, 4].map((_, index) => (
-              <div key={index} className="py-2 px-3.5">
+            {[1, 2, 3, 4].map((_) => (
+              <div key={_} className="py-2 px-3.5">
                 <div className="flex gap-2">
                   <Badge color="red" />
 

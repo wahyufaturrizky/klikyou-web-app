@@ -169,6 +169,42 @@ const IconReject = () => (
   </svg>
 );
 
+const IconPlus = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M25.3333 17.3337H17.3333V25.3337H14.6667V17.3337H6.66666V14.667H14.6667V6.66699H17.3333V14.667H25.3333V17.3337Z"
+      fill="white"
+    />
+  </svg>
+);
+
+const IconTrash = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M21.3333 12V25.3333H10.6667V12H21.3333ZM19.3333 4H12.6667L11.3333 5.33333H6.66666V8H25.3333V5.33333H20.6667L19.3333 4ZM24 9.33333H7.99999V25.3333C7.99999 26.8 9.19999 28 10.6667 28H21.3333C22.8 28 24 26.8 24 25.3333V9.33333Z"
+      fill="#9CB1C6"
+    />
+  </svg>
+);
+
+const IconSearch = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M21.0066 19.0065H19.9533L19.58 18.6465C20.8866 17.1265 21.6733 15.1532 21.6733 13.0065C21.6733 8.21984 17.7933 4.33984 13.0066 4.33984C8.21997 4.33984 4.33997 8.21984 4.33997 13.0065C4.33997 17.7932 8.21997 21.6732 13.0066 21.6732C15.1533 21.6732 17.1266 20.8865 18.6466 19.5798L19.0066 19.9532V21.0065L25.6733 27.6598L27.66 25.6732L21.0066 19.0065ZM13.0066 19.0065C9.68663 19.0065 7.00663 16.3265 7.00663 13.0065C7.00663 9.68651 9.68663 7.00651 13.0066 7.00651C16.3266 7.00651 19.0066 9.68651 19.0066 13.0065C19.0066 16.3265 16.3266 19.0065 13.0066 19.0065Z"
+      fill="black"
+    />
+  </svg>
+);
+
+const IconFilter = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M9.34004 7.99967H22.6734L15.9934 16.3997L9.34004 7.99967ZM5.67337 7.47967C8.36671 10.933 13.34 17.333 13.34 17.333V25.333C13.34 26.0663 13.94 26.6663 14.6734 26.6663H17.34C18.0734 26.6663 18.6734 26.0663 18.6734 25.333V17.333C18.6734 17.333 23.6334 10.933 26.3267 7.47967C27.0067 6.59967 26.38 5.33301 25.2734 5.33301H6.72671C5.62004 5.33301 4.99337 6.59967 5.67337 7.47967Z"
+      fill="black"
+    />
+  </svg>
+);
+
 export const DashboardIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={IconDashboard} {...props} />
 );
@@ -239,4 +275,20 @@ export const CheckIcon = (props: Partial<CustomIconComponentProps>) => (
 
 export const RejectIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={IconReject} {...props} />
+);
+
+export const PlusIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconPlus} {...props} />
+);
+
+export const TrashIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconTrash} {...props} />
+);
+
+export const SearchIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconSearch} {...props} />
+);
+
+export const FilterIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconFilter} {...props} />
 );

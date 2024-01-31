@@ -34,6 +34,8 @@ export default function Home() {
         const { token } = data;
         localStorage.setItem("access_token", token);
 
+        localStorage.setItem("currentMenu", "1");
+
         router.push("/dashboard");
       },
     },
