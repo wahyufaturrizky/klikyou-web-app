@@ -4,7 +4,7 @@
 
 @layer utilities {
   .bg-img-login {
-    @apply bg-[url('/bg-img-login.svg')] bg-no-repeat bg-cover bg-center;
+    @apply bg-[url('/bg-img-login.svg')] bg-no-repeat bg-cover;
   }
 
   .bg-img-logo-sider {

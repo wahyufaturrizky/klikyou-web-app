@@ -133,6 +133,42 @@ const IconPencil = () => (
   </svg>
 );
 
+const IconFile = () => (
+  <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M26.6667 53.3332H53.3333V59.9998H26.6667V53.3332ZM26.6667 39.9998H53.3333V46.6665H26.6667V39.9998ZM46.6667 6.6665H20C16.3333 6.6665 13.3333 9.6665 13.3333 13.3332V66.6665C13.3333 70.3332 16.3 73.3332 19.9667 73.3332H60C63.6667 73.3332 66.6667 70.3332 66.6667 66.6665V26.6665L46.6667 6.6665ZM60 66.6665H20V13.3332H43.3333V29.9998H60V66.6665Z"
+      fill="#0AADE0"
+    />
+  </svg>
+);
+
+const IconStopwatch = () => (
+  <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M20 6.6665V26.6665H20.0333L20 26.6998L33.3333 39.9998L20 53.3332L20.0333 53.3665H20V73.3332H60V53.3665H59.9667L60 53.3332L46.6667 39.9998L60 26.6998L59.9667 26.6665H60V6.6665H20ZM53.3333 54.9998V66.6665H26.6667V54.9998L40 41.6665L53.3333 54.9998ZM40 38.3332L26.6667 24.9998V13.3332H53.3333V24.9998L40 38.3332Z"
+      fill="#FFB800"
+    />
+  </svg>
+);
+
+const IconCheck = () => (
+  <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M40 6.6665C21.6 6.6665 6.66663 21.5998 6.66663 39.9998C6.66663 58.3998 21.6 73.3332 40 73.3332C58.4 73.3332 73.3333 58.3998 73.3333 39.9998C73.3333 21.5998 58.4 6.6665 40 6.6665ZM40 66.6665C25.3 66.6665 13.3333 54.6998 13.3333 39.9998C13.3333 25.2998 25.3 13.3332 40 13.3332C54.7 13.3332 66.6666 25.2998 66.6666 39.9998C66.6666 54.6998 54.7 66.6665 40 66.6665ZM55.3 25.2665L33.3333 47.2332L24.7 38.6332L20 43.3332L33.3333 56.6665L60 29.9998L55.3 25.2665Z"
+      fill="#23C464"
+    />
+  </svg>
+);
+
+const IconReject = () => (
+  <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M40 6.6665C21.6 6.6665 6.66663 21.5998 6.66663 39.9998C6.66663 58.3998 21.6 73.3332 40 73.3332C58.4 73.3332 73.3333 58.3998 73.3333 39.9998C73.3333 21.5998 58.4 6.6665 40 6.6665ZM40 66.6665C25.2666 66.6665 13.3333 54.7332 13.3333 39.9998C13.3333 33.8332 15.4333 28.1665 18.9666 23.6665L56.3333 61.0332C51.8333 64.5665 46.1666 66.6665 40 66.6665ZM61.0333 56.3332L23.6666 18.9665C28.1666 15.4332 33.8333 13.3332 40 13.3332C54.7333 13.3332 66.6666 25.2665 66.6666 39.9998C66.6666 46.1665 64.5666 51.8332 61.0333 56.3332Z"
+      fill="#F44550"
+    />
+  </svg>
+);
+
 export const DashboardIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={IconDashboard} {...props} />
 );
@@ -187,4 +223,20 @@ export const BackIcon = (props: Partial<CustomIconComponentProps>) => (
 
 export const PencilIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={IconPencil} {...props} />
+);
+
+export const FileIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconFile} {...props} />
+);
+
+export const StopwatchIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconStopwatch} {...props} />
+);
+
+export const CheckIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconCheck} {...props} />
+);
+
+export const RejectIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconReject} {...props} />
 );

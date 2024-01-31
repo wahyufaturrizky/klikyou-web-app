@@ -115,7 +115,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div>
+    <div className="p-6">
       <div className="flex gap-4 items-center">
         {isEdit && <BackIcon style={{ color: "#2379AA" }} onClick={() => setIsEdit(false)} />}
         <Text

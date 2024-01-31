@@ -47,7 +47,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
     { icon: DocumentIcon, label: "Documents" },
     {
       icon: ApprovalsIcon,
-      label: <Link href="/approvals">Approvals</Link>,
+      label: "Approvals",
       children: [
         { icon: ToReviewIcon, label: "To Review" },
         { icon: HistoryIcon, label: "History" },
@@ -229,7 +229,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
               </Dropdown>
             </div>
           </Header>
-          <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>{props.children}</Content>
+          <Content style={{ overflow: "initial" }}>{props.children}</Content>
           <Footer style={{ textAlign: "center" }}>
             {/* Ant Design ©{new Date().getFullYear()} Created by Ant UED */}
           </Footer>

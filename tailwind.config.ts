@@ -17,6 +17,8 @@ const config: Config = {
         "secondary-blue": "#2379AA",
         red: "#F44550",
         "primary-gray": "#9CB1C6",
+        "gray-dark": "#455C72",
+        link: "#2166E9",
       },
     },
   },
