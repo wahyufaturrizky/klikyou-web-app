@@ -43,6 +43,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
     "/dashboard": "Dashboard",
     "/profile": "Profile",
     "/documents": "Documents",
+    "/user-management": "User Management",
   };
 
   const [isShowNotif, setIsShowNotif] = useState<boolean>(false);
@@ -76,7 +77,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
       label: "Master",
       children: [{ icon: TagIcon, label: "Document Tags" }],
     },
-    { icon: UserIcon, label: "User Management" },
+    { icon: UserIcon, label: <Link href="/user-management">User Management</Link> },
     { icon: SettingIcon, label: "Settings" },
   ].map((item, index) => {
     const { icon, label, children } = item;
