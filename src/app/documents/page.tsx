@@ -1,16 +1,16 @@
 "use client";
 import Button from "@/components/Button";
+import Input from "@/components/Input";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
-import { useDocument } from "@/services/document/useDocument";
-import { FileIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon, FilterIcon } from "@/style/icon";
-import { ConfigProvider, Modal, Table, TableProps, DatePicker, Checkbox } from "antd";
-import { useEffect, useState } from "react";
-import Input from "@/components/Input";
-import { useForm, Controller } from "react-hook-form";
-import dayjs from "dayjs";
+import { useDeleteDocument, useDocument } from "@/services/document/useDocument";
+import { FileIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
+import { UseMutationResult } from "@tanstack/react-query";
+import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
+import { Key, useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 export interface OptionInterface {
   label: string;
@@ -35,8 +35,23 @@ type FormFilterValues = {
   role: string[];
 };
 
+interface DeleteModal {
+  open: boolean;
+  type: string;
+  data: { data: DataDocumentsType[] | null; selectedRowKeys: Key[] } | null;
+}
+
 export default function DocumentsPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
+  const [isShowDelete, setShowDelete] = useState<DeleteModal>({
+    open: false,
+    type: "selection",
+    data: {
+      data: null,
+      selectedRowKeys: [],
+    },
+  });
   const [data, setData] = useState<DataDocumentsType[]>([
     {
       id: "101",
@@ -273,10 +288,48 @@ export default function DocumentsPage() {
     },
   ];
 
+  const resetShowDelete = () => {
+    setShowDelete({
+      open: false,
+      data: null,
+      type: "",
+    });
+  };
+
   const onSubmitFilter = (data: FormFilterValues) => {
     refetchDocument();
     setIsShowModalFilter(false);
   };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (selectedRowKeys: Key[]) => {
+      setSelectedRowKeys(selectedRowKeys);
+    },
+  };
+
+  const renderConfirmationText = (type: any, data: any) => {
+    switch (type) {
+      case "selection":
+        return data.selectedRowKeys.length > 1
+          ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
+          : `Are you sure to delete document ${
+              data?.data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.branchName
+            } ?`;
+      default:
+        return `Are you sure to delete document ${data?.name} ?`;
+    }
+  };
+
+  const { mutate: deleteDocument, isPending: isPendingDeleteDocument }: any = useDeleteDocument({
+    options: {
+      onSuccess: () => {
+        refetchDocument();
+        resetShowDelete();
+        setSelectedRowKeys([]);
+      },
+    },
+  });
 
   return (
     <div className="p-6">
@@ -292,10 +345,27 @@ export default function DocumentsPage() {
 
           <Button
             type="button"
-            onClick={() => {}}
+            onClick={() =>
+              setShowDelete({
+                open: true,
+                type: "selection",
+                data: { data, selectedRowKeys },
+              })
+            }
             label="Delete"
-            icon={<TrashIcon />}
-            className="flex border border-primary-gray justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-gray shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            disabled={rowSelection.selectedRowKeys?.length === 0}
+            icon={
+              <TrashIcon
+                style={{
+                  color: rowSelection.selectedRowKeys?.length === 0 ? "#9CB1C6" : "#F44550",
+                }}
+              />
+            }
+            className={`${
+              rowSelection.selectedRowKeys?.length === 0
+                ? "text-primary-gray border-primary-gray"
+                : "text-red border-red"
+            } flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
           />
         </div>
 
@@ -332,6 +402,9 @@ export default function DocumentsPage() {
       <div className="p-2 bg-white rounded-md mt-6">
         <ConfigProvider
           theme={{
+            token: {
+              colorPrimary: "#0AADE0",
+            },
             components: {
               Table: {
                 headerBg: "white",
@@ -346,6 +419,7 @@ export default function DocumentsPage() {
             loading={isPendingDocument}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
+            rowSelection={rowSelection}
           />
         </ConfigProvider>
       </div>
@@ -458,6 +532,51 @@ export default function DocumentsPage() {
             />
           </div>
         </div>
+      </Modal>
+
+      <Modal
+        title="Confirm Delete"
+        open={isShowDelete.open}
+        onCancel={() => {
+          setShowDelete({
+            open: false,
+            data: null,
+            type: "",
+          });
+        }}
+        footer={
+          <div className="flex justify-end items-center">
+            <div className="flex gap-4 items-center">
+              <Button
+                type="button"
+                onClick={() => {
+                  setShowDelete({
+                    open: false,
+                    data: null,
+                    type: "",
+                  });
+                }}
+                label="No"
+                className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              />
+
+              <Button
+                loading={isPendingDeleteDocument}
+                disabled={isPendingDeleteDocument}
+                type="button"
+                onClick={() =>
+                  deleteDocument({
+                    ids: selectedRowKeys,
+                  })
+                }
+                label="Yes"
+                className="flex justify-center items-center rounded-md bg-red px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              />
+            </div>
+          </div>
+        }
+      >
+        <div>{renderConfirmationText(isShowDelete.type, isShowDelete.data)}</div>
       </Modal>
     </div>
   );

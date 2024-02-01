@@ -3,7 +3,7 @@ import { ButtonInterface } from "../interface/Button";
 const Button = ({ ...props }: ButtonInterface) => {
   return (
     <button {...props}>
-      {props.disabled && (
+      {props.loading && (
         <svg
           aria-hidden="true"
           role="status"

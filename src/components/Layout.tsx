@@ -29,8 +29,15 @@ const { Header, Content, Footer, Sider } = LayoutAntd;
 const Layout = ({ ...props }: LayoutInterface) => {
   const router = useRouter();
   const pathname = usePathname();
+  const [currentMenu, setCurrentMenu] = useState<string | null>(null);
 
-  const currentMenu: string | null = localStorage.getItem("currentMenu");
+  useEffect(() => {
+    const handleGetCurrentMenu = () => {
+      setCurrentMenu(localStorage.getItem("currentMenu"));
+    };
+
+    handleGetCurrentMenu();
+  });
 
   const pathNameList: any = {
     "/dashboard": "Dashboard",

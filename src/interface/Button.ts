@@ -8,5 +8,6 @@ export interface ButtonInterface {
   className: string;
   type: ButtonType;
   disabled?: boolean;
+  loading?: boolean;
   icon?: ReactNode;
 }

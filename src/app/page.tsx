@@ -140,6 +140,7 @@ export default function Home() {
                 onClick={handleSubmit(onSubmit)}
                 label="Login"
                 disabled={isPendingLogin}
+                loading={isPendingLogin}
                 className="flex w-full justify-center items-center rounded-md bg-primary-blue px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               />
             </div>

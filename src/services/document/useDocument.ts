@@ -50,4 +50,4 @@ function useDeleteDocument({ options }: any) {
   });
 }
 
-export { useCreateDocument, useDocument, useUpdateDocument };
+export { useCreateDocument, useDocument, useUpdateDocument, useDeleteDocument };
