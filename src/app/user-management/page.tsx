@@ -98,7 +98,8 @@ export default function UserManagementPage() {
       title: "User full name",
       dataIndex: "name",
       key: "name",
-      render: (text: string) => {
+      render: (text: string, record: DataUserManagementType) => {
+        const { id } = record;
         return (
           <div className="gap-2 flex items-center">
             <ImageNext
@@ -108,7 +109,7 @@ export default function UserManagementPage() {
               alt="logo-klikyou"
               className="h-[32px] w-[32px]"
             />
-            <Link href="">
+            <Link href={`/user-management/view/${id}`}>
               <Text label={text} className="text-base font-normal" />
             </Link>
           </div>
@@ -289,7 +290,7 @@ export default function UserManagementPage() {
         <div className="flex gap-4 items-center">
           <Button
             type="button"
-            onClick={() => router.push("")}
+            onClick={() => router.push("/user-management/add")}
             label="Add"
             icon={<PlusIcon />}
             className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -372,6 +373,7 @@ export default function UserManagementPage() {
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
+            rowKey={(record) => record.id}
           />
         </ConfigProvider>
       </div>

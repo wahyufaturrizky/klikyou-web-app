@@ -11,6 +11,7 @@ import { Table, TableProps, ConfigProvider, Upload, UploadProps } from "antd";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
+import { useRouter } from "next/navigation";
 
 type FormProfileValues = {
   imgProfile: string;
@@ -32,7 +33,8 @@ interface DataType {
   updatedAt: Date;
 }
 
-export default function ProfilePage() {
+export default function ViewEditProfile() {
+  const router = useRouter();
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
@@ -141,7 +143,7 @@ export default function ProfilePage() {
   return (
     <div className="p-6">
       <div className="flex gap-4 items-center">
-        {isEdit && <BackIcon style={{ color: "#2379AA" }} onClick={() => setIsEdit(false)} />}
+        {isEdit && <BackIcon style={{ color: "#2379AA" }} onClick={() => router.back()} />}
         <Text
           label={isEdit ? "Profile detail" : "Edit profile"}
           className="text-3xl font-normal text-secondary-blue"

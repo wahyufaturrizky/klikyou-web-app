@@ -21,13 +21,15 @@ import { Badge, ConfigProvider, Dropdown, Layout as LayoutAntd, Menu, theme } fr
 import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
 const Layout = ({ ...props }: LayoutInterface) => {
   const router = useRouter();
+  const param = useParams();
+
   const pathname = usePathname();
   const [currentMenu, setCurrentMenu] = useState<string | null>(null);
 
@@ -44,6 +46,8 @@ const Layout = ({ ...props }: LayoutInterface) => {
     "/profile": "Profile",
     "/documents": "Documents",
     "/user-management": "User Management",
+    "/user-management/add": "User Management",
+    "/user-management/view/sd": "User Management",
   };
 
   const [isShowNotif, setIsShowNotif] = useState<boolean>(false);

@@ -215,6 +215,7 @@ export default function DashboardPage() {
                 columns={columnsShortest}
                 dataSource={data}
                 pagination={false}
+                rowKey={(record) => record.id}
               />
             </ConfigProvider>
           </div>
@@ -245,6 +246,7 @@ export default function DashboardPage() {
                 columns={columnsLongest}
                 dataSource={data}
                 pagination={false}
+                rowKey={(record) => record.id}
               />
             </ConfigProvider>
           </div>
@@ -273,6 +275,7 @@ export default function DashboardPage() {
                 columns={columnsLowest}
                 dataSource={dataRejected}
                 pagination={false}
+                rowKey={(record) => record.id}
               />
             </ConfigProvider>
           </div>
@@ -299,6 +302,7 @@ export default function DashboardPage() {
                 columns={columnsLowest}
                 dataSource={dataRejected}
                 pagination={false}
+                rowKey={(record) => record.id}
               />
             </ConfigProvider>
           </div>

@@ -424,6 +424,7 @@ export default function DocumentsPage() {
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
+            rowKey={(record) => record.id}
           />
         </ConfigProvider>
       </div>
