@@ -30,6 +30,8 @@ const Layout = ({ ...props }: LayoutInterface) => {
   const router = useRouter();
   const pathname = usePathname();
 
+  const currentMenu: string | null = localStorage.getItem("currentMenu");
+
   const pathNameList: any = {
     "/dashboard": "Dashboard",
     "/profile": "Profile",
@@ -175,7 +177,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
           </div>
           <Menu
             onClick={onClickMenu}
-            selectedKeys={[localStorage.getItem("currentMenu") as string]}
+            selectedKeys={[currentMenu || ""]}
             theme="light"
             mode="inline"
             items={items}

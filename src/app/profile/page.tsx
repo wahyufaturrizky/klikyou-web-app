@@ -6,9 +6,11 @@ import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import { PencilIcon, BackIcon } from "@/style/icon";
-import { Table, TableProps, ConfigProvider } from "antd";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import { Table, TableProps, ConfigProvider, Upload, UploadProps } from "antd";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 
 type FormProfileValues = {
   imgProfile: string;
@@ -32,8 +34,9 @@ interface DataType {
 
 export default function ProfilePage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
-  const { watch, control, handleSubmit } = useForm<FormProfileValues>({
+  const { watch, control, handleSubmit, setValue, getValues } = useForm<FormProfileValues>({
     defaultValues: {
       imgProfile: "/placeholder-profile.png",
       firstName: "",
@@ -114,6 +117,27 @@ export default function ProfilePage() {
     console.log(data);
   };
 
+  const handleChangeUploadAvatar: UploadProps["onChange"] = (info) => {
+    if (info.file.status === "uploading") {
+      setLoadingImageAvatar(true);
+      return;
+    }
+    if (info.file.status === "done") {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj as FileType, (url) => {
+        setLoadingImageAvatar(false);
+        setValue("imgProfile", url);
+      });
+    }
+  };
+
+  const uploadButton = (
+    <button className="border border-0 bg-none" type="button">
+      {loadingImageAvatar ? <LoadingOutlined /> : <PlusOutlined />}
+      <div className="mt-2">Upload</div>
+    </button>
+  );
+
   return (
     <div className="p-6">
       <div className="flex gap-4 items-center">
@@ -142,13 +166,56 @@ export default function ProfilePage() {
                 <Text label="Profile photo" className="text-xl font-semibold text-black" />
 
                 <div className="flex justify-center mt-6">
-                  <ImageNext
-                    src="/placeholder-profile.png"
-                    width={180}
-                    height={180}
-                    alt="logo-klikyou"
-                    className="h-auto w-auto"
-                  />
+                  {isEdit ? (
+                    <Controller
+                      control={control}
+                      name="imgProfile"
+                      render={({ field: { onChange, value } }) => (
+                        <div>
+                          <Upload
+                            name="imgProfile"
+                            listType="picture-circle"
+                            showUploadList={false}
+                            action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                            beforeUpload={beforeUpload}
+                            onChange={(info) => {
+                              if (info.file.status === "uploading") {
+                                setLoadingImageAvatar(true);
+                                return;
+                              }
+                              if (info.file.status === "done") {
+                                // Get this url from response in real world.
+                                getBase64(info.file.originFileObj as FileType, (url) => {
+                                  setLoadingImageAvatar(false);
+                                  onChange(url);
+                                });
+                              }
+                            }}
+                          >
+                            {value ? (
+                              <ImageNext
+                                src={value}
+                                width={180}
+                                height={180}
+                                alt="logo-klikyou"
+                                className="h-auto w-auto"
+                              />
+                            ) : (
+                              uploadButton
+                            )}
+                          </Upload>
+                        </div>
+                      )}
+                    />
+                  ) : (
+                    <ImageNext
+                      src={getValues("imgProfile")}
+                      width={180}
+                      height={180}
+                      alt="logo-klikyou"
+                      className="h-auto w-auto"
+                    />
+                  )}
                 </div>
               </div>
 
