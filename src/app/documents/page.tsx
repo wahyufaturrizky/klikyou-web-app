@@ -7,7 +7,6 @@ import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
 import { useDeleteDocument, useDocument } from "@/services/document/useDocument";
 import { FileIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
-import { UseMutationResult } from "@tanstack/react-query";
 import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -91,6 +90,7 @@ export default function DocumentsPage() {
     {
       title: "ID",
       dataIndex: "id",
+      sorter: true,
       key: "id",
       render: (text: string) => {
         return <Text label={text} className="text-base font-normal text-black" />;
@@ -330,6 +330,10 @@ export default function DocumentsPage() {
       },
     },
   });
+
+  useEffect(() => {
+    refetchDocument();
+  }, [tableParams]);
 
   return (
     <div className="p-6">
