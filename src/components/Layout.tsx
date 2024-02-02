@@ -79,7 +79,9 @@ const Layout = ({ ...props }: LayoutInterface) => {
     {
       icon: MasterIcon,
       label: "Master",
-      children: [{ icon: TagIcon, label: <Link href="/documents-tags">Document Tags</Link> }],
+      children: [
+        { icon: TagIcon, label: <Link href="/master/documents-tags">Document Tags</Link> },
+      ],
     },
     { icon: UserIcon, label: <Link href="/user-management">User Management</Link> },
     { icon: SettingIcon, label: "Settings" },
