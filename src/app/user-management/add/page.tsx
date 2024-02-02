@@ -12,6 +12,8 @@ import { TableProps, Upload, UploadProps } from "antd";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useSignIn } from "@/services/auth/useAuth";
+import { useCreateUserManagement } from "@/services/user-management/useUserManagement";
 
 type FormProfileValues = {
   imgProfile: string;
@@ -37,7 +39,7 @@ export default function AddProfilePage() {
   const router = useRouter();
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
-  const { watch, control, handleSubmit, setValue, getValues } = useForm<FormProfileValues>({
+  const { watch, control, handleSubmit, setValue } = useForm<FormProfileValues>({
     defaultValues: {
       imgProfile: "/placeholder-profile.png",
       firstName: "",
@@ -114,8 +116,17 @@ export default function AddProfilePage() {
     },
   ];
 
+  const { mutate: createUserManagement, isPending: isPendingCreateUserManagement } =
+    useCreateUserManagement({
+      options: {
+        onSuccess: () => {
+          router.back();
+        },
+      },
+    });
+
   const onSubmit = (data: FormProfileValues) => {
-    console.log(data);
+    createUserManagement(data);
   };
 
   const handleChangeUploadAvatar: UploadProps["onChange"] = (info) => {
@@ -392,6 +403,8 @@ export default function AddProfilePage() {
 
         <Button
           type="button"
+          loading={isPendingCreateUserManagement}
+          disabled={isPendingCreateUserManagement}
           onClick={handleSubmit(onSubmit)}
           label="Save"
           className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

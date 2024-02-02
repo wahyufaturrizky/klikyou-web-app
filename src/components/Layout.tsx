@@ -47,7 +47,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
     "/documents": "Documents",
     "/user-management": "User Management",
     "/user-management/add": "User Management",
-    "/user-management/view/sd": "User Management",
+    "/master/documents-tags": "Document Tags",
   };
 
   const [isShowNotif, setIsShowNotif] = useState<boolean>(false);
@@ -171,6 +171,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
         <Sider
           theme="light"
           width={220}
+          className="scrollbar"
           style={{
             overflow: "auto",
             height: "100vh",

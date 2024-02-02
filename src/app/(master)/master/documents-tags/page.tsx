@@ -5,25 +5,23 @@ import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
-import { useDeleteDocument, useDocument } from "@/services/document/useDocument";
-import { FileIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
+import { useCreateDocumentTags, useDocumentTags } from "@/services/document-tags/useDocumentTags";
+import { useUpdateUserManagement } from "@/services/user-management/useUserManagement";
+import { FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
+import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import ImageNext from "@/components/Image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 export interface OptionInterface {
   label: string;
   value: string;
 }
 
-interface DataUserManagementType {
+interface DataDocumentTags {
   id: string;
-  name: string;
-  emailAddress: string;
-  level: string;
+  code: string;
+  tagName: string;
   updateAt: Date;
 }
 
@@ -34,13 +32,24 @@ type FormFilterValues = {
   role: string[];
 };
 
+type FormAddAndEditValues = {
+  code: string;
+  tagName: string;
+};
+
 interface DeleteModal {
   open: boolean;
   type: string;
-  data: { data: DataUserManagementType[] | null; selectedRowKeys: Key[] } | null;
+  data: { data: DataDocumentTags[] | null; selectedRowKeys: Key[] } | null;
 }
 
-export default function UserManagementPage() {
+interface AddAndEditModal {
+  open: boolean;
+  data: DataDocumentTags | null;
+  type: "add" | "edit" | "";
+}
+
+export default function DocumentTagsPage() {
   const router = useRouter();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
@@ -52,12 +61,16 @@ export default function UserManagementPage() {
       selectedRowKeys: [],
     },
   });
-  const [data, setData] = useState<DataUserManagementType[]>([
+  const [stateAddAndEditModal, setStateAddAndEditModal] = useState<AddAndEditModal>({
+    open: false,
+    data: null,
+    type: "add",
+  });
+  const [data, setData] = useState<DataDocumentTags[]>([
     {
       id: "101",
-      name: "Project Antasari - Quotation",
-      emailAddress: "wahyu@mail.com",
-      level: "Admin",
+      code: "REIM",
+      tagName: "Reimbursement",
       updateAt: new Date(),
     },
   ]);
@@ -84,7 +97,19 @@ export default function UserManagementPage() {
     },
   });
 
-  const columns: TableProps<DataUserManagementType>["columns"] = [
+  const {
+    control: controlAddAndEdit,
+    handleSubmit: handleSubmitAddAndEdit,
+    reset: resetAddAndEdit,
+    setValue: setValueAddAndEdit,
+  } = useForm<FormAddAndEditValues>({
+    defaultValues: {
+      code: "",
+      tagName: "",
+    },
+  });
+
+  const columns: TableProps<DataDocumentTags>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -95,39 +120,17 @@ export default function UserManagementPage() {
       },
     },
     {
-      title: "User full name",
-      dataIndex: "name",
-      key: "name",
-      render: (text: string, record: DataUserManagementType) => {
-        const { id } = record;
-        return (
-          <div className="gap-2 flex items-center">
-            <ImageNext
-              src="/placeholder-profile.png"
-              width={32}
-              height={32}
-              alt="logo-klikyou"
-              className="h-[32px] w-[32px]"
-            />
-            <Link href={`/user-management/view/${id}`}>
-              <Text label={text} className="text-base font-normal" />
-            </Link>
-          </div>
-        );
-      },
-    },
-    {
-      title: "Email address",
-      dataIndex: "emailAddress",
-      key: "emailAddress",
+      title: "Code",
+      dataIndex: "code",
+      key: "code",
       render: (text: string) => {
         return <Text label={text} className="text-base font-normal text-black" />;
       },
     },
     {
-      title: "Level",
-      dataIndex: "level",
-      key: "level",
+      title: "Tag Name",
+      dataIndex: "tagName",
+      key: "tagName",
       render: (text: string) => {
         return <Text label={text} className="text-base font-normal text-black" />;
       },
@@ -145,7 +148,16 @@ export default function UserManagementPage() {
         return (
           <div className="flex justify-center items-center cursor-pointer">
             <PencilIcon
-              onClick={() => router.push(`/user-management/edit/${record.id}`)}
+              onClick={() => {
+                setValueAddAndEdit("code", record.code);
+                setValueAddAndEdit("tagName", record.tagName);
+
+                setStateAddAndEditModal({
+                  open: true,
+                  data: record,
+                  type: "edit",
+                });
+              }}
               style={{
                 height: 32,
                 width: 32,
@@ -174,10 +186,10 @@ export default function UserManagementPage() {
   const debounceSearch = useDebounce(watchFilter("search"), 1000);
 
   const {
-    data: dataDocument,
-    isPending: isPendingDocument,
-    refetch: refetchDocument,
-  } = useDocument({
+    data: dataDocumentTags,
+    isPending: isPendingDocumentTags,
+    refetch: refetchDocumentTags,
+  } = useDocumentTags({
     query: {
       search: debounceSearch,
       date: getValuesFilter("date"),
@@ -187,10 +199,10 @@ export default function UserManagementPage() {
   });
 
   useEffect(() => {
-    if (dataDocument) {
-      setData(dataDocument.data);
+    if (dataDocumentTags) {
+      setData(dataDocumentTags.data);
     }
-  }, [dataDocument]);
+  }, [dataDocumentTags]);
 
   const optionsStatus = [
     {
@@ -246,8 +258,8 @@ export default function UserManagementPage() {
     });
   };
 
-  const onSubmitFilter = (data: FormFilterValues) => {
-    refetchDocument();
+  const onSubmitFilter = () => {
+    refetchDocumentTags();
     setIsShowModalFilter(false);
   };
 
@@ -271,19 +283,58 @@ export default function UserManagementPage() {
     }
   };
 
-  const { mutate: deleteDocument, isPending: isPendingDeleteDocument }: any = useDeleteDocument({
-    options: {
-      onSuccess: () => {
-        refetchDocument();
-        resetShowDelete();
-        setSelectedRowKeys([]);
+  const { mutate: deleteDocumentTags, isPending: isPendingDeleteDocumentTags }: any =
+    useDocumentTags({
+      options: {
+        onSuccess: () => {
+          refetchDocumentTags();
+          resetShowDelete();
+          setSelectedRowKeys([]);
+        },
       },
-    },
-  });
+    });
 
   useEffect(() => {
-    refetchDocument();
+    refetchDocumentTags();
   }, [tableParams]);
+
+  const { mutate: createDocumentTags, isPending: isPendingCreateDocumentTags } =
+    useCreateDocumentTags({
+      options: {
+        onSuccess: () => {
+          resetAddAndEdit();
+          refetchDocumentTags();
+          setStateAddAndEditModal({
+            data: null,
+            open: false,
+            type: "",
+          });
+        },
+      },
+    });
+
+  const { mutate: updateDocumentTags, isPending: isPendingUpdateDocumentTags } =
+    useUpdateUserManagement({
+      options: {
+        onSuccess: () => {
+          resetAddAndEdit();
+          refetchDocumentTags();
+          setStateAddAndEditModal({
+            data: null,
+            open: false,
+            type: "",
+          });
+        },
+      },
+    });
+
+  const onSubmitAddAndEdit = (data: FormAddAndEditValues) => {
+    if (stateAddAndEditModal.type === "add") {
+      createDocumentTags(data);
+    } else {
+      updateDocumentTags(data);
+    }
+  };
 
   return (
     <div className="p-6">
@@ -291,7 +342,13 @@ export default function UserManagementPage() {
         <div className="flex gap-4 items-center">
           <Button
             type="button"
-            onClick={() => router.push("/user-management/add")}
+            onClick={() =>
+              setStateAddAndEditModal({
+                data: null,
+                open: true,
+                type: "add",
+              })
+            }
             label="Add"
             icon={<PlusIcon />}
             className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -369,8 +426,9 @@ export default function UserManagementPage() {
           <Table
             columns={columns}
             dataSource={data}
-            scroll={{ x: 1500 }}
-            loading={isPendingDocument}
+            loading={
+              isPendingDocumentTags || isPendingCreateDocumentTags || isPendingUpdateDocumentTags
+            }
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
@@ -516,11 +574,11 @@ export default function UserManagementPage() {
               />
 
               <Button
-                loading={isPendingDeleteDocument}
-                disabled={isPendingDeleteDocument}
+                loading={isPendingDeleteDocumentTags}
+                disabled={isPendingDeleteDocumentTags}
                 type="button"
                 onClick={() =>
-                  deleteDocument({
+                  deleteDocumentTags({
                     ids: selectedRowKeys,
                   })
                 }
@@ -532,6 +590,97 @@ export default function UserManagementPage() {
         }
       >
         <div>{renderConfirmationText(isShowDelete.type, isShowDelete.data)}</div>
+      </Modal>
+
+      <Modal
+        title={`${stateAddAndEditModal.type === "edit" ? "Edit" : "Add"} document tag`}
+        open={stateAddAndEditModal.open}
+        onCancel={() => {
+          resetAddAndEdit();
+          setStateAddAndEditModal({
+            open: false,
+            data: null,
+            type: "",
+          });
+        }}
+        footer={
+          <div className="flex justify-end items-center">
+            <div className="flex gap-4 items-center">
+              <Button
+                type="button"
+                onClick={() => {
+                  resetAddAndEdit();
+                  setStateAddAndEditModal({
+                    open: false,
+                    data: null,
+                    type: "",
+                  });
+                }}
+                label="Cancel"
+                className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              />
+
+              <Button
+                type="button"
+                onClick={handleSubmitAddAndEdit(onSubmitAddAndEdit)}
+                label="Yes"
+                className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              />
+            </div>
+          </div>
+        }
+      >
+        <div>
+          <div className="mb-6">
+            <Controller
+              control={controlAddAndEdit}
+              rules={{
+                required: "Code is required",
+              }}
+              name="code"
+              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                <Input
+                  onChange={onChange}
+                  error={error}
+                  onBlur={onBlur}
+                  value={value}
+                  name="code"
+                  type="text"
+                  required
+                  placeholder="Enter code"
+                  classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                  classNameLabel="block text-xl font-semibold text-black"
+                  label="Code"
+                />
+              )}
+            />
+          </div>
+
+          <div>
+            <Controller
+              control={controlAddAndEdit}
+              rules={{
+                required: "Tag name is required",
+              }}
+              name="tagName"
+              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                <Input
+                  onChange={onChange}
+                  error={error}
+                  onBlur={onBlur}
+                  value={value}
+                  name="tagName"
+                  type="text"
+                  required
+                  placeholder="Enter tag name"
+                  classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                  classNameLabel="block text-xl font-semibold text-black"
+                  label="Tag name"
+                />
+              )}
+            />
+          </div>
+        </div>
       </Modal>
     </div>
   );

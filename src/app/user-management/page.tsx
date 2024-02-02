@@ -1,18 +1,21 @@
 "use client";
 import Button from "@/components/Button";
+import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
-import { useDeleteDocument, useDocument } from "@/services/document/useDocument";
-import { FileIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
+import {
+  useDeleteUserManagement,
+  useUserManagement,
+} from "@/services/user-management/useUserManagement";
+import { FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
-import { Key, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import ImageNext from "@/components/Image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Key, useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 export interface OptionInterface {
   label: string;
@@ -174,10 +177,10 @@ export default function UserManagementPage() {
   const debounceSearch = useDebounce(watchFilter("search"), 1000);
 
   const {
-    data: dataDocument,
-    isPending: isPendingDocument,
-    refetch: refetchDocument,
-  } = useDocument({
+    data: dataUserManagement,
+    isPending: isPendingUserManagement,
+    refetch: refetchDocumentUserManagement,
+  } = useUserManagement({
     query: {
       search: debounceSearch,
       date: getValuesFilter("date"),
@@ -187,10 +190,10 @@ export default function UserManagementPage() {
   });
 
   useEffect(() => {
-    if (dataDocument) {
-      setData(dataDocument.data);
+    if (dataUserManagement) {
+      setData(dataUserManagement.data);
     }
-  }, [dataDocument]);
+  }, [dataUserManagement]);
 
   const optionsStatus = [
     {
@@ -247,7 +250,7 @@ export default function UserManagementPage() {
   };
 
   const onSubmitFilter = (data: FormFilterValues) => {
-    refetchDocument();
+    refetchDocumentUserManagement();
     setIsShowModalFilter(false);
   };
 
@@ -271,18 +274,19 @@ export default function UserManagementPage() {
     }
   };
 
-  const { mutate: deleteDocument, isPending: isPendingDeleteDocument }: any = useDeleteDocument({
-    options: {
-      onSuccess: () => {
-        refetchDocument();
-        resetShowDelete();
-        setSelectedRowKeys([]);
+  const { mutate: deleteUserManagement, isPending: isPendingDeleteUserManagement }: any =
+    useDeleteUserManagement({
+      options: {
+        onSuccess: () => {
+          refetchDocumentUserManagement();
+          resetShowDelete();
+          setSelectedRowKeys([]);
+        },
       },
-    },
-  });
+    });
 
   useEffect(() => {
-    refetchDocument();
+    refetchDocumentUserManagement();
   }, [tableParams]);
 
   return (
@@ -370,7 +374,7 @@ export default function UserManagementPage() {
             columns={columns}
             dataSource={data}
             scroll={{ x: 1500 }}
-            loading={isPendingDocument}
+            loading={isPendingUserManagement}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
@@ -516,11 +520,11 @@ export default function UserManagementPage() {
               />
 
               <Button
-                loading={isPendingDeleteDocument}
-                disabled={isPendingDeleteDocument}
+                loading={isPendingDeleteUserManagement}
+                disabled={isPendingDeleteUserManagement}
                 type="button"
                 onClick={() =>
-                  deleteDocument({
+                  deleteUserManagement({
                     ids: selectedRowKeys,
                   })
                 }

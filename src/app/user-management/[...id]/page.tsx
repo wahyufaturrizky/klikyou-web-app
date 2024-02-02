@@ -5,13 +5,14 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
-import { PencilIcon, BackIcon } from "@/style/icon";
+import { useUpdateUserManagement } from "@/services/user-management/useUserManagement";
+import { BackIcon, PencilIcon } from "@/style/icon";
+import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { Table, TableProps, ConfigProvider, Upload, UploadProps } from "antd";
+import { ConfigProvider, Table, TableProps, Upload, UploadProps } from "antd";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
-import { useRouter } from "next/navigation";
 
 type FormProfileValues = {
   imgProfile: string;
@@ -117,8 +118,17 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
     },
   ];
 
+  const { mutate: updateUserManagement, isPending: isPendingUpdateUserManagement } =
+    useUpdateUserManagement({
+      options: {
+        onSuccess: () => {
+          router.back();
+        },
+      },
+    });
+
   const onSubmit = (data: FormProfileValues) => {
-    console.log(data);
+    updateUserManagement(data);
   };
 
   const handleChangeUploadAvatar: UploadProps["onChange"] = (info) => {
@@ -473,6 +483,8 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
 
           <Button
             type="button"
+            loading={isPendingUpdateUserManagement}
+            disabled={isPendingUpdateUserManagement}
             onClick={handleSubmit(onSubmit)}
             label="Save"
             className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
