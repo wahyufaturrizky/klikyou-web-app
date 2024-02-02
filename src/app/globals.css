@@ -15,7 +15,7 @@
     );
   }
 
-  ::-webkit-scrollbar {
+  /* ::-webkit-scrollbar {
     width: 20px;
     height: 20px;
   }
@@ -37,5 +37,5 @@
       rgba(10, 173, 224, 1) 0%,
       rgba(35, 121, 170, 0.8814119397759104) 51%
     );
-  }
+  } */
 }
