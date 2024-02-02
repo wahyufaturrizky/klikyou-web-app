@@ -3,9 +3,11 @@ import { LayoutInterface } from "@/interface/Layout";
 
 import {
   ApprovalsIcon,
+  BackIcon,
   DashboardIcon,
   DocumentIcon,
   HistoryIcon,
+  LogoutIcon,
   MasterIcon,
   NotifIcon,
   ReceivedIcon,
@@ -13,16 +15,14 @@ import {
   TagIcon,
   ToReviewIcon,
   UserIcon,
-  LogoutIcon,
-  BackIcon,
 } from "@/style/icon";
 import type { MenuProps } from "antd";
 import { Badge, ConfigProvider, Dropdown, Layout as LayoutAntd, Menu, theme } from "antd";
+import Link from "next/link";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
@@ -88,14 +88,14 @@ const Layout = ({ ...props }: LayoutInterface) => {
 
     return {
       key: String(index + 1),
-      icon: createElement(icon),
+      icon: <div className="h-6 w-6">{createElement(icon)}</div>,
       label: <Text label={label} className="font-bold" />,
       children: children?.map((child, indexChild) => {
         const { icon, label: subLabel } = child;
 
         return {
           key: String(subLabel + indexChild + 1),
-          icon: createElement(icon),
+          icon: <div className="h-6 w-6">{createElement(icon)}</div>,
           label: <Text label={subLabel} className="font-bold" />,
         };
       }) as MenuProps["items"],
@@ -215,12 +215,12 @@ const Layout = ({ ...props }: LayoutInterface) => {
                 <BackIcon style={{ color: "#2379AA" }} onClick={() => router.back()} />
               )}
               <Text
-                className="text-secondary-blue font-bold text-3xl"
+                className="text-secondary-blue font-bold text-2xl"
                 label={pathNameList[pathname]}
               />
 
               <Text
-                className="text-black font-bold text-2xl border-l-2 border-primary-gray pl-4"
+                className="text-black font-bold text-xl border-l-2 border-primary-gray pl-4"
                 label="PT Wahyu Zikri Tech"
               />
             </div>
@@ -228,14 +228,16 @@ const Layout = ({ ...props }: LayoutInterface) => {
             <div className="flex items-center gap-7">
               <div
                 onClick={() => setIsShowNotif(!isShowNotif)}
-                className="flex items-center gap-2 bg-primary-gray p-3 rounded-full cursor-pointer"
+                className="flex items-center gap-1 bg-primary-gray p-2 rounded-full cursor-pointer"
               >
                 <NotifIcon
                   style={{
                     color: "white",
+                    height: 16,
+                    width: 16,
                   }}
                 />
-                <Text className="text-white font-bold text-base" label="0" />
+                <Text className="text-white font-bold text-sm" label="0" />
               </div>
 
               <Dropdown menu={{ items: itemsProfile }} trigger={["click"]}>
@@ -248,8 +250,8 @@ const Layout = ({ ...props }: LayoutInterface) => {
                     className="mx-auto h-auto w-auto"
                   />
                   <div>
-                    <Text className="text-black font-normal text-xl" label="Wahyu Fatur Rizki" />
-                    <Text className="text-primary-gray font-bold text-sm" label="Super Admin" />
+                    <Text className="text-black font-normal text-lg" label="Wahyu Fatur Rizki" />
+                    <Text className="text-primary-gray font-bold text-xs" label="Super Admin" />
                   </div>
                 </div>
               </Dropdown>
@@ -280,11 +282,11 @@ const Layout = ({ ...props }: LayoutInterface) => {
 
                   <div>
                     <Text
-                      className="text-black font-normal text-base"
+                      className="text-black font-normal text-sm"
                       label="1 new document to approve"
                     />
                     <Text
-                      className="text-primary-gray font-normal text-sm"
+                      className="text-primary-gray font-normal text-xs"
                       label="30 Jun 2023 17:00"
                     />
                   </div>
@@ -295,7 +297,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
 
           <div className="">
             <Text
-              className="text-primary-blue font-medium text-lg text-center py-2 cursor-pointer hover:text-primary-blue/70 active:text-primary-blue/90"
+              className="text-primary-blue font-medium text-base text-center py-2 cursor-pointer hover:text-primary-blue/70 active:text-primary-blue/90"
               label="Mark all as read"
             />
           </div>

@@ -70,18 +70,18 @@ export default function Home() {
             width={406}
             height={139}
             alt="logo-klikyou"
-            className="mx-auto h-auto w-auto"
+            className="mx-auto h-auto w-[270px]"
           />
 
           <Text
             label="👋 Hello, PT Sempurna Tech"
-            className="mt-10 text-center text-2xl font-normal text-white"
+            className="mt-10 text-center text-xl font-normal text-white"
           />
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm bg-white rounded-md p-6">
           <div className="space-y-6">
-            <Text label="Login" className="text-2xl font-bold text-black" />
+            <Text label="Login" className="text-xl font-bold text-black" />
 
             <Controller
               control={control}

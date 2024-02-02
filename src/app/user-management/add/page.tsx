@@ -5,13 +5,13 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
-import { PencilIcon, BackIcon } from "@/style/icon";
+import { BackIcon } from "@/style/icon";
+import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { Table, TableProps, ConfigProvider, Upload, UploadProps } from "antd";
+import { TableProps, Upload, UploadProps } from "antd";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
-import { useRouter } from "next/navigation";
 
 type FormProfileValues = {
   imgProfile: string;
@@ -142,18 +142,21 @@ export default function AddProfilePage() {
   return (
     <div className="p-6">
       <div className="flex gap-4 items-center">
-        <BackIcon style={{ color: "#2379AA" }} onClick={() => router.back()} />
-        <Text label="Add user" className="text-3xl font-normal text-secondary-blue" />
+        <BackIcon
+          style={{ color: "#2379AA", height: 24, width: 24 }}
+          onClick={() => router.back()}
+        />
+        <Text label="Add user" className="text-2xl font-normal text-secondary-blue" />
       </div>
 
       <div className="gap-6 flex">
         <div className="w-1/2">
-          <Text label="User info" className="mt-6 text-2xl font-bold text-black" />
+          <Text label="User info" className="mt-6 text-xl font-bold text-black" />
 
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex">
               <div className="w-1/2">
-                <Text label="Profile photo" className="text-xl font-semibold text-black" />
+                <Text label="Profile photo" className="text-lg font-semibold text-black" />
 
                 <div className="flex justify-center mt-6">
                   <Controller
@@ -219,7 +222,7 @@ export default function AddProfilePage() {
                           required
                           placeholder="Enter first name"
                           classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                          classNameLabel="block text-xl font-semibold text-black"
+                          classNameLabel="block text-lg font-semibold text-black"
                           label="First Name"
                         />
                       )}
@@ -244,7 +247,7 @@ export default function AddProfilePage() {
                           required
                           placeholder="Enter last name"
                           classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                          classNameLabel="block text-xl font-semibold text-black"
+                          classNameLabel="block text-lg font-semibold text-black"
                           label="Last Name"
                         />
                       )}
@@ -268,7 +271,7 @@ export default function AddProfilePage() {
                           styleSelect={{ width: "100%" }}
                           required
                           label="Tags"
-                          classNameLabel="block text-xl font-semibold text-black"
+                          classNameLabel="block text-lg font-semibold text-black"
                         />
                       )}
                     />
@@ -291,7 +294,7 @@ export default function AddProfilePage() {
                           styleSelect={{ width: "100%" }}
                           required
                           label="Role"
-                          classNameLabel="block text-xl font-semibold text-black"
+                          classNameLabel="block text-lg font-semibold text-black"
                         />
                       )}
                     />
@@ -303,14 +306,14 @@ export default function AddProfilePage() {
         </div>
 
         <div className="w-1/2">
-          <Text label="Account info" className="mt-6 text-2xl font-bold text-black" />
+          <Text label="Account info" className="mt-6 text-xl font-bold text-black" />
 
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex">
               <div className="w-1/2 px-2">
-                <Text label="Username " className="text-xl font-semibold text-black" />
+                <Text label="Username " className="text-lg font-semibold text-black" />
 
-                <Text label="superadmin" className="text-base font-normal text-black" />
+                <Text label="superadmin" className="text-xs font-normal text-black" />
 
                 <div>
                   <div className="mt-6">
@@ -331,7 +334,7 @@ export default function AddProfilePage() {
                           required
                           placeholder="Enter password"
                           classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                          classNameLabel="block text-xl font-semibold text-black"
+                          classNameLabel="block text-lg font-semibold text-black"
                           label="Password"
                         />
                       )}
@@ -341,12 +344,9 @@ export default function AddProfilePage() {
               </div>
 
               <div className="w-1/2 px-2">
-                <Text label="Email address" className="text-xl font-semibold text-black" />
+                <Text label="Email address" className="text-lg font-semibold text-black" />
 
-                <Text
-                  label="superadmin@goforward.com"
-                  className="text-base font-normal text-black"
-                />
+                <Text label="superadmin@goforward.com" className="text-xs font-normal text-black" />
 
                 <div>
                   <div className="mt-6">
@@ -369,7 +369,7 @@ export default function AddProfilePage() {
                           required
                           placeholder="Enter confirm password"
                           classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                          classNameLabel="block text-xl font-semibold text-black"
+                          classNameLabel="block text-lg font-semibold text-black"
                           label="Re-type password"
                         />
                       )}

@@ -33,9 +33,11 @@ interface DataType {
   updatedAt: Date;
 }
 
-export default function ViewEditProfile() {
+export default function ViewEditProfile({ params }: { params: { id: string } }) {
+  const { id } = params;
+
   const router = useRouter();
-  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(id[0] === "view" ? false : true);
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
   const { watch, control, handleSubmit, setValue, getValues } = useForm<FormProfileValues>({
@@ -143,29 +145,34 @@ export default function ViewEditProfile() {
   return (
     <div className="p-6">
       <div className="flex gap-4 items-center">
-        {isEdit && <BackIcon style={{ color: "#2379AA" }} onClick={() => router.back()} />}
+        <BackIcon
+          style={{ color: "#2379AA", height: 24, width: 24 }}
+          onClick={() => router.back()}
+        />
         <Text
-          label={isEdit ? "Profile detail" : "Edit profile"}
-          className="text-3xl font-normal text-secondary-blue"
+          label={isEdit ? "Edit user" : "User detail"}
+          className="text-2xl font-normal text-secondary-blue"
         />
       </div>
 
-      <Button
-        type="button"
-        onClick={() => setIsEdit(!isEdit)}
-        label="Edit"
-        icon={<PencilIcon />}
-        className="mt-6 flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-      />
+      {!isEdit && (
+        <Button
+          type="button"
+          onClick={() => setIsEdit(!isEdit)}
+          label="Edit"
+          icon={<PencilIcon />}
+          className="mt-6 flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        />
+      )}
 
       <div className="gap-6 flex">
         <div className="w-1/2">
-          <Text label="User info" className="mt-6 text-2xl font-bold text-black" />
+          <Text label="User info" className="mt-6 text-xl font-bold text-black" />
 
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex">
               <div className="w-1/2">
-                <Text label="Profile photo" className="text-xl font-semibold text-black" />
+                <Text label="Profile photo" className="text-lg font-semibold text-black" />
 
                 <div className="flex justify-center mt-6">
                   {isEdit ? (
@@ -242,7 +249,7 @@ export default function ViewEditProfile() {
                             required
                             placeholder="Enter first name"
                             classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                            classNameLabel="block text-xl font-semibold text-black"
+                            classNameLabel="block text-lg font-semibold text-black"
                             label="First Name"
                           />
                         )}
@@ -267,7 +274,7 @@ export default function ViewEditProfile() {
                             required
                             placeholder="Enter last name"
                             classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                            classNameLabel="block text-xl font-semibold text-black"
+                            classNameLabel="block text-lg font-semibold text-black"
                             label="Last Name"
                           />
                         )}
@@ -291,7 +298,7 @@ export default function ViewEditProfile() {
                             styleSelect={{ width: "100%" }}
                             required
                             label="Tags"
-                            classNameLabel="block text-xl font-semibold text-black"
+                            classNameLabel="block text-lg font-semibold text-black"
                           />
                         )}
                       />
@@ -314,7 +321,7 @@ export default function ViewEditProfile() {
                             styleSelect={{ width: "100%" }}
                             required
                             label="Role"
-                            classNameLabel="block text-xl font-semibold text-black"
+                            classNameLabel="block text-lg font-semibold text-black"
                           />
                         )}
                       />
@@ -340,7 +347,7 @@ export default function ViewEditProfile() {
                           <div className="mb-6" key={mapping}>
                             <Text
                               label={labelMap[mapping]}
-                              className="text-xl font-semibold text-black"
+                              className="text-lg font-semibold text-black"
                             />
                             {mapping === "tags" || mapping === "role" ? (
                               <div className="flex gap-2 flex-warp mt-2">
@@ -348,14 +355,14 @@ export default function ViewEditProfile() {
                                   <Text
                                     key={item}
                                     label={item}
-                                    className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                    className="text-sm font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
                                   />
                                 ))}
                               </div>
                             ) : (
                               <Text
                                 label={valueMap[mapping]}
-                                className="text-base font-normal text-black"
+                                className="text-sm font-normal text-black"
                               />
                             )}
                           </div>
@@ -369,14 +376,14 @@ export default function ViewEditProfile() {
         </div>
 
         <div className="w-1/2">
-          <Text label="Account info" className="mt-6 text-2xl font-bold text-black" />
+          <Text label="Account info" className="mt-6 text-xl font-bold text-black" />
 
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex">
               <div className="w-1/2 px-2">
-                <Text label="Username " className="text-xl font-semibold text-black" />
+                <Text label="Username " className="text-lg font-semibold text-black" />
 
-                <Text label="superadmin" className="text-base font-normal text-black" />
+                <Text label="superadmin" className="text-sm font-normal text-black" />
 
                 {isEdit && (
                   <div>
@@ -398,7 +405,7 @@ export default function ViewEditProfile() {
                             required
                             placeholder="Enter password"
                             classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                            classNameLabel="block text-xl font-semibold text-black"
+                            classNameLabel="block text-lg font-semibold text-black"
                             label="Password"
                           />
                         )}
@@ -409,12 +416,9 @@ export default function ViewEditProfile() {
               </div>
 
               <div className="w-1/2 px-2">
-                <Text label="Email address" className="text-xl font-semibold text-black" />
+                <Text label="Email address" className="text-lg font-semibold text-black" />
 
-                <Text
-                  label="superadmin@goforward.com"
-                  className="text-base font-normal text-black"
-                />
+                <Text label="superadmin@goforward.com" className="text-sm font-normal text-black" />
 
                 {isEdit && (
                   <div>
@@ -438,7 +442,7 @@ export default function ViewEditProfile() {
                             required
                             placeholder="Enter confirm password"
                             classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                            classNameLabel="block text-xl font-semibold text-black"
+                            classNameLabel="block text-lg font-semibold text-black"
                             label="Re-type password"
                           />
                         )}
@@ -457,7 +461,11 @@ export default function ViewEditProfile() {
           <Button
             type="button"
             onClick={() => {
-              setIsEdit(false);
+              if (id[0] === "edit") {
+                router.back();
+              } else {
+                setIsEdit(false);
+              }
             }}
             label="Cancel"
             className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -472,7 +480,7 @@ export default function ViewEditProfile() {
         </div>
       ) : (
         <div>
-          <Text label="Data info" className="mt-6 text-2xl font-bold text-black" />
+          <Text label="Data info" className="mt-6 text-xl font-bold text-black" />
 
           <div className="p-2 bg-white rounded-md mt-6">
             <ConfigProvider

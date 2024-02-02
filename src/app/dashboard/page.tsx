@@ -169,7 +169,7 @@ export default function DashboardPage() {
       <div className="bg-img-login h-[343px] bg-bottom flex flex-col items-start justify-center p-6">
         <Text
           label="👋 Hello, PT Sempurna Tech"
-          className="text-center text-2xl font-normal text-white"
+          className="text-center text-xl font-normal text-white"
         />
       </div>
       <div className="flex gap-4 px-6 -mt-16">
@@ -181,9 +181,9 @@ export default function DashboardPage() {
                 {icon}
 
                 <div>
-                  <Text label={label} className="text-xl font-bold text-gray-dark" />
+                  <Text label={label} className="text-base font-bold text-gray-dark" />
 
-                  <Text label={value} className="text-5xl font-semibold text-black" />
+                  <Text label={value} className="text-3xl font-semibold text-black" />
                 </div>
               </div>
             </div>
@@ -193,7 +193,7 @@ export default function DashboardPage() {
 
       <div className="gap-6 flex px-6 mt-6">
         <div className="w-1/2">
-          <Text label="Process time" className="text-2xl font-bold text-black" />
+          <Text label="Process time" className="text-xl font-bold text-black" />
 
           <div className="p-2 bg-white rounded-md mt-6">
             <ConfigProvider
@@ -209,7 +209,7 @@ export default function DashboardPage() {
                 title={() => (
                   <Text
                     label="SHORTEST"
-                    className="text-lg border-b border-[#f0f0f0] font-normal text-black pb-4"
+                    className="text-base border-b border-[#f0f0f0] font-normal text-black pb-4"
                   />
                 )}
                 columns={columnsShortest}
@@ -240,7 +240,7 @@ export default function DashboardPage() {
                 title={() => (
                   <Text
                     label="LONGEST"
-                    className="text-lg border-b border-[#f0f0f0] font-normal text-black pb-4"
+                    className="text-base border-b border-[#f0f0f0] font-normal text-black pb-4"
                   />
                 )}
                 columns={columnsLongest}
@@ -269,7 +269,7 @@ export default function DashboardPage() {
                 title={() => (
                   <Text
                     label="LOWEST"
-                    className="text-lg border-b border-[#f0f0f0] font-normal text-black pb-4"
+                    className="text-base border-b border-[#f0f0f0] font-normal text-black pb-4"
                   />
                 )}
                 columns={columnsLowest}
@@ -296,7 +296,7 @@ export default function DashboardPage() {
                 title={() => (
                   <Text
                     label="HIGHEST"
-                    className="text-lg border-b border-[#f0f0f0] font-normal text-black pb-4"
+                    className="text-base border-b border-[#f0f0f0] font-normal text-black pb-4"
                   />
                 )}
                 columns={columnsLowest}

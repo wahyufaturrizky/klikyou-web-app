@@ -145,6 +145,7 @@ export default function UserManagementPage() {
         return (
           <div className="flex justify-center items-center cursor-pointer">
             <PencilIcon
+              onClick={() => router.push(`/user-management/edit/${record.id}`)}
               style={{
                 height: 32,
                 width: 32,
