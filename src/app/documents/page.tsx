@@ -10,6 +10,7 @@ import { FileIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } fro
 import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 export interface OptionInterface {
   label: string;
@@ -41,6 +42,7 @@ interface DeleteModal {
 }
 
 export default function DocumentsPage() {
+  const router = useRouter();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [isShowDelete, setShowDelete] = useState<DeleteModal>({
@@ -341,7 +343,7 @@ export default function DocumentsPage() {
         <div className="flex gap-4 items-center">
           <Button
             type="button"
-            onClick={() => {}}
+            onClick={() => router.push("/documents/add")}
             label="Add"
             icon={<PlusIcon />}
             className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

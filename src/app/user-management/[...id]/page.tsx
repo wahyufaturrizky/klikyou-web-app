@@ -131,20 +131,6 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
     updateUserManagement(data);
   };
 
-  const handleChangeUploadAvatar: UploadProps["onChange"] = (info) => {
-    if (info.file.status === "uploading") {
-      setLoadingImageAvatar(true);
-      return;
-    }
-    if (info.file.status === "done") {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj as FileType, (url) => {
-        setLoadingImageAvatar(false);
-        setValue("imgProfile", url);
-      });
-    }
-  };
-
   const uploadButton = (
     <button className="border border-0 bg-none" type="button">
       {loadingImageAvatar ? <LoadingOutlined /> : <PlusOutlined />}

@@ -56,6 +56,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
     "/dashboard": "Dashboard",
     "/profile": "Profile",
     "/documents": "Documents",
+    "/documents/add": "Documents",
     "/user-management": "User Management",
     "/user-management/add": "User Management",
     "/master/documents-tags": "Document Tags",
