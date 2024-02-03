@@ -36,7 +36,7 @@ function useUpdateSettings({ options }: any) {
         data: updates,
       }),
     ...options,
-  });
+  }) as any;
 }
 
 function useDeleteSettings({ options }: any) {

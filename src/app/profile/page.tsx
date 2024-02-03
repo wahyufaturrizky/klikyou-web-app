@@ -5,12 +5,13 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
-import { PencilIcon, BackIcon } from "@/style/icon";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { Table, TableProps, ConfigProvider, Upload, UploadProps } from "antd";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useProfile, useUpdateProfile } from "@/services/profile/useProfile";
+import { BackIcon, PencilIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import { ConfigProvider, Table, TableProps, Upload } from "antd";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 type FormProfileValues = {
   imgProfile: string;
@@ -49,6 +50,30 @@ export default function ProfilePage() {
       confirmPassword: "",
     },
   });
+
+  const { data: dataProfile, refetch: refetchProfile } = useProfile();
+
+  useEffect(() => {
+    if (dataProfile) {
+      setValue("imgProfile", dataProfile.imgProfile);
+      setValue("firstName", dataProfile.firstName);
+      setValue("lastName", dataProfile.lastName);
+      setValue("tags", dataProfile.tags);
+      setValue("role", dataProfile.role);
+      setValue("username", dataProfile.username);
+      setValue("email", dataProfile.email);
+      setValue("password", dataProfile.password);
+    }
+  }, [dataProfile]);
+
+  const { mutate: updateUserManagement, isPending: isPendingUpdateUserManagement } =
+    useUpdateProfile({
+      options: {
+        onSuccess: () => {
+          refetchProfile();
+        },
+      },
+    });
 
   const columns: TableProps<DataType>["columns"] = [
     {
@@ -114,7 +139,7 @@ export default function ProfilePage() {
   ];
 
   const onSubmit = (data: FormProfileValues) => {
-    console.log(data);
+    updateUserManagement(data);
   };
 
   const uploadButton = (
@@ -450,6 +475,8 @@ export default function ProfilePage() {
           <Button
             type="button"
             onClick={handleSubmit(onSubmit)}
+            loading={isPendingUpdateUserManagement}
+            disabled={isPendingUpdateUserManagement}
             label="Save"
             className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           />

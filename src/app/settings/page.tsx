@@ -1,16 +1,19 @@
 "use client";
+import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
-import Select from "@/components/Select";
+import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
-import UseDateTimeFormat from "@/hook/useDateFormat";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { TableProps, Upload, UploadProps } from "antd";
-import { useState } from "react";
+import { Upload } from "antd";
+import { useState, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import Button from "@/components/Button";
-import InputTextArea from "@/components/InputTextArea";
+import {
+  useUserManagement,
+  useUpdateUserManagement,
+} from "@/services/user-management/useUserManagement";
+import { useSettings, useUpdateSettings } from "@/services/settings/useSettings";
 
 type FormSettingsValues = {
   imgProfile: string;
@@ -24,7 +27,7 @@ type FormSettingsValues = {
 export default function SettingsPage() {
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
-  const { control, setValue, handleSubmit } = useForm<FormSettingsValues>({
+  const { control, handleSubmit, setValue } = useForm<FormSettingsValues>({
     defaultValues: {
       imgProfile: "/placeholder-profile.png",
       name: "",
@@ -35,8 +38,19 @@ export default function SettingsPage() {
     },
   });
 
+  const { data: dataSettings, refetch: refetchSettings } = useSettings();
+
+  const { mutate: updateUserManagement, isPending: isPendingUpdateUserManagement } =
+    useUpdateSettings({
+      options: {
+        onSuccess: () => {
+          refetchSettings();
+        },
+      },
+    });
+
   const onSubmit = (data: FormSettingsValues) => {
-    console.log(data);
+    updateUserManagement(data);
   };
 
   const uploadButton = (
@@ -45,6 +59,15 @@ export default function SettingsPage() {
       <div className="mt-2">Upload</div>
     </button>
   );
+
+  useEffect(() => {
+    if (dataSettings) {
+      setValue("imgProfile", dataSettings.imgProfile);
+      setValue("name", dataSettings.name);
+      setValue("address", dataSettings.address);
+      setValue("npwp", dataSettings.npwp);
+    }
+  }, [dataSettings]);
 
   return (
     <div className="p-6">
@@ -243,6 +266,8 @@ export default function SettingsPage() {
           type="button"
           onClick={handleSubmit(onSubmit)}
           label="Update"
+          disabled={isPendingUpdateUserManagement}
+          loading={isPendingUpdateUserManagement}
           className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         />
       </div>

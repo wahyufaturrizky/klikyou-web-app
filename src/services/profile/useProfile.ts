@@ -36,7 +36,7 @@ function useUpdateProfile({ options }: any) {
         data: updates,
       }),
     ...options,
-  });
+  }) as any;
 }
 
 export { useCreateProfile, useProfile, useUpdateProfile };
