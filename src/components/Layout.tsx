@@ -17,7 +17,16 @@ import {
   UserIcon,
 } from "@/style/icon";
 import type { MenuProps } from "antd";
-import { Badge, ConfigProvider, Dropdown, Layout as LayoutAntd, Menu, theme, Grid } from "antd";
+import {
+  Badge,
+  ConfigProvider,
+  Dropdown,
+  Layout as LayoutAntd,
+  Menu,
+  theme,
+  Grid,
+  Spin,
+} from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createElement, useEffect, useRef, useState } from "react";
@@ -50,6 +59,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
     "/user-management": "User Management",
     "/user-management/add": "User Management",
     "/master/documents-tags": "Document Tags",
+    "/settings": "Settings",
   };
 
   const [isShowNotif, setIsShowNotif] = useState<boolean>(false);
@@ -86,7 +96,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
       ],
     },
     { icon: UserIcon, label: <Link href="/user-management">User Management</Link> },
-    { icon: SettingIcon, label: "Settings" },
+    { icon: SettingIcon, label: <Link href="/settings">Settings</Link> },
   ].map((item, index) => {
     const { icon, label, children } = item;
 
@@ -98,7 +108,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
         const { icon, label: subLabel } = child;
 
         return {
-          key: subLabel + String(indexChild + 1),
+          key: String(subLabel) + String(indexChild + 1),
           icon: <div className="h-6 w-6">{createElement(icon)}</div>,
           label: <Text label={subLabel} className="font-bold" />,
         };
@@ -157,6 +167,10 @@ const Layout = ({ ...props }: LayoutInterface) => {
 
   const screens = useBreakpoint();
   const { lg, xl, xxl } = screens;
+
+  if (Object.keys(screens).length === 0) {
+    return <Spin fullscreen />;
+  }
 
   return (
     <div>

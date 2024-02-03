@@ -7,7 +7,7 @@ import { useSignIn } from "@/services/auth/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { Grid } from "antd";
+import { Grid, Spin } from "antd";
 import { WarningOutlined } from "@ant-design/icons";
 
 type FormLoginValues = {
@@ -67,6 +67,10 @@ export default function Home() {
 
   const screens = useBreakpoint();
   const { lg, xl, xxl } = screens;
+
+  if (Object.keys(screens).length === 0) {
+    return <Spin fullscreen />;
+  }
 
   return (
     <section>
