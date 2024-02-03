@@ -96,7 +96,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
         const { icon, label: subLabel } = child;
 
         return {
-          key: String(subLabel + indexChild + 1),
+          key: subLabel + String(indexChild + 1),
           icon: <div className="h-6 w-6">{createElement(icon)}</div>,
           label: <Text label={subLabel} className="font-bold" />,
         };
