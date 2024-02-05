@@ -34,9 +34,9 @@ export default function Home() {
   const { mutate: loginUser, isPending: isPendingLogin } = useSignIn({
     options: {
       onSuccess: (res: ResLogin) => {
-        const { data } = res;
-        const { token } = data;
-        localStorage.setItem("access_token", token);
+        const { data } = res.data;
+        const { access_token } = data;
+        localStorage.setItem("access_token", access_token);
 
         localStorage.setItem("currentMenu", "1");
 
@@ -46,10 +46,7 @@ export default function Home() {
   });
 
   const onSubmit: SubmitHandler<FormLoginValues> = (data) => {
-    loginUser({
-      username: data.email,
-      password: data.password,
-    });
+    loginUser(data);
   };
 
   useEffect(() => {

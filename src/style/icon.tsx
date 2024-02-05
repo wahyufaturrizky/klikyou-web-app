@@ -205,6 +205,33 @@ const IconFilter = () => (
   </svg>
 );
 
+const IconOpen = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M25.3333 25.3333H6.66667V6.66667H16V4H6.66667C5.18667 4 4 5.2 4 6.66667V25.3333C4 26.8 5.18667 28 6.66667 28H25.3333C26.8 28 28 26.8 28 25.3333V16H25.3333V25.3333ZM18.6667 4V6.66667H23.4533L10.3467 19.7733L12.2267 21.6533L25.3333 8.54667V13.3333H28V4H18.6667Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+const IconDownload = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M23.9999 19.9997V23.9997H7.99992V19.9997H5.33325V23.9997C5.33325 25.4663 6.53325 26.6663 7.99992 26.6663H23.9999C25.4666 26.6663 26.6666 25.4663 26.6666 23.9997V19.9997H23.9999ZM22.6666 14.6663L20.7866 12.7863L17.3333 16.2263V5.33301H14.6666V16.2263L11.2133 12.7863L9.33325 14.6663L15.9999 21.333L22.6666 14.6663Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+const IconProtect = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M15.9999 2.66699L5.33325 6.66699V14.787C5.33325 21.5203 9.87992 27.8003 15.9999 29.3337C22.1199 27.8003 26.6666 21.5203 26.6666 14.787V6.66699L15.9999 2.66699ZM23.9999 14.787C23.9999 20.1203 20.5999 25.0537 15.9999 26.5603C11.3999 25.0537 7.99992 20.1337 7.99992 14.787V8.41366L15.9999 5.58699L23.9999 8.41366V14.787ZM11.7599 14.1203L9.86659 16.0003L14.5866 20.7203L22.1333 13.1737L20.2533 11.2937L14.5999 16.947L11.7599 14.1203Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
 export const DashboardIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={IconDashboard} {...props} />
 );
@@ -291,4 +318,16 @@ export const SearchIcon = (props: Partial<CustomIconComponentProps>) => (
 
 export const FilterIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={IconFilter} {...props} />
+);
+
+export const OpenIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconOpen} {...props} />
+);
+
+export const DownloadIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconDownload} {...props} />
+);
+
+export const ProtectIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconProtect} {...props} />
 );
