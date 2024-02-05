@@ -335,7 +335,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
       ) : (
         <div className="flex min-h-full flex-1 flex-col justify-start px-6 py-12 lg:px-8 bg-center h-lvh">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-            <div className="flex flex-col justify-center border border-2 border-red rounded-md p-6">
+            <div className="flex flex-col justify-center items-center border border-2 border-red rounded-md p-6">
               <WarningOutlined style={{ fontSize: "60px", color: "red" }} />
 
               <Text
