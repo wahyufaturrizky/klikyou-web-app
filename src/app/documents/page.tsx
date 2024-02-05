@@ -6,12 +6,12 @@ import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
 import { useDeleteDocument, useDocument } from "@/services/document/useDocument";
-import { FileIcon, FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
+import { FileIcon, FilterIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export interface OptionInterface {
   label: string;
@@ -196,23 +196,6 @@ export default function DocumentsPage() {
       dataIndex: "updateAt",
       key: "updateAt",
       render: (text: Date) => UseDateTimeFormat(text),
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => {
-        return (
-          <div className="flex justify-center items-center cursor-pointer">
-            <PencilIcon
-              style={{
-                height: 32,
-                width: 32,
-                color: "#2166E9",
-              }}
-            />
-          </div>
-        );
-      },
     },
   ];
 
