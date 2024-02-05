@@ -17,6 +17,18 @@ const useUserManagement = ({ query = {}, options }: any = {}) => {
   }) as any;
 };
 
+const fetchUserManagementById = async ({ id }: { id: string }) => {
+  return client(`/getUserManagement/${id}`).then((data) => data);
+};
+
+const useUserManagementById = ({ id, options }: any) => {
+  return useQuery({
+    queryKey: ["user-management", id],
+    queryFn: () => fetchUserManagementById({ id }),
+    ...options,
+  }) as any;
+};
+
 function useCreateUserManagement({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
@@ -55,4 +67,5 @@ export {
   useUserManagement,
   useUpdateUserManagement,
   useDeleteUserManagement,
+  useUserManagementById,
 };

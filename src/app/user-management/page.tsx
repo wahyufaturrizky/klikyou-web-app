@@ -22,7 +22,7 @@ export interface OptionInterface {
   value: string;
 }
 
-interface DataUserManagementType {
+export interface DataUserManagementType {
   id: string;
   name: string;
   emailAddress: string;

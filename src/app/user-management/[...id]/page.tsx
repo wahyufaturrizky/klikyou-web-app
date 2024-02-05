@@ -1,18 +1,24 @@
 "use client";
+import { DeleteModal } from "@/app/documents/page";
 import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
-import { useUpdateUserManagement } from "@/services/user-management/useUserManagement";
-import { BackIcon, PencilIcon } from "@/style/icon";
+import {
+  useDeleteUserManagement,
+  useUpdateUserManagement,
+  useUserManagementById,
+} from "@/services/user-management/useUserManagement";
+import { BackIcon, PencilIcon, TrashIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { ConfigProvider, Table, TableProps, Upload, UploadProps } from "antd";
+import { ConfigProvider, Modal, Spin, Table, TableProps, Upload, message } from "antd";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { DataUserManagementType } from "../page";
 
 type FormProfileValues = {
   imgProfile: string;
@@ -37,11 +43,24 @@ interface DataType {
 export default function ViewEditProfile({ params }: { params: { id: string } }) {
   const { id } = params;
 
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [dataById, setDataById] = useState<DataUserManagementType>();
+
   const router = useRouter();
   const [isEdit, setIsEdit] = useState<boolean>(id[0] === "view" ? false : true);
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
-  const { watch, control, handleSubmit, setValue, getValues } = useForm<FormProfileValues>({
+  const [isShowDelete, setShowDelete] = useState<DeleteModal>({
+    open: false,
+    type: "selection",
+    data: {
+      data: null,
+      selectedRowKeys: [],
+    },
+  });
+
+  const { watch, control, handleSubmit, getValues } = useForm<FormProfileValues>({
     defaultValues: {
       imgProfile: "/placeholder-profile.png",
       firstName: "",
@@ -131,6 +150,16 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
     updateUserManagement(data);
   };
 
+  const { data: dataUserManagement, isPending: isPendingUserManagement } = useUserManagementById({
+    id,
+  });
+
+  useEffect(() => {
+    if (dataUserManagement) {
+      setDataById(dataUserManagement.data);
+    }
+  }, [dataUserManagement]);
+
   const uploadButton = (
     <button className="border border-0 bg-none" type="button">
       {loadingImageAvatar ? <LoadingOutlined /> : <PlusOutlined />}
@@ -138,16 +167,63 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
     </button>
   );
 
+  const { mutate: deleteUserManagement, isPending: isPendingDeleteUserManagement }: any =
+    useDeleteUserManagement({
+      options: {
+        onSuccess: () => {
+          messageApi.open({
+            type: "success",
+            content: "Delete document success",
+            duration: 1,
+            onClose: () => router.back(),
+          });
+        },
+      },
+    });
+
+  const renderConfirmationText = (type: any, data: any) => {
+    switch (type) {
+      case "single":
+        return `Are you sure to delete document ${data?.name} ?`;
+      default:
+        break;
+    }
+  };
+
   return (
     <div className="p-6">
-      <div className="flex gap-4 items-center">
-        <BackIcon
-          style={{ color: "#2379AA", height: 24, width: 24 }}
-          onClick={() => router.back()}
-        />
-        <Text
-          label={isEdit ? "Edit user" : "User detail"}
-          className="text-2xl font-normal text-secondary-blue"
+      {contextHolder}
+      {isPendingUserManagement && <Spin fullscreen />}
+
+      <div className="flex items-center justify-between">
+        <div className="flex gap-4 items-center">
+          <BackIcon
+            style={{ color: "#2379AA", height: 24, width: 24 }}
+            onClick={() => router.back()}
+          />
+          <Text
+            label={isEdit ? "Edit user" : "User detail"}
+            className="text-2xl font-normal text-secondary-blue"
+          />
+        </div>
+
+        <Button
+          type="button"
+          onClick={() =>
+            setShowDelete({
+              open: true,
+              type: "single",
+            })
+          }
+          label="Delete"
+          icon={
+            <TrashIcon
+              style={{
+                color: "#F44550",
+              }}
+            />
+          }
+          className="flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 text-red border-red"
         />
       </div>
 
@@ -501,6 +577,51 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
           </div>
         </div>
       )}
+
+      <Modal
+        title="Confirm Delete"
+        open={isShowDelete.open}
+        onCancel={() => {
+          setShowDelete({
+            open: false,
+            data: null,
+            type: "",
+          });
+        }}
+        footer={
+          <div className="flex justify-end items-center">
+            <div className="flex gap-4 items-center">
+              <Button
+                type="button"
+                onClick={() => {
+                  setShowDelete({
+                    open: false,
+                    data: null,
+                    type: "",
+                  });
+                }}
+                label="No"
+                className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              />
+
+              <Button
+                loading={isPendingDeleteUserManagement}
+                disabled={isPendingDeleteUserManagement}
+                type="button"
+                onClick={() =>
+                  deleteUserManagement({
+                    ids: [id],
+                  })
+                }
+                label="Yes"
+                className="flex justify-center items-center rounded-md bg-red px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              />
+            </div>
+          </div>
+        }
+      >
+        <div>{renderConfirmationText(isShowDelete.type, isShowDelete.data)}</div>
+      </Modal>
     </div>
   );
 }

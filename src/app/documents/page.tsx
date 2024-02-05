@@ -11,13 +11,14 @@ import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export interface OptionInterface {
   label: string;
   value: string;
 }
 
-interface DataDocumentsType {
+export interface DataDocumentsType {
   id: string;
   docName: string;
   tags: string[];
@@ -35,10 +36,10 @@ type FormFilterValues = {
   role: string[];
 };
 
-interface DeleteModal {
+export interface DeleteModal {
   open: boolean;
   type: string;
-  data: { data: DataDocumentsType[] | null; selectedRowKeys: Key[] } | null;
+  data?: { data: DataDocumentsType[] | null; selectedRowKeys: Key[] } | null;
 }
 
 export default function DocumentsPage() {
@@ -102,8 +103,13 @@ export default function DocumentsPage() {
       title: "Document name",
       dataIndex: "docName",
       key: "docName",
-      render: (text: string) => {
-        return <Text label={text} className="text-base font-normal text-link" />;
+      render: (text: string, record: DataDocumentsType) => {
+        const { id } = record;
+        return (
+          <Link href={`/documents/view/${id}`}>
+            <Text label={text} className="text-base font-normal" />
+          </Link>
+        );
       },
     },
     {
