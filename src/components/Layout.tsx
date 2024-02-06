@@ -45,9 +45,23 @@ interface UserProfile {
   avatar_path: string;
 }
 
+interface CompanyProfile {
+  companyAddress: string;
+  companyImagePath: string;
+  companyName: string;
+  createdAt: string;
+  deletedAt: null;
+  email: string;
+  id: number;
+  npwp: string;
+  tel: string;
+  updatedAt: string;
+}
+
 const Layout = ({ ...props }: LayoutInterface) => {
   const router = useRouter();
   const [userProfile, setUserProfile] = useState<UserProfile>();
+  const [companyProfile, setCompanyProfile] = useState<CompanyProfile>();
 
   const pathname = usePathname();
   const [currentMenu, setCurrentMenu] = useState<string | null>(null);
@@ -97,7 +111,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
       icon: ApprovalsIcon,
       label: "Approvals",
       children: [
-        { icon: ToReviewIcon, label: "To Review" },
+        { icon: ToReviewIcon, label: <Link href="/approvals/to-review">To Review</Link> },
         { icon: HistoryIcon, label: "History" },
       ],
     },
@@ -188,6 +202,16 @@ const Layout = ({ ...props }: LayoutInterface) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const handleFetchCompanyProfile = () => {
+      const rawCompanyProfile = localStorage.getItem("company_profile");
+
+      setCompanyProfile(JSON.parse(rawCompanyProfile ?? "{}"));
+    };
+
+    handleFetchCompanyProfile();
+  }, []);
+
   const onClickMenu: MenuProps["onClick"] = (e) => {
     localStorage.setItem("currentMenu", e.key);
   };
@@ -273,7 +297,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
 
                   <Text
                     className="text-black font-bold text-xl border-l-2 border-primary-gray pl-4"
-                    label="PT Wahyu Zikri Tech"
+                    label={companyProfile?.companyName || ""}
                   />
                 </div>
 

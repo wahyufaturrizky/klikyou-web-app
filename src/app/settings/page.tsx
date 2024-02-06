@@ -4,7 +4,7 @@ import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
-import { useSettings, useUpdateSettings, useCreateSettings } from "@/services/settings/useSettings";
+import { useCreateSettings, useSettings } from "@/services/settings/useSettings";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Spin, Upload } from "antd";
@@ -63,6 +63,8 @@ export default function SettingsPage() {
   useEffect(() => {
     if (dataSettings) {
       const { data } = dataSettings.data;
+
+      localStorage.setItem("company_profile", JSON.stringify(data));
 
       setValue("company_image_path", data.companyImagePath);
       setValue("company_name", data.companyName);
