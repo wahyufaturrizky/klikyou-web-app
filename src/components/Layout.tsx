@@ -97,6 +97,8 @@ const Layout = ({ ...props }: LayoutInterface) => {
     "/settings": "Settings",
     "/approvals/to-review": "To Review",
     "/approvals/history": "History",
+    "/received/to-do": "To Do",
+    "/received/processed": "Processed",
   };
 
   const [isShowNotif, setIsShowNotif] = useState<boolean>(false);
@@ -121,8 +123,8 @@ const Layout = ({ ...props }: LayoutInterface) => {
       icon: ReceivedIcon,
       label: "Received",
       children: [
-        { icon: ToReviewIcon, label: "To Do" },
-        { icon: HistoryIcon, label: "Processed" },
+        { icon: ToReviewIcon, label: <Link href="/received/to-do">To Do</Link> },
+        { icon: HistoryIcon, label: <Link href="/received/processed">Processed</Link> },
       ],
     },
     {

@@ -3,10 +3,10 @@ import { Metadata } from "next";
 import { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "History",
-  description: "History page",
+  title: "To Do",
+  description: "To Do page",
 };
 
-export default function HistoryLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default function ToDoLayout({ children }: Readonly<{ children: ReactNode }>) {
   return <Layout>{children}</Layout>;
 }
