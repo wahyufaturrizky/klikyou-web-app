@@ -95,6 +95,8 @@ const Layout = ({ ...props }: LayoutInterface) => {
     "/user-management/add": "User Management",
     "/master/documents-tags": "Document Tags",
     "/settings": "Settings",
+    "/approvals/to-review": "To Review",
+    "/approvals/history": "History",
   };
 
   const [isShowNotif, setIsShowNotif] = useState<boolean>(false);
@@ -112,7 +114,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
       label: "Approvals",
       children: [
         { icon: ToReviewIcon, label: <Link href="/approvals/to-review">To Review</Link> },
-        { icon: HistoryIcon, label: "History" },
+        { icon: HistoryIcon, label: <Link href="/approvals/history">History</Link> },
       ],
     },
     {
