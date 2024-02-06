@@ -7,7 +7,7 @@ import { useSignIn } from "@/services/auth/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { Grid, Spin } from "antd";
+import { Grid, Spin, message } from "antd";
 import { WarningOutlined } from "@ant-design/icons";
 
 type FormLoginValues = {
@@ -22,6 +22,7 @@ interface ResLogin {
 const { useBreakpoint } = Grid;
 
 export default function Home() {
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
 
   const { control, handleSubmit } = useForm<FormLoginValues>({
@@ -34,6 +35,11 @@ export default function Home() {
   const { mutate: loginUser, isPending: isPendingLogin } = useSignIn({
     options: {
       onSuccess: (res: ResLogin) => {
+        messageApi.open({
+          type: "success",
+          content: "Success login",
+        });
+
         const { data } = res.data;
         const { access_token } = data;
         localStorage.setItem("access_token", access_token);
@@ -42,6 +48,12 @@ export default function Home() {
         localStorage.setItem("currentMenu", "1");
 
         router.push("/dashboard");
+      },
+      onError: () => {
+        messageApi.open({
+          type: "error",
+          content: "Email or password is incorrect",
+        });
       },
     },
   });
@@ -74,6 +86,7 @@ export default function Home() {
     <section>
       {lg || xl || xxl ? (
         <div className="flex min-h-full flex-1 flex-col justify-start px-6 py-12 lg:px-8 bg-img-login bg-center h-lvh">
+          {contextHolder}
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
             <ImageNext
               src="/logo-klikyou.svg"
