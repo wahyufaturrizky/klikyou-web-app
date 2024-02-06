@@ -4,23 +4,19 @@ import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
+import { useSettings, useUpdateSettings, useCreateSettings } from "@/services/settings/useSettings";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { Upload } from "antd";
-import { useState, useEffect } from "react";
+import { Spin, Upload } from "antd";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import {
-  useUserManagement,
-  useUpdateUserManagement,
-} from "@/services/user-management/useUserManagement";
-import { useSettings, useUpdateSettings } from "@/services/settings/useSettings";
 
 type FormSettingsValues = {
-  imgProfile: string;
-  name: string;
-  address: string;
+  company_image_path: string;
+  company_name: string;
+  company_address: string;
   npwp: string;
-  telp: string;
+  tel: string;
   email: string;
 };
 
@@ -29,19 +25,23 @@ export default function SettingsPage() {
 
   const { control, handleSubmit, setValue } = useForm<FormSettingsValues>({
     defaultValues: {
-      imgProfile: "/placeholder-profile.png",
-      name: "",
-      address: "",
+      company_image_path: "/placeholder-profile.png",
+      company_name: "",
+      company_address: "",
       npwp: "",
-      telp: "",
+      tel: "",
       email: "",
     },
   });
 
-  const { data: dataSettings, refetch: refetchSettings } = useSettings();
+  const {
+    data: dataSettings,
+    refetch: refetchSettings,
+    isPending: isPendingSettings,
+  } = useSettings();
 
-  const { mutate: updateUserManagement, isPending: isPendingUpdateUserManagement } =
-    useUpdateSettings({
+  const { mutate: createUserManagement, isPending: isPendingCreateUserManagement } =
+    useCreateSettings({
       options: {
         onSuccess: () => {
           refetchSettings();
@@ -50,7 +50,7 @@ export default function SettingsPage() {
     });
 
   const onSubmit = (data: FormSettingsValues) => {
-    updateUserManagement(data);
+    createUserManagement(data);
   };
 
   const uploadButton = (
@@ -62,15 +62,20 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (dataSettings) {
-      setValue("imgProfile", dataSettings.imgProfile);
-      setValue("name", dataSettings.name);
-      setValue("address", dataSettings.address);
-      setValue("npwp", dataSettings.npwp);
+      const { data } = dataSettings.data;
+
+      setValue("company_image_path", data.companyImagePath);
+      setValue("company_name", data.companyName);
+      setValue("company_address", data.companyAddress);
+      setValue("npwp", data.npwp);
+      setValue("tel", data.tel);
+      setValue("email", data.email);
     }
   }, [dataSettings]);
 
   return (
     <div className="p-6">
+      {isPendingSettings && <Spin fullscreen />}
       <div className="flex gap-4 items-center">
         <Text label="Change setting" className="text-3xl font-normal text-secondary-blue" />
       </div>
@@ -87,11 +92,11 @@ export default function SettingsPage() {
                 <div className="flex justify-center mt-6">
                   <Controller
                     control={control}
-                    name="imgProfile"
+                    name="company_image_path"
                     render={({ field: { onChange, value } }) => (
                       <div>
                         <Upload
-                          name="imgProfile"
+                          name="company_image_path"
                           listType="picture-circle"
                           showUploadList={false}
                           action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
@@ -136,14 +141,14 @@ export default function SettingsPage() {
                       rules={{
                         required: "Company name is required",
                       }}
-                      name="name"
+                      name="company_name"
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <Input
                           onChange={onChange}
                           error={error}
                           onBlur={onBlur}
                           value={value}
-                          name="name"
+                          name="company_name"
                           type="text"
                           required
                           placeholder="Enter Company name"
@@ -161,14 +166,14 @@ export default function SettingsPage() {
                       rules={{
                         required: "Company address is required",
                       }}
-                      name="address"
+                      name="company_address"
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <InputTextArea
                           onChange={onChange}
                           error={error}
                           onBlur={onBlur}
                           value={value}
-                          name="address"
+                          name="company_address"
                           required
                           placeholder="Enter company address"
                           classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
@@ -193,7 +198,7 @@ export default function SettingsPage() {
                           onBlur={onBlur}
                           value={value}
                           name="npwp"
-                          type="number"
+                          type="string"
                           required
                           placeholder="Enter NPWP"
                           classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
@@ -210,17 +215,17 @@ export default function SettingsPage() {
                       rules={{
                         required: "NPWP name is required",
                       }}
-                      name="telp"
+                      name="tel"
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <Input
                           onChange={onChange}
                           error={error}
                           onBlur={onBlur}
                           value={value}
-                          name="telp"
-                          type="number"
+                          name="tel"
+                          type="string"
                           required
-                          placeholder="Enter telp"
+                          placeholder="Enter tel"
                           classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                           classNameLabel="block text-xl font-semibold text-black"
                           label="Telp"
@@ -266,8 +271,8 @@ export default function SettingsPage() {
           type="button"
           onClick={handleSubmit(onSubmit)}
           label="Update"
-          disabled={isPendingUpdateUserManagement}
-          loading={isPendingUpdateUserManagement}
+          disabled={isPendingCreateUserManagement}
+          loading={isPendingCreateUserManagement}
           className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         />
       </div>

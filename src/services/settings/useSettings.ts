@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client";
 
 const fetchSettings = async ({ query = {} }) => {
-  return client("/getSettings", {
+  return client("/settings", {
     params: {
       ...query,
     },
@@ -20,7 +20,7 @@ const useSettings = ({ query = {}, options }: any = {}) => {
 function useCreateSettings({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
-      client("/createSettings", {
+      client("/settings", {
         method: "POST",
         data: reqBody,
       }),
@@ -31,7 +31,7 @@ function useCreateSettings({ options }: any) {
 function useUpdateSettings({ options }: any) {
   return useMutation({
     mutationFn: (updates) =>
-      client("/updateSettings", {
+      client("/settings", {
         method: "PUT",
         data: updates,
       }),
@@ -42,7 +42,7 @@ function useUpdateSettings({ options }: any) {
 function useDeleteSettings({ options }: any) {
   return useMutation({
     mutationFn: (updates) =>
-      client("/updateSettings", {
+      client("/settings", {
         method: "DELETE",
         data: updates,
       }),
