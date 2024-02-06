@@ -12,7 +12,7 @@ export async function client(
     method: method || (data ? "POST" : "GET"),
     headers: {
       "Content-Type": data ? "application/json" : undefined,
-      ...(token && { "x-access-token": token }),
+      ...(token && { Authorization: `Bearer ${token}` }),
       ...customHeaders,
     },
     ...customConfig,

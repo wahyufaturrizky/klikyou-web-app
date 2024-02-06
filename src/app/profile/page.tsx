@@ -9,7 +9,7 @@ import { useProfile, useUpdateProfile } from "@/services/profile/useProfile";
 import { BackIcon, PencilIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { ConfigProvider, Table, TableProps, Upload } from "antd";
+import { ConfigProvider, Spin, Table, TableProps, Upload } from "antd";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -39,7 +39,7 @@ export default function ProfilePage() {
 
   const { watch, control, handleSubmit, setValue, getValues } = useForm<FormProfileValues>({
     defaultValues: {
-      imgProfile: "/placeholder-profile.png",
+      imgProfile: "",
       firstName: "",
       lastName: "",
       tags: ["Text1", "Text2", "Text3"],
@@ -51,18 +51,20 @@ export default function ProfilePage() {
     },
   });
 
-  const { data: dataProfile, refetch: refetchProfile } = useProfile();
+  const { data: dataProfile, refetch: refetchProfile, isPending: isPendingProfile } = useProfile();
 
   useEffect(() => {
     if (dataProfile) {
-      setValue("imgProfile", dataProfile.imgProfile);
-      setValue("firstName", dataProfile.firstName);
-      setValue("lastName", dataProfile.lastName);
-      setValue("tags", dataProfile.tags);
-      setValue("role", dataProfile.role);
-      setValue("username", dataProfile.username);
-      setValue("email", dataProfile.email);
-      setValue("password", dataProfile.password);
+      const { data } = dataProfile.data;
+
+      setValue("imgProfile", data?.imgProfile);
+      setValue("firstName", data?.firstName);
+      setValue("lastName", data?.lastName);
+      setValue("tags", data?.tags);
+      setValue("role", data?.role);
+      setValue("username", data?.username);
+      setValue("email", data?.email);
+      setValue("password", data?.password);
     }
   }, [dataProfile]);
 
@@ -151,6 +153,7 @@ export default function ProfilePage() {
 
   return (
     <div className="p-6">
+      {isPendingProfile && <Spin fullscreen />}
       <div className="flex gap-4 items-center">
         {isEdit && <BackIcon style={{ color: "#2379AA" }} onClick={() => setIsEdit(false)} />}
         <Text
@@ -220,7 +223,7 @@ export default function ProfilePage() {
                     />
                   ) : (
                     <ImageNext
-                      src={getValues("imgProfile")}
+                      src={getValues("imgProfile") || "/placeholder-profile.png"}
                       width={180}
                       height={180}
                       alt="logo-klikyou"
@@ -333,7 +336,14 @@ export default function ProfilePage() {
                   <div>
                     {Object.keys(watch())
                       .filter(
-                        (filtering) => !["imgProfile", "username", "email"].includes(filtering)
+                        (filtering) =>
+                          ![
+                            "imgProfile",
+                            "username",
+                            "email",
+                            "confirmPassword",
+                            "password",
+                          ].includes(filtering)
                       )
                       .map((mapping) => {
                         const labelMap: any = {
@@ -353,7 +363,7 @@ export default function ProfilePage() {
                             />
                             {mapping === "tags" || mapping === "role" ? (
                               <div className="flex gap-2 flex-warp mt-2">
-                                {valueMap[mapping].map((item: string) => (
+                                {valueMap[mapping]?.map((item: string) => (
                                   <Text
                                     key={item}
                                     label={item}
