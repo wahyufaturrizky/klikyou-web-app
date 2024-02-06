@@ -224,6 +224,8 @@ export default function DocumentsPage() {
       date: getValuesFilter("date"),
       status: getValuesFilter("status").join(","),
       role: getValuesFilter("role").join(","),
+      page: tableParams.pagination?.current,
+      limit: tableParams.pagination?.pageSize,
     },
   });
 

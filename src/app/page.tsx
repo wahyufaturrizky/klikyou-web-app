@@ -37,6 +37,7 @@ export default function Home() {
         const { data } = res.data;
         const { access_token } = data;
         localStorage.setItem("access_token", access_token);
+        localStorage.setItem("user_profile", JSON.stringify(data));
 
         localStorage.setItem("currentMenu", "1");
 

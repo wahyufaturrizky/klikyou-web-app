@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client";
 
 const fetchUserManagement = async ({ query = {} }) => {
-  return client("/getUserManagement", {
+  return client("/users", {
     params: {
       ...query,
     },

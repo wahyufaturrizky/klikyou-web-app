@@ -5,10 +5,10 @@ import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
-import { useCreateDocumentTags, useDocumentTags } from "@/services/document-tags/useDocumentTags";
-import { useUpdateUserManagement } from "@/services/user-management/useUserManagement";
-import { FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
+import { useDeleteDocument, useDocument } from "@/services/document/useDocument";
+import { FileIcon, FilterIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -18,10 +18,14 @@ export interface OptionInterface {
   value: string;
 }
 
-interface DataDocumentTags {
+export interface DataDocumentsType {
   id: string;
-  code: string;
-  tagName: string;
+  docName: string;
+  tags: string[];
+  file: string;
+  status: string;
+  latestAction: string;
+  role: string[];
   updateAt: Date;
 }
 
@@ -32,24 +36,13 @@ type FormFilterValues = {
   role: string[];
 };
 
-type FormAddAndEditValues = {
-  code: string;
-  tagName: string;
-};
-
-interface DeleteModal {
+export interface DeleteModal {
   open: boolean;
   type: string;
-  data: { data: DataDocumentTags[] | null; selectedRowKeys: Key[] } | null;
+  data?: { data: DataDocumentsType[] | null; selectedRowKeys: Key[] } | null;
 }
 
-interface AddAndEditModal {
-  open: boolean;
-  data: DataDocumentTags | null;
-  type: "add" | "edit" | "";
-}
-
-export default function DocumentTagsPage() {
+export default function ToReviewPage() {
   const router = useRouter();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
@@ -61,16 +54,15 @@ export default function DocumentTagsPage() {
       selectedRowKeys: [],
     },
   });
-  const [stateAddAndEditModal, setStateAddAndEditModal] = useState<AddAndEditModal>({
-    open: false,
-    data: null,
-    type: "add",
-  });
-  const [data, setData] = useState<DataDocumentTags[]>([
+  const [data, setData] = useState<DataDocumentsType[]>([
     {
       id: "101",
-      code: "REIM",
-      tagName: "Reimbursement",
+      docName: "Project Antasari - Quotation",
+      tags: ["Quotation", "Project"],
+      role: ["Quotation", "Project"],
+      file: "file.pdf",
+      status: "(3/3) Fully approved",
+      latestAction: "(3/3) Fully approved",
       updateAt: new Date(),
     },
   ]);
@@ -97,19 +89,7 @@ export default function DocumentTagsPage() {
     },
   });
 
-  const {
-    control: controlAddAndEdit,
-    handleSubmit: handleSubmitAddAndEdit,
-    reset: resetAddAndEdit,
-    setValue: setValueAddAndEdit,
-  } = useForm<FormAddAndEditValues>({
-    defaultValues: {
-      code: "",
-      tagName: "",
-    },
-  });
-
-  const columns: TableProps<DataDocumentTags>["columns"] = [
+  const columns: TableProps<DataDocumentsType>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -120,53 +100,102 @@ export default function DocumentTagsPage() {
       },
     },
     {
-      title: "Code",
-      dataIndex: "code",
-      key: "code",
-      render: (text: string) => {
-        return <Text label={text} className="text-base font-normal text-black" />;
+      title: "Document name",
+      dataIndex: "docName",
+      key: "docName",
+      render: (text: string, record: DataDocumentsType) => {
+        const { id } = record;
+        return (
+          <Link href={`/documents/view/${id}`}>
+            <Text label={text} className="text-base font-normal" />
+          </Link>
+        );
       },
     },
     {
-      title: "Tag Name",
-      dataIndex: "tagName",
-      key: "tagName",
+      title: "Tags",
+      dataIndex: "tags",
+      key: "tags",
+      render: (text: string[]) => (
+        <div className="flex gap-2 flex-warp">
+          {text?.map((item: string) => {
+            return (
+              <Text
+                key={item}
+                label={item}
+                className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
+              />
+            );
+          })}
+        </div>
+      ),
+    },
+    {
+      title: "File",
+      dataIndex: "file",
+      key: "file",
       render: (text: string) => {
-        return <Text label={text} className="text-base font-normal text-black" />;
+        return (
+          <div className="flex justify-center items-center">
+            <FileIcon
+              style={{
+                height: 32,
+                width: 32,
+              }}
+            />
+          </div>
+        );
       },
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (text: string) => {
+        return (
+          <Text
+            label={text}
+            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
+          />
+        );
+      },
+    },
+    {
+      title: "Latest Action",
+      dataIndex: "latestAction",
+      key: "latestAction",
+      render: (text: string) => {
+        return (
+          <Text
+            label={text}
+            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
+          />
+        );
+      },
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+      render: (text: string[]) => (
+        <div className="flex gap-2 flex-warp">
+          {text?.map((item: string) => {
+            return (
+              <Text
+                key={item}
+                label={item}
+                className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
+              />
+            );
+          })}
+        </div>
+      ),
     },
     {
       title: "Update At",
       dataIndex: "updateAt",
       key: "updateAt",
       render: (text: Date) => UseDateTimeFormat(text),
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => {
-        return (
-          <div className="flex justify-center items-center cursor-pointer">
-            <PencilIcon
-              onClick={() => {
-                setValueAddAndEdit("code", record.code);
-                setValueAddAndEdit("tagName", record.tagName);
-
-                setStateAddAndEditModal({
-                  open: true,
-                  data: record,
-                  type: "edit",
-                });
-              }}
-              style={{
-                height: 32,
-                width: 32,
-                color: "#2166E9",
-              }}
-            />
-          </div>
-        );
-      },
     },
   ];
 
@@ -186,10 +215,10 @@ export default function DocumentTagsPage() {
   const debounceSearch = useDebounce(watchFilter("search"), 1000);
 
   const {
-    data: dataDocumentTags,
-    isPending: isPendingDocumentTags,
-    refetch: refetchDocumentTags,
-  } = useDocumentTags({
+    data: dataDocument,
+    isPending: isPendingDocument,
+    refetch: refetchDocument,
+  } = useDocument({
     query: {
       search: debounceSearch,
       date: getValuesFilter("date"),
@@ -201,10 +230,10 @@ export default function DocumentTagsPage() {
   });
 
   useEffect(() => {
-    if (dataDocumentTags) {
-      setData(dataDocumentTags.data);
+    if (dataDocument) {
+      setData(dataDocument.data);
     }
-  }, [dataDocumentTags]);
+  }, [dataDocument]);
 
   const optionsStatus = [
     {
@@ -260,8 +289,8 @@ export default function DocumentTagsPage() {
     });
   };
 
-  const onSubmitFilter = () => {
-    refetchDocumentTags();
+  const onSubmitFilter = (data: FormFilterValues) => {
+    refetchDocument();
     setIsShowModalFilter(false);
   };
 
@@ -285,58 +314,19 @@ export default function DocumentTagsPage() {
     }
   };
 
-  const { mutate: deleteDocumentTags, isPending: isPendingDeleteDocumentTags }: any =
-    useDocumentTags({
-      options: {
-        onSuccess: () => {
-          refetchDocumentTags();
-          resetShowDelete();
-          setSelectedRowKeys([]);
-        },
+  const { mutate: deleteDocument, isPending: isPendingDeleteDocument }: any = useDeleteDocument({
+    options: {
+      onSuccess: () => {
+        refetchDocument();
+        resetShowDelete();
+        setSelectedRowKeys([]);
       },
-    });
+    },
+  });
 
   useEffect(() => {
-    refetchDocumentTags();
+    refetchDocument();
   }, [tableParams]);
-
-  const { mutate: createDocumentTags, isPending: isPendingCreateDocumentTags } =
-    useCreateDocumentTags({
-      options: {
-        onSuccess: () => {
-          resetAddAndEdit();
-          refetchDocumentTags();
-          setStateAddAndEditModal({
-            data: null,
-            open: false,
-            type: "",
-          });
-        },
-      },
-    });
-
-  const { mutate: updateDocumentTags, isPending: isPendingUpdateDocumentTags } =
-    useUpdateUserManagement({
-      options: {
-        onSuccess: () => {
-          resetAddAndEdit();
-          refetchDocumentTags();
-          setStateAddAndEditModal({
-            data: null,
-            open: false,
-            type: "",
-          });
-        },
-      },
-    });
-
-  const onSubmitAddAndEdit = (data: FormAddAndEditValues) => {
-    if (stateAddAndEditModal.type === "add") {
-      createDocumentTags(data);
-    } else {
-      updateDocumentTags(data);
-    }
-  };
 
   return (
     <div className="p-6">
@@ -344,13 +334,7 @@ export default function DocumentTagsPage() {
         <div className="flex gap-4 items-center">
           <Button
             type="button"
-            onClick={() =>
-              setStateAddAndEditModal({
-                data: null,
-                open: true,
-                type: "add",
-              })
-            }
+            onClick={() => router.push("/documents/add")}
             label="Add"
             icon={<PlusIcon />}
             className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -428,9 +412,8 @@ export default function DocumentTagsPage() {
           <Table
             columns={columns}
             dataSource={data}
-            loading={
-              isPendingDocumentTags || isPendingCreateDocumentTags || isPendingUpdateDocumentTags
-            }
+            scroll={{ x: 1500 }}
+            loading={isPendingDocument}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
@@ -576,11 +559,11 @@ export default function DocumentTagsPage() {
               />
 
               <Button
-                loading={isPendingDeleteDocumentTags}
-                disabled={isPendingDeleteDocumentTags}
+                loading={isPendingDeleteDocument}
+                disabled={isPendingDeleteDocument}
                 type="button"
                 onClick={() =>
-                  deleteDocumentTags({
+                  deleteDocument({
                     ids: selectedRowKeys,
                   })
                 }
@@ -592,97 +575,6 @@ export default function DocumentTagsPage() {
         }
       >
         <div>{renderConfirmationText(isShowDelete.type, isShowDelete.data)}</div>
-      </Modal>
-
-      <Modal
-        title={`${stateAddAndEditModal.type === "edit" ? "Edit" : "Add"} document tag`}
-        open={stateAddAndEditModal.open}
-        onCancel={() => {
-          resetAddAndEdit();
-          setStateAddAndEditModal({
-            open: false,
-            data: null,
-            type: "",
-          });
-        }}
-        footer={
-          <div className="flex justify-end items-center">
-            <div className="flex gap-4 items-center">
-              <Button
-                type="button"
-                onClick={() => {
-                  resetAddAndEdit();
-                  setStateAddAndEditModal({
-                    open: false,
-                    data: null,
-                    type: "",
-                  });
-                }}
-                label="Cancel"
-                className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              />
-
-              <Button
-                type="button"
-                onClick={handleSubmitAddAndEdit(onSubmitAddAndEdit)}
-                label="Yes"
-                className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              />
-            </div>
-          </div>
-        }
-      >
-        <div>
-          <div className="mb-6">
-            <Controller
-              control={controlAddAndEdit}
-              rules={{
-                required: "Code is required",
-              }}
-              name="code"
-              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                <Input
-                  onChange={onChange}
-                  error={error}
-                  onBlur={onBlur}
-                  value={value}
-                  name="code"
-                  type="text"
-                  required
-                  placeholder="Enter code"
-                  classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                  classNameLabel="block text-xl font-semibold text-black"
-                  label="Code"
-                />
-              )}
-            />
-          </div>
-
-          <div>
-            <Controller
-              control={controlAddAndEdit}
-              rules={{
-                required: "Tag name is required",
-              }}
-              name="tagName"
-              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                <Input
-                  onChange={onChange}
-                  error={error}
-                  onBlur={onBlur}
-                  value={value}
-                  name="tagName"
-                  type="text"
-                  required
-                  placeholder="Enter tag name"
-                  classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                  classNameLabel="block text-xl font-semibold text-black"
-                  label="Tag name"
-                />
-              )}
-            />
-          </div>
-        </div>
       </Modal>
     </div>
   );

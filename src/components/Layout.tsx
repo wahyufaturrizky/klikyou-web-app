@@ -1,6 +1,7 @@
 "use client";
 import { LayoutInterface } from "@/interface/Layout";
 
+import { useLogOut } from "@/services/auth/useAuth";
 import {
   ApprovalsIcon,
   BackIcon,
@@ -16,33 +17,52 @@ import {
   ToReviewIcon,
   UserIcon,
 } from "@/style/icon";
+import { WarningOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import {
   Badge,
   ConfigProvider,
   Dropdown,
+  Grid,
   Layout as LayoutAntd,
   Menu,
-  theme,
-  Grid,
   Spin,
+  theme,
 } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
-import { WarningOutlined } from "@ant-design/icons";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
 const { useBreakpoint } = Grid;
 
+interface UserProfile {
+  username: string;
+  email: string;
+  avatar_path: string;
+}
+
 const Layout = ({ ...props }: LayoutInterface) => {
   const router = useRouter();
+  const [userProfile, setUserProfile] = useState<UserProfile>();
 
   const pathname = usePathname();
   const [currentMenu, setCurrentMenu] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleFetchUserProfile = () => {
+      const rawUserProfile: string | null = localStorage.getItem("user_profile");
+
+      const dataUserProfile = JSON.parse(rawUserProfile ?? "{}");
+
+      setUserProfile(dataUserProfile);
+    };
+
+    handleFetchUserProfile();
+  }, []);
 
   useEffect(() => {
     const handleGetCurrentMenu = () => {
@@ -129,6 +149,15 @@ const Layout = ({ ...props }: LayoutInterface) => {
     };
   }, []);
 
+  const { mutate: logOutUser, isPending: isPendingLogOutUser } = useLogOut({
+    options: {
+      onSuccess: () => {
+        localStorage.removeItem("access_token");
+        router.push("/");
+      },
+    },
+  });
+
   const itemsProfile: MenuProps["items"] = [
     {
       label: "My Profile",
@@ -142,10 +171,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
       label: <Text className="text-primary-blue font-normal" label="Logout" />,
       key: "2",
       icon: createElement(LogoutIcon),
-      onClick: () => {
-        localStorage.removeItem("access_token");
-        router.push("/");
-      },
+      onClick: () => logOutUser({ email: userProfile?.email }),
     },
   ];
 
@@ -175,6 +201,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
 
   return (
     <div>
+      {isPendingLogOutUser && <Spin fullscreen />}
       {lg || xl || xxl ? (
         <ConfigProvider
           theme={{
@@ -268,7 +295,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
                   <Dropdown menu={{ items: itemsProfile }} trigger={["click"]}>
                     <div className="flex items-center gap-2 cursor-pointer">
                       <ImageNext
-                        src="/placeholder-avatar-header.svg"
+                        src={"/placeholder-avatar-header.svg"}
                         width={32}
                         height={32}
                         alt="placeholder-avatar-header"
@@ -277,7 +304,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
                       <div>
                         <Text
                           className="text-black font-normal text-lg"
-                          label="Wahyu Fatur Rizki"
+                          label={userProfile?.username ?? ""}
                         />
                         <Text className="text-primary-gray font-bold text-xs" label="Super Admin" />
                       </div>

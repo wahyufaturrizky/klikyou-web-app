@@ -23,4 +23,15 @@ function useSignIn({ options }: any) {
   }) as any;
 }
 
-export { useRegister, useSignIn };
+function useLogOut({ options }: any) {
+  return useMutation({
+    mutationFn: (reqBody) =>
+      client("/auth/logout", {
+        method: "POST",
+        data: reqBody,
+      }),
+    ...options,
+  }) as any;
+}
+
+export { useRegister, useSignIn, useLogOut };
