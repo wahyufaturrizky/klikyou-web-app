@@ -6,9 +6,10 @@ import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
-import { useDeleteHistory, useHistory } from "@/services/history/useHistory";
+import { useHistory } from "@/services/history/useHistory";
+import { useProcessed } from "@/services/processed/useProcessed";
 import { useUpdateToReview } from "@/services/to-view/useToReview";
-import { FileIcon, FilterIcon, SearchIcon, TrashIcon } from "@/style/icon";
+import { FileIcon, FilterIcon, SearchIcon, DownloadIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
   Button as ButtonAntd,
@@ -24,20 +25,19 @@ import {
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { DataToDoType } from "@/app/(received)/received/to-do/page";
 
 export interface OptionInterface {
   label: string;
   value: string;
 }
 
-export interface DataHistoryType {
+export interface DataProcessedType {
   id: string;
   docName: string;
   tags: string[];
   file: string;
-  status: string;
   updatedAt: string;
-  approval: string;
 }
 
 type FormFilterValues = {
@@ -49,7 +49,7 @@ type FormFilterValues = {
 
 interface ApproveAndRejectModal {
   open: boolean;
-  data: DataHistoryType | null;
+  data: DataProcessedType | null;
   type: "approve" | "reject" | "";
 }
 
@@ -58,25 +58,10 @@ type FormApproveRejectValues = {
   file: string;
 };
 
-interface DeleteModal {
-  open: boolean;
-  type: string;
-  data: { data: DataHistoryType[] | null; selectedRowKeys: Key[] } | null;
-}
-
 export default function ProcessedPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [selectedRows, setSelectedRows] = useState<DataHistoryType[]>([]);
-
-  const [isShowDelete, setShowDelete] = useState<DeleteModal>({
-    open: false,
-    type: "selection",
-    data: {
-      data: null,
-      selectedRowKeys: [],
-    },
-  });
+  const [selectedRows, setSelectedRows] = useState<DataProcessedType[]>([]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -87,15 +72,13 @@ export default function ProcessedPage() {
       type: "approve",
     });
 
-  const [dataHistory, setDataHistory] = useState<DataHistoryType[]>([
+  const [dataProcessed, setDataProcessed] = useState<DataProcessedType[]>([
     {
       id: "101",
       docName: "Project Antasari - Quotation",
       tags: ["Quotation", "Project"],
       file: "file.pdf",
-      status: "(3/3) Fully approved",
       updatedAt: "30/06/2023 17:00",
-      approval: "Approved",
     },
   ]);
 
@@ -132,7 +115,7 @@ export default function ProcessedPage() {
     },
   });
 
-  const columns: TableProps<DataHistoryType>["columns"] = [
+  const columns: TableProps<DataProcessedType>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -146,10 +129,10 @@ export default function ProcessedPage() {
       title: "Document name",
       dataIndex: "docName",
       key: "docName",
-      render: (text: string, record: DataHistoryType) => {
+      render: (text: string, record: DataProcessedType) => {
         const { id } = record;
         return (
-          <Link href={`/approvals/history/view/${id}`}>
+          <Link href={`/received/processed/view/${id}`}>
             <Text label={text} className="text-base font-normal" />
           </Link>
         );
@@ -174,51 +157,28 @@ export default function ProcessedPage() {
       ),
     },
     {
-      title: "File",
-      dataIndex: "file",
-      key: "file",
-      render: (text: string) => {
-        return (
-          <div className="flex justify-center items-center">
-            <FileIcon
-              style={{
-                height: 32,
-                width: 32,
-              }}
-            />
-          </div>
-        );
-      },
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (text: string) => {
-        return (
-          <Text
-            label={text}
-            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
-          />
-        );
-      },
-    },
-    {
       title: "Update At",
       dataIndex: "updateAt",
       key: "updateAt",
       render: (text: Date) => UseDateTimeFormat(text),
     },
     {
-      title: "Approval",
-      dataIndex: "approval",
-      key: "approval",
-      render: (text: string) => {
+      title: "Latest document",
+      dataIndex: "file",
+      key: "file",
+      render: (text: string, record: DataProcessedType) => {
+        const { id } = record;
         return (
-          <Text
-            label={text}
-            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
-          />
+          <div className="gap-2 flex items-center cursor-pointer">
+            <DownloadIcon
+              style={{
+                height: 32,
+                width: 32,
+                color: "#2166E9",
+              }}
+            />
+            <Text label="Download" className="text-base font-normal text-link" />
+          </div>
         );
       },
     },
@@ -233,17 +193,17 @@ export default function ProcessedPage() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setDataHistory([]);
+      setDataProcessed([]);
     }
   };
 
   const debounceSearch = useDebounce(watchFilter("search"), 1000);
 
   const {
-    data: dataRawHistory,
-    isPending: isPendingHistory,
-    refetch: refetchHistory,
-  } = useHistory({
+    data: dataRawProcessed,
+    isPending: isPendingProcessed,
+    refetch: refetchProcessed,
+  } = useProcessed({
     query: {
       search: debounceSearch,
       date: getValuesFilter("date"),
@@ -255,15 +215,15 @@ export default function ProcessedPage() {
   });
 
   useEffect(() => {
-    if (dataRawHistory) {
-      setDataHistory(
-        dataRawHistory.data.data.map((item: DataHistoryType) => ({
+    if (dataRawProcessed) {
+      setDataProcessed(
+        dataRawProcessed.data.data.map((item: DataProcessedType) => ({
           ...item,
           key: item.id,
         }))
       );
     }
-  }, [dataRawHistory]);
+  }, [dataRawProcessed]);
 
   const optionsStatus = [
     {
@@ -312,13 +272,13 @@ export default function ProcessedPage() {
   ];
 
   const onSubmitFilter = (data: FormFilterValues) => {
-    refetchHistory();
+    refetchProcessed();
     setIsShowModalFilter(false);
   };
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selectedRowKeys: Key[], selectedRows: DataHistoryType[]) => {
+    onChange: (selectedRowKeys: Key[], selectedRows: DataProcessedType[]) => {
       console.log("🚀 ~ ToReviewPage ~ selectedRows:", selectedRows);
       setSelectedRowKeys(selectedRowKeys);
       setSelectedRows(selectedRows);
@@ -326,7 +286,7 @@ export default function ProcessedPage() {
   };
 
   useEffect(() => {
-    refetchHistory();
+    refetchProcessed();
   }, [tableParams]);
 
   const { mutate: updateApproveReject, isPending: isPendingUpdateApproveReject } =
@@ -339,7 +299,7 @@ export default function ProcessedPage() {
           });
 
           resetApproveRejectEdit();
-          refetchHistory();
+          refetchProcessed();
           setStateApproveAndRejectModal({
             data: null,
             open: false,
@@ -353,65 +313,10 @@ export default function ProcessedPage() {
     updateApproveReject(data);
   };
 
-  const { mutate: deleteUserManagement, isPending: isPendingDeleteUserManagement }: any =
-    useDeleteHistory({
-      options: {
-        onSuccess: () => {
-          refetchHistory();
-          setShowDelete({
-            open: true,
-            type: "",
-            data: null,
-          });
-          setSelectedRowKeys([]);
-        },
-      },
-    });
-
-  const renderConfirmationText = (type: any, data: any) => {
-    switch (type) {
-      case "selection":
-        return data.selectedRowKeys.length > 1
-          ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
-          : `Are you sure to delete document ${
-              data?.data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.branchName
-            } ?`;
-      default:
-        return `Are you sure to delete document ${data?.name} ?`;
-    }
-  };
-
   return (
     <div className="p-6">
       {contextHolder}
-      <div className="flex justify-between items-center">
-        <div className="flex gap-4 items-center">
-          <Button
-            type="button"
-            onClick={() =>
-              setShowDelete({
-                open: true,
-                type: "selection",
-                data: { data: dataHistory, selectedRowKeys },
-              })
-            }
-            label="Delete"
-            disabled={rowSelection.selectedRowKeys?.length === 0}
-            icon={
-              <TrashIcon
-                style={{
-                  color: rowSelection.selectedRowKeys?.length === 0 ? "#9CB1C6" : "#F44550",
-                }}
-              />
-            }
-            className={`${
-              rowSelection.selectedRowKeys?.length === 0
-                ? "text-primary-gray border-primary-gray"
-                : "text-red border-red"
-            } flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
-          />
-        </div>
-
+      <div className="flex justify-end items-center">
         <div className="flex gap-4 items-center">
           <Button
             type="button"
@@ -457,9 +362,8 @@ export default function ProcessedPage() {
         >
           <Table
             columns={columns}
-            dataSource={dataHistory}
-            scroll={{ x: 1500 }}
-            loading={isPendingHistory}
+            dataSource={dataProcessed}
+            loading={isPendingProcessed}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
@@ -688,51 +592,6 @@ export default function ProcessedPage() {
             />
           </div>
         </div>
-      </Modal>
-
-      <Modal
-        title="Confirm Delete"
-        open={isShowDelete.open}
-        onCancel={() => {
-          setShowDelete({
-            open: false,
-            data: null,
-            type: "",
-          });
-        }}
-        footer={
-          <div className="flex justify-end items-center">
-            <div className="flex gap-4 items-center">
-              <Button
-                type="button"
-                onClick={() => {
-                  setShowDelete({
-                    open: false,
-                    data: null,
-                    type: "",
-                  });
-                }}
-                label="No"
-                className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              />
-
-              <Button
-                loading={isPendingDeleteUserManagement}
-                disabled={isPendingDeleteUserManagement}
-                type="button"
-                onClick={() =>
-                  deleteUserManagement({
-                    ids: selectedRowKeys,
-                  })
-                }
-                label="Yes"
-                className="flex justify-center items-center rounded-md bg-red px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              />
-            </div>
-          </div>
-        }
-      >
-        <div>{renderConfirmationText(isShowDelete.type, isShowDelete.data)}</div>
       </Modal>
     </div>
   );

@@ -7,15 +7,7 @@ import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
 import { useToReview, useUpdateToReview } from "@/services/to-view/useToReview";
-import {
-  CheckIcon,
-  DownloadIcon,
-  FileIcon,
-  FilterIcon,
-  PeopleCheckIcon,
-  RejectIcon,
-  SearchIcon,
-} from "@/style/icon";
+import { DownloadIcon, FilterIcon, PeopleCheckIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
   Button as ButtonAntd,
