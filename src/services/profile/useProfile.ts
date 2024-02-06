@@ -20,7 +20,7 @@ const useProfile = ({ query = {}, options }: any = {}) => {
 function useCreateProfile({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
-      client("/createProfile", {
+      client("/my-profile", {
         method: "POST",
         data: reqBody,
       }),
@@ -31,7 +31,7 @@ function useCreateProfile({ options }: any) {
 function useUpdateProfile({ options }: any) {
   return useMutation({
     mutationFn: (updates) =>
-      client("/updateProfile", {
+      client("/my-profile", {
         method: "PUT",
         data: updates,
       }),

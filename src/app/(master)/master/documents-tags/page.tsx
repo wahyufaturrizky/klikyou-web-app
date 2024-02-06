@@ -2,14 +2,17 @@
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Text from "@/components/Text";
-import UseDateTimeFormat from "@/hook/useDateFormat";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
-import { useCreateDocumentTags, useDocumentTags } from "@/services/document-tags/useDocumentTags";
-import { useUpdateUserManagement } from "@/services/user-management/useUserManagement";
+import {
+  useCreateDocumentTags,
+  useDeleteDocumentTags,
+  useDocumentTags,
+  useUpdateDocumentTags,
+} from "@/services/document-tags/useDocumentTags";
 import { FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
-import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
-import { useRouter } from "next/navigation";
+import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps, message } from "antd";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -21,8 +24,8 @@ export interface OptionInterface {
 interface DataDocumentTags {
   id: string;
   code: string;
-  tagName: string;
-  updateAt: Date;
+  name: string;
+  updatedAt: Date;
 }
 
 type FormFilterValues = {
@@ -34,13 +37,13 @@ type FormFilterValues = {
 
 type FormAddAndEditValues = {
   code: string;
-  tagName: string;
+  name: string;
 };
 
 interface DeleteModal {
   open: boolean;
   type: string;
-  data: { data: DataDocumentTags[] | null; selectedRowKeys: Key[] } | null;
+  data: { data?: DataDocumentTags[] | null; selectedRowKeys: Key[] } | null;
 }
 
 interface AddAndEditModal {
@@ -50,9 +53,9 @@ interface AddAndEditModal {
 }
 
 export default function DocumentTagsPage() {
-  const router = useRouter();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
+  const [messageApi, contextHolder] = message.useMessage();
   const [isShowDelete, setShowDelete] = useState<DeleteModal>({
     open: false,
     type: "selection",
@@ -66,14 +69,7 @@ export default function DocumentTagsPage() {
     data: null,
     type: "add",
   });
-  const [data, setData] = useState<DataDocumentTags[]>([
-    {
-      id: "101",
-      code: "REIM",
-      tagName: "Reimbursement",
-      updateAt: new Date(),
-    },
-  ]);
+  const [dataDocTag, setDataDocTag] = useState<DataDocumentTags[]>();
 
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
@@ -105,7 +101,7 @@ export default function DocumentTagsPage() {
   } = useForm<FormAddAndEditValues>({
     defaultValues: {
       code: "",
-      tagName: "",
+      name: "",
     },
   });
 
@@ -129,17 +125,17 @@ export default function DocumentTagsPage() {
     },
     {
       title: "Tag Name",
-      dataIndex: "tagName",
-      key: "tagName",
+      dataIndex: "name",
+      key: "name",
       render: (text: string) => {
         return <Text label={text} className="text-base font-normal text-black" />;
       },
     },
     {
       title: "Update At",
-      dataIndex: "updateAt",
-      key: "updateAt",
-      render: (text: Date) => UseDateTimeFormat(text),
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+      render: (text: Date) => UseConvertDateFormat(text),
     },
     {
       title: "Action",
@@ -150,7 +146,7 @@ export default function DocumentTagsPage() {
             <PencilIcon
               onClick={() => {
                 setValueAddAndEdit("code", record.code);
-                setValueAddAndEdit("tagName", record.tagName);
+                setValueAddAndEdit("name", record.name);
 
                 setStateAddAndEditModal({
                   open: true,
@@ -179,7 +175,7 @@ export default function DocumentTagsPage() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setData([]);
+      setDataDocTag([]);
     }
   };
 
@@ -202,7 +198,12 @@ export default function DocumentTagsPage() {
 
   useEffect(() => {
     if (dataDocumentTags) {
-      setData(dataDocumentTags.data);
+      setDataDocTag(
+        dataDocumentTags.data.data.map((item: DataDocumentTags) => ({
+          ...item,
+          key: item.id,
+        }))
+      );
     }
   }, [dataDocumentTags]);
 
@@ -286,9 +287,14 @@ export default function DocumentTagsPage() {
   };
 
   const { mutate: deleteDocumentTags, isPending: isPendingDeleteDocumentTags }: any =
-    useDocumentTags({
+    useDeleteDocumentTags({
       options: {
         onSuccess: () => {
+          messageApi.open({
+            type: "success",
+            content: "Success delete document tag",
+          });
+
           refetchDocumentTags();
           resetShowDelete();
           setSelectedRowKeys([]);
@@ -304,6 +310,11 @@ export default function DocumentTagsPage() {
     useCreateDocumentTags({
       options: {
         onSuccess: () => {
+          messageApi.open({
+            type: "success",
+            content: "Success create document tag",
+          });
+
           resetAddAndEdit();
           refetchDocumentTags();
           setStateAddAndEditModal({
@@ -316,9 +327,15 @@ export default function DocumentTagsPage() {
     });
 
   const { mutate: updateDocumentTags, isPending: isPendingUpdateDocumentTags } =
-    useUpdateUserManagement({
+    useUpdateDocumentTags({
+      id: stateAddAndEditModal.data?.id,
       options: {
         onSuccess: () => {
+          messageApi.open({
+            type: "success",
+            content: "Success update document tag",
+          });
+
           resetAddAndEdit();
           refetchDocumentTags();
           setStateAddAndEditModal({
@@ -340,6 +357,7 @@ export default function DocumentTagsPage() {
 
   return (
     <div className="p-6">
+      {contextHolder}
       <div className="flex justify-between items-center">
         <div className="flex gap-4 items-center">
           <Button
@@ -362,7 +380,7 @@ export default function DocumentTagsPage() {
               setShowDelete({
                 open: true,
                 type: "selection",
-                data: { data, selectedRowKeys },
+                data: { data: dataDocTag, selectedRowKeys },
               })
             }
             label="Delete"
@@ -427,7 +445,7 @@ export default function DocumentTagsPage() {
         >
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={dataDocTag}
             loading={
               isPendingDocumentTags || isPendingCreateDocumentTags || isPendingUpdateDocumentTags
             }
@@ -581,7 +599,7 @@ export default function DocumentTagsPage() {
                 type="button"
                 onClick={() =>
                   deleteDocumentTags({
-                    ids: selectedRowKeys,
+                    id: selectedRowKeys[0],
                   })
                 }
                 label="Yes"
@@ -664,14 +682,14 @@ export default function DocumentTagsPage() {
               rules={{
                 required: "Tag name is required",
               }}
-              name="tagName"
+              name="name"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <Input
                   onChange={onChange}
                   error={error}
                   onBlur={onBlur}
                   value={value}
-                  name="tagName"
+                  name="name"
                   type="text"
                   required
                   placeholder="Enter tag name"

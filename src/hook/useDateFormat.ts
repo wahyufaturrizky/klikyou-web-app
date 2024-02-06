@@ -1,4 +1,4 @@
-// 30/06/2023 17:00 Date Format
+// from new Date() default format to 30/06/2023 17:00 Date Format
 const UseDateTimeFormat = (date: Date = new Date()) => {
   // Extract date and time components
   let day: number | string = date.getDate();

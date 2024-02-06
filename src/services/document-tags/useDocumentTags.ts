@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client";
 
 const fetchDocumentTags = async ({ query = {} }) => {
-  return client("/getDocumentTags", {
+  return client("/master-document-tags", {
     params: {
       ...query,
     },
@@ -20,7 +20,7 @@ const useDocumentTags = ({ query = {}, options }: any = {}) => {
 function useCreateDocumentTags({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
-      client("/createDocumentTags", {
+      client("/master-document-tags", {
         method: "POST",
         data: reqBody,
       }),
@@ -28,23 +28,22 @@ function useCreateDocumentTags({ options }: any) {
   }) as any;
 }
 
-function useUpdateDocumentTags({ options }: any) {
+function useUpdateDocumentTags({ options, id }: any) {
   return useMutation({
     mutationFn: (updates) =>
-      client("/updateDocumentTags", {
+      client(`/master-document-tags/${id}`, {
         method: "PUT",
         data: updates,
       }),
     ...options,
-  });
+  }) as any;
 }
 
 function useDeleteDocumentTags({ options }: any) {
   return useMutation({
-    mutationFn: (updates) =>
-      client("/updateDocumentTags", {
+    mutationFn: ({ id }: { id: string }) =>
+      client(`/master-document-tags/${id}`, {
         method: "DELETE",
-        data: updates,
       }),
     ...options,
   });
