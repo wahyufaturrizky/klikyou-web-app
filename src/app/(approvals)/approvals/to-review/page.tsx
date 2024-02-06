@@ -6,7 +6,16 @@ import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
 import { useDeleteDocument, useDocument } from "@/services/document/useDocument";
-import { FileIcon, FilterIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
+import {
+  FileIcon,
+  FilterIcon,
+  PlusIcon,
+  SearchIcon,
+  TrashIcon,
+  PencilIcon,
+  CheckIcon,
+  RejectIcon,
+} from "@/style/icon";
 import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,15 +27,13 @@ export interface OptionInterface {
   value: string;
 }
 
-export interface DataDocumentsType {
+export interface DataToReviewType {
   id: string;
   docName: string;
   tags: string[];
   file: string;
   status: string;
-  latestAction: string;
-  role: string[];
-  updateAt: Date;
+  updatedAt: string;
 }
 
 type FormFilterValues = {
@@ -39,7 +46,7 @@ type FormFilterValues = {
 export interface DeleteModal {
   open: boolean;
   type: string;
-  data?: { data: DataDocumentsType[] | null; selectedRowKeys: Key[] } | null;
+  data?: { data: DataToReviewType[] | null; selectedRowKeys: Key[] } | null;
 }
 
 export default function ToReviewPage() {
@@ -54,16 +61,14 @@ export default function ToReviewPage() {
       selectedRowKeys: [],
     },
   });
-  const [data, setData] = useState<DataDocumentsType[]>([
+  const [dataToReview, setDataToReview] = useState<DataToReviewType[]>([
     {
       id: "101",
       docName: "Project Antasari - Quotation",
       tags: ["Quotation", "Project"],
-      role: ["Quotation", "Project"],
       file: "file.pdf",
       status: "(3/3) Fully approved",
-      latestAction: "(3/3) Fully approved",
-      updateAt: new Date(),
+      updatedAt: "30/06/2023 17:00",
     },
   ]);
 
@@ -89,7 +94,7 @@ export default function ToReviewPage() {
     },
   });
 
-  const columns: TableProps<DataDocumentsType>["columns"] = [
+  const columns: TableProps<DataToReviewType>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -103,10 +108,10 @@ export default function ToReviewPage() {
       title: "Document name",
       dataIndex: "docName",
       key: "docName",
-      render: (text: string, record: DataDocumentsType) => {
+      render: (text: string, record: DataToReviewType) => {
         const { id } = record;
         return (
-          <Link href={`/documents/view/${id}`}>
+          <Link href={`/approvals/view/${id}`}>
             <Text label={text} className="text-base font-normal" />
           </Link>
         );
@@ -161,41 +166,51 @@ export default function ToReviewPage() {
       },
     },
     {
-      title: "Latest Action",
-      dataIndex: "latestAction",
-      key: "latestAction",
-      render: (text: string) => {
-        return (
-          <Text
-            label={text}
-            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
-          />
-        );
-      },
-    },
-    {
-      title: "Role",
-      dataIndex: "role",
-      key: "role",
-      render: (text: string[]) => (
-        <div className="flex gap-2 flex-warp">
-          {text?.map((item: string) => {
-            return (
-              <Text
-                key={item}
-                label={item}
-                className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
-              />
-            );
-          })}
-        </div>
-      ),
-    },
-    {
       title: "Update At",
       dataIndex: "updateAt",
       key: "updateAt",
       render: (text: Date) => UseDateTimeFormat(text),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => {
+        return (
+          <div className="flex items-center cursor-pointer gap-2">
+            <Button
+              type="button"
+              onClick={() => {}}
+              label="Approve"
+              icon={
+                <CheckIcon
+                  style={{
+                    height: 32,
+                    width: 32,
+                    color: "#23C464",
+                  }}
+                />
+              }
+              className="flex gap-2 justify-center items-center rounded-md bg-transparent px-6 py-1.5 text-lg font-semibold text-green"
+            />
+
+            <Button
+              type="button"
+              onClick={() => {}}
+              label="Reject"
+              icon={
+                <RejectIcon
+                  style={{
+                    height: 32,
+                    width: 32,
+                    color: "#F44550",
+                  }}
+                />
+              }
+              className="flex gap-2 justify-center items-center rounded-md bg-transparent px-6 py-1.5 text-lg font-semibold text-red"
+            />
+          </div>
+        );
+      },
     },
   ];
 
@@ -208,7 +223,7 @@ export default function ToReviewPage() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setData([]);
+      setDataToReview([]);
     }
   };
 
@@ -231,8 +246,8 @@ export default function ToReviewPage() {
 
   useEffect(() => {
     if (dataDocument) {
-      setData(
-        dataDocument.data.data.map((item: DataDocumentsType) => ({
+      setDataToReview(
+        dataDocument.data.data.map((item: DataToReviewType) => ({
           ...item,
           key: item.id,
         }))
@@ -339,27 +354,36 @@ export default function ToReviewPage() {
         <div className="flex gap-4 items-center">
           <Button
             type="button"
-            onClick={() => router.push("/documents/add")}
-            label="Add"
-            icon={<PlusIcon />}
-            className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            onClick={() => {}}
+            label="Reject"
+            disabled={rowSelection.selectedRowKeys?.length === 0}
+            icon={
+              <CheckIcon
+                style={{
+                  color: rowSelection.selectedRowKeys?.length === 0 ? "#9CB1C6" : "#23C464",
+                  height: 32,
+                  width: 32,
+                }}
+              />
+            }
+            className={`${
+              rowSelection.selectedRowKeys?.length === 0
+                ? "text-primary-gray border-primary-gray"
+                : "text-green border-green"
+            } gap-2 flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
           />
 
           <Button
             type="button"
-            onClick={() =>
-              setShowDelete({
-                open: true,
-                type: "selection",
-                data: { data, selectedRowKeys },
-              })
-            }
-            label="Delete"
+            onClick={() => {}}
+            label="Reject"
             disabled={rowSelection.selectedRowKeys?.length === 0}
             icon={
-              <TrashIcon
+              <RejectIcon
                 style={{
                   color: rowSelection.selectedRowKeys?.length === 0 ? "#9CB1C6" : "#F44550",
+                  height: 32,
+                  width: 32,
                 }}
               />
             }
@@ -367,7 +391,7 @@ export default function ToReviewPage() {
               rowSelection.selectedRowKeys?.length === 0
                 ? "text-primary-gray border-primary-gray"
                 : "text-red border-red"
-            } flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
+            } gap-2 flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
           />
         </div>
 
@@ -416,7 +440,7 @@ export default function ToReviewPage() {
         >
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={dataToReview}
             scroll={{ x: 1500 }}
             loading={isPendingDocument}
             pagination={tableParams.pagination}
