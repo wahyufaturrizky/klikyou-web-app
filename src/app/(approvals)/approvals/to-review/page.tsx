@@ -1,26 +1,28 @@
 "use client";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
-import { useDeleteDocument, useDocument } from "@/services/document/useDocument";
+import { useToReview, useUpdateToReview } from "@/services/to-view/useToReview";
+import { CheckIcon, FileIcon, FilterIcon, RejectIcon, SearchIcon } from "@/style/icon";
 import {
-  FileIcon,
-  FilterIcon,
-  PlusIcon,
-  SearchIcon,
-  TrashIcon,
-  PencilIcon,
-  CheckIcon,
-  RejectIcon,
-} from "@/style/icon";
-import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
+  Checkbox,
+  ConfigProvider,
+  DatePicker,
+  Modal,
+  Table,
+  TableProps,
+  message,
+  Button as ButtonAntd,
+  Upload,
+} from "antd";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { UploadOutlined } from "@ant-design/icons";
 
 export interface OptionInterface {
   label: string;
@@ -43,24 +45,31 @@ type FormFilterValues = {
   role: string[];
 };
 
-export interface DeleteModal {
+interface ApproveAndRejectModal {
   open: boolean;
-  type: string;
-  data?: { data: DataToReviewType[] | null; selectedRowKeys: Key[] } | null;
+  data: DataToReviewType | null;
+  type: "approve" | "reject" | "";
 }
 
+type FormApproveRejectValues = {
+  note: string;
+  file: string;
+};
+
 export default function ToReviewPage() {
-  const router = useRouter();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [isShowDelete, setShowDelete] = useState<DeleteModal>({
-    open: false,
-    type: "selection",
-    data: {
+  const [selectedRows, setSelectedRows] = useState<DataToReviewType[]>([]);
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
+    useState<ApproveAndRejectModal>({
+      open: false,
       data: null,
-      selectedRowKeys: [],
-    },
-  });
+      type: "approve",
+    });
+
   const [dataToReview, setDataToReview] = useState<DataToReviewType[]>([
     {
       id: "101",
@@ -94,6 +103,17 @@ export default function ToReviewPage() {
     },
   });
 
+  const {
+    control: controlApproveRejectEdit,
+    handleSubmit: handleSubmitApproveRejectEdit,
+    reset: resetApproveRejectEdit,
+  } = useForm<FormApproveRejectValues>({
+    defaultValues: {
+      note: "",
+      file: "",
+    },
+  });
+
   const columns: TableProps<DataToReviewType>["columns"] = [
     {
       title: "ID",
@@ -111,7 +131,7 @@ export default function ToReviewPage() {
       render: (text: string, record: DataToReviewType) => {
         const { id } = record;
         return (
-          <Link href={`/approvals/view/${id}`}>
+          <Link href={`/approvals/to-review/view/${id}`}>
             <Text label={text} className="text-base font-normal" />
           </Link>
         );
@@ -179,7 +199,13 @@ export default function ToReviewPage() {
           <div className="flex items-center cursor-pointer gap-2">
             <Button
               type="button"
-              onClick={() => {}}
+              onClick={() =>
+                setStateApproveAndRejectModal({
+                  open: true,
+                  data: record,
+                  type: "approve",
+                })
+              }
               label="Approve"
               icon={
                 <CheckIcon
@@ -195,7 +221,13 @@ export default function ToReviewPage() {
 
             <Button
               type="button"
-              onClick={() => {}}
+              onClick={() =>
+                setStateApproveAndRejectModal({
+                  open: true,
+                  data: record,
+                  type: "reject",
+                })
+              }
               label="Reject"
               icon={
                 <RejectIcon
@@ -230,10 +262,10 @@ export default function ToReviewPage() {
   const debounceSearch = useDebounce(watchFilter("search"), 1000);
 
   const {
-    data: dataDocument,
-    isPending: isPendingDocument,
-    refetch: refetchDocument,
-  } = useDocument({
+    data: dataRawToReview,
+    isPending: isPendingRawToReview,
+    refetch: refetchRawToReview,
+  } = useToReview({
     query: {
       search: debounceSearch,
       date: getValuesFilter("date"),
@@ -245,15 +277,15 @@ export default function ToReviewPage() {
   });
 
   useEffect(() => {
-    if (dataDocument) {
+    if (dataRawToReview) {
       setDataToReview(
-        dataDocument.data.data.map((item: DataToReviewType) => ({
+        dataRawToReview.data.data.map((item: DataToReviewType) => ({
           ...item,
           key: item.id,
         }))
       );
     }
-  }, [dataDocument]);
+  }, [dataRawToReview]);
 
   const optionsStatus = [
     {
@@ -301,61 +333,63 @@ export default function ToReviewPage() {
     },
   ];
 
-  const resetShowDelete = () => {
-    setShowDelete({
-      open: false,
-      data: null,
-      type: "",
-    });
-  };
-
   const onSubmitFilter = (data: FormFilterValues) => {
-    refetchDocument();
+    refetchRawToReview();
     setIsShowModalFilter(false);
   };
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selectedRowKeys: Key[]) => {
+    onChange: (selectedRowKeys: Key[], selectedRows: DataToReviewType[]) => {
+      console.log("🚀 ~ ToReviewPage ~ selectedRows:", selectedRows);
       setSelectedRowKeys(selectedRowKeys);
+      setSelectedRows(selectedRows);
     },
   };
-
-  const renderConfirmationText = (type: any, data: any) => {
-    switch (type) {
-      case "selection":
-        return data.selectedRowKeys.length > 1
-          ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
-          : `Are you sure to delete document ${
-              data?.data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.branchName
-            } ?`;
-      default:
-        return `Are you sure to delete document ${data?.name} ?`;
-    }
-  };
-
-  const { mutate: deleteDocument, isPending: isPendingDeleteDocument }: any = useDeleteDocument({
-    options: {
-      onSuccess: () => {
-        refetchDocument();
-        resetShowDelete();
-        setSelectedRowKeys([]);
-      },
-    },
-  });
 
   useEffect(() => {
-    refetchDocument();
+    refetchRawToReview();
   }, [tableParams]);
+
+  const { mutate: updateApproveReject, isPending: isPendingUpdateApproveReject } =
+    useUpdateToReview({
+      options: {
+        onSuccess: () => {
+          messageApi.open({
+            type: "success",
+            content: "Success update review",
+          });
+
+          resetApproveRejectEdit();
+          refetchRawToReview();
+          setStateApproveAndRejectModal({
+            data: null,
+            open: false,
+            type: "",
+          });
+        },
+      },
+    });
+
+  const onSubmitApproveRejectEdit = (data: FormApproveRejectValues) => {
+    updateApproveReject(data);
+  };
 
   return (
     <div className="p-6">
+      {contextHolder}
       <div className="flex justify-between items-center">
         <div className="flex gap-4 items-center">
           <Button
             type="button"
-            onClick={() => {}}
-            label="Reject"
+            onClick={() =>
+              setStateApproveAndRejectModal({
+                open: true,
+                data: null,
+                type: "approve",
+              })
+            }
+            label="Approve"
             disabled={rowSelection.selectedRowKeys?.length === 0}
             icon={
               <CheckIcon
@@ -375,7 +409,13 @@ export default function ToReviewPage() {
 
           <Button
             type="button"
-            onClick={() => {}}
+            onClick={() =>
+              setStateApproveAndRejectModal({
+                open: true,
+                data: null,
+                type: "reject",
+              })
+            }
             label="Reject"
             disabled={rowSelection.selectedRowKeys?.length === 0}
             icon={
@@ -442,7 +482,7 @@ export default function ToReviewPage() {
             columns={columns}
             dataSource={dataToReview}
             scroll={{ x: 1500 }}
-            loading={isPendingDocument}
+            loading={isPendingRawToReview}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
@@ -562,10 +602,13 @@ export default function ToReviewPage() {
       </Modal>
 
       <Modal
-        title="Confirm Delete"
-        open={isShowDelete.open}
+        title={`${
+          stateApproveAndRejectModal.type === "approve" ? "Approve" : "Reject"
+        } document tag`}
+        open={stateApproveAndRejectModal.open}
         onCancel={() => {
-          setShowDelete({
+          resetApproveRejectEdit();
+          setStateApproveAndRejectModal({
             open: false,
             data: null,
             type: "",
@@ -576,34 +619,98 @@ export default function ToReviewPage() {
             <div className="flex gap-4 items-center">
               <Button
                 type="button"
+                disabled={isPendingUpdateApproveReject}
+                loading={isPendingUpdateApproveReject}
                 onClick={() => {
-                  setShowDelete({
+                  resetApproveRejectEdit();
+                  setStateApproveAndRejectModal({
                     open: false,
                     data: null,
                     type: "",
                   });
                 }}
-                label="No"
+                label="Cancel"
                 className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               />
 
               <Button
-                loading={isPendingDeleteDocument}
-                disabled={isPendingDeleteDocument}
                 type="button"
-                onClick={() =>
-                  deleteDocument({
-                    ids: selectedRowKeys,
-                  })
-                }
+                disabled={isPendingUpdateApproveReject}
+                loading={isPendingUpdateApproveReject}
+                onClick={handleSubmitApproveRejectEdit(onSubmitApproveRejectEdit)}
                 label="Yes"
-                className="flex justify-center items-center rounded-md bg-red px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               />
             </div>
           </div>
         }
       >
-        <div>{renderConfirmationText(isShowDelete.type, isShowDelete.data)}</div>
+        <div>
+          <div className="mb-6">
+            <Controller
+              control={controlApproveRejectEdit}
+              name="note"
+              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                <InputTextArea
+                  onChange={onChange}
+                  error={error}
+                  onBlur={onBlur}
+                  value={value}
+                  name="note"
+                  placeholder="Enter note"
+                  classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                  classNameLabel="block text-xl font-semibold text-black"
+                  label="Note"
+                />
+              )}
+            />
+          </div>
+
+          <div>
+            <Text
+              label="Upload supporting files"
+              className="mb-2 text-lg font-semibold text-black"
+            />
+
+            <Controller
+              control={controlApproveRejectEdit}
+              rules={{
+                required: "Document is required",
+              }}
+              name="file"
+              render={({ field: { onChange } }) => (
+                <ConfigProvider
+                  theme={{
+                    token: {
+                      colorPrimary: "#0AADE0",
+                    },
+                  }}
+                >
+                  <Upload
+                    name="file"
+                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                    headers={{
+                      authorization: "authorization-text",
+                    }}
+                    onChange={(info) => {
+                      if (info.file.status !== "uploading") {
+                        console.log(info.file, info.fileList);
+                      }
+                      if (info.file.status === "done") {
+                        message.success(`${info.file.name} file uploaded successfully`);
+                        onChange(JSON.stringify(info));
+                      } else if (info.file.status === "error") {
+                        message.error(`${info.file.name} file upload failed.`);
+                      }
+                    }}
+                  >
+                    <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
+                  </Upload>
+                </ConfigProvider>
+              )}
+            />
+          </div>
+        </div>
       </Modal>
     </div>
   );

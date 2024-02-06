@@ -1005,7 +1005,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                 required: "Document name is required",
               }}
               name="docName"
-              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+              render={({ field: { onChange } }) => (
                 <ConfigProvider
                   theme={{
                     token: {
@@ -1014,7 +1014,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   }}
                 >
                   <Upload
-                    name="file"
+                    name="docName"
                     action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
                     headers={{
                       authorization: "authorization-text",
