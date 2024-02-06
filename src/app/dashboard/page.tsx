@@ -1,8 +1,9 @@
 "use client";
 import Text from "@/components/Text";
+import { useDashboard } from "@/services/dashboard/useDashboard";
 import { CheckIcon, FileIcon, RejectIcon, StopwatchIcon } from "@/style/icon";
-import { ConfigProvider, DatePicker, Table, TableProps } from "antd";
-import { createElement } from "react";
+import { ConfigProvider, DatePicker, Spin, Table, TableProps } from "antd";
+import { createElement, useEffect } from "react";
 
 export interface OptionInterface {
   label: string;
@@ -164,8 +165,20 @@ export default function DashboardPage() {
     },
   ];
 
+  const { data: dataDashboard, isPending: isPendingDashboard } = useDashboard({
+    query: {
+      crtas: "tsadf",
+    },
+  });
+
+  useEffect(() => {
+    if (dataDashboard) {
+    }
+  }, [dataDashboard]);
+
   return (
     <div>
+      {isPendingDashboard && <Spin fullscreen />}
       <div className="bg-img-login h-[343px] bg-bottom flex flex-col items-start justify-center p-6">
         <Text
           label="👋 Hello, PT Sempurna Tech"
