@@ -156,7 +156,12 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
 
   useEffect(() => {
     if (dataUserManagement) {
-      setDataById(dataUserManagement.data);
+      setDataById(
+        dataUserManagement.data.data.map((item: DataUserManagementType) => ({
+          ...item,
+          key: item.id,
+        }))
+      );
     }
   }, [dataUserManagement]);
 

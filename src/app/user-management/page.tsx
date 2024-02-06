@@ -193,7 +193,12 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     if (dataUserManagement) {
-      setData(dataUserManagement.data);
+      setData(
+        dataUserManagement.data.data.map((item: DataUserManagementType) => ({
+          ...item,
+          key: item.id,
+        }))
+      );
     }
   }, [dataUserManagement]);
 

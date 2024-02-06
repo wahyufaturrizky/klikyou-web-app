@@ -231,7 +231,12 @@ export default function DocumentsPage() {
 
   useEffect(() => {
     if (dataDocument) {
-      setData(dataDocument.data);
+      setData(
+        dataDocument.data.data.map((item: DataDocumentsType) => ({
+          ...item,
+          key: item.id,
+        }))
+      );
     }
   }, [dataDocument]);
 

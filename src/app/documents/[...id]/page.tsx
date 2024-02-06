@@ -150,7 +150,12 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
   useEffect(() => {
     if (dataDocument) {
-      setDataById(dataDocument.data);
+      setDataById(
+        dataDocument.data.data.map((item: DataDocumentsType) => ({
+          ...item,
+          key: item.id,
+        }))
+      );
     }
   }, [dataDocument]);
 
