@@ -19,18 +19,37 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { DataUserManagementType } from "../page";
+import { DefaultOptionType } from "antd/es/cascader";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
+import { useRole } from "@/services/role/useRole";
+import { UploadChangeParam, UploadFile } from "antd/es/upload";
 
 type FormProfileValues = {
-  imgProfile: string;
-  firstName: string;
-  lastName: string;
+  avatar_path: string;
+  first_name: string;
+  last_name: string;
   tags: string[];
-  role: string[];
+  role_id: string;
   username: string;
   email: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword?: string;
 };
+
+interface role_idType {
+  createdAt: string;
+  id: number;
+  levelName: string;
+  updatedAt: string;
+}
+
+interface TagType {
+  id: number;
+  code: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 interface DataType {
   key: string;
@@ -47,7 +66,11 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
 
   const [dataById, setDataById] = useState<DataUserManagementType>();
 
+  const [dataRole, setDatarole] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+
   const router = useRouter();
+  const [avatarPathRaw, setAvatarPathRaw] = useState<UploadChangeParam<UploadFile<any>>>();
   const [isEdit, setIsEdit] = useState<boolean>(id[0] === "view" ? false : true);
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
@@ -62,17 +85,48 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
 
   const { watch, control, handleSubmit, getValues } = useForm<FormProfileValues>({
     defaultValues: {
-      imgProfile: "/placeholder-profile.png",
-      firstName: "",
-      lastName: "",
-      tags: ["Text1", "Text2", "Text3"],
-      role: ["Text1", "Text2", "Text3"],
+      avatar_path: "/placeholder-profile.png",
+      first_name: "",
+      last_name: "",
+      tags: [],
+      role_id: "",
       username: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
   });
+
+  const { data: dataListrole_id, isPending: isPendingrole_id } = useRole();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+
+  useEffect(() => {
+    const fetchDatarole = () => {
+      setDatarole(
+        dataListrole_id.data.data.map((itemrole_id: role_idType) => ({
+          label: itemrole_id.levelName,
+          value: itemrole_id.id,
+        }))
+      );
+    };
+
+    const fetchDataTag = () => {
+      setDataTag(
+        dataListTag.data.data.data.map((itemTag: TagType) => ({
+          label: itemTag.name,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    if (dataListrole_id) {
+      fetchDatarole();
+    }
+
+    if (dataListTag) {
+      fetchDataTag();
+    }
+  }, [dataListrole_id, dataListTag]);
 
   const columns: TableProps<DataType>["columns"] = [
     {
@@ -139,19 +193,39 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
 
   const { mutate: updateUserManagement, isPending: isPendingUpdateUserManagement } =
     useUpdateUserManagement({
+      id: id[1],
       options: {
         onSuccess: () => {
+          messageApi.open({
+            type: "success",
+            content: "Update document success",
+          });
           router.back();
         },
       },
     });
 
   const onSubmit = (data: FormProfileValues) => {
-    updateUserManagement(data);
+    delete data.confirmPassword;
+
+    const { username, email, password, first_name, last_name, tags, role_id } = data;
+
+    let formdata = new FormData();
+
+    formdata.append("username", username);
+    formdata.append("email", email);
+    formdata.append("password", password);
+    formdata.append("first_name", first_name);
+    formdata.append("last_name", last_name);
+    formdata.append("tags", JSON.stringify(tags));
+    formdata.append("role_id", JSON.stringify(role_id));
+    formdata.append("avatar_path", avatarPathRaw?.file as any);
+
+    updateUserManagement(formdata);
   };
 
   const { data: dataUserManagement, isPending: isPendingUserManagement } = useUserManagementById({
-    id,
+    id: id[1],
   });
 
   useEffect(() => {
@@ -195,10 +269,12 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
     }
   };
 
+  const isLoading = isPendingUserManagement || isPendingrole_id || isPendingTag;
+
   return (
     <div className="p-6">
       {contextHolder}
-      {isPendingUserManagement && <Spin fullscreen />}
+      {isLoading && <Spin fullscreen />}
 
       <div className="flex items-center justify-between">
         <div className="flex gap-4 items-center">
@@ -255,16 +331,18 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                   {isEdit ? (
                     <Controller
                       control={control}
-                      name="imgProfile"
+                      name="avatar_path"
                       render={({ field: { onChange, value } }) => (
                         <div>
                           <Upload
-                            name="imgProfile"
+                            name="avatar_path"
                             listType="picture-circle"
                             showUploadList={false}
                             action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
                             beforeUpload={beforeUpload}
                             onChange={(info) => {
+                              setAvatarPathRaw(info);
+
                               if (info.file.status === "uploading") {
                                 setLoadingImageAvatar(true);
                                 return;
@@ -295,7 +373,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                     />
                   ) : (
                     <ImageNext
-                      src={getValues("imgProfile")}
+                      src={getValues("avatar_path")}
                       width={180}
                       height={180}
                       alt="logo-klikyou"
@@ -314,14 +392,14 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                         rules={{
                           required: "First name is required",
                         }}
-                        name="firstName"
+                        name="first_name"
                         render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                           <Input
                             onChange={onChange}
                             error={error}
                             onBlur={onBlur}
                             value={value}
-                            name="firstName"
+                            name="first_name"
                             type="text"
                             required
                             placeholder="Enter first name"
@@ -339,14 +417,14 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                         rules={{
                           required: "Last name is required",
                         }}
-                        name="lastName"
+                        name="last_name"
                         render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                           <Input
                             onChange={onChange}
                             error={error}
                             onBlur={onBlur}
                             value={value}
-                            name="lastName"
+                            name="last_name"
                             type="text"
                             required
                             placeholder="Enter last name"
@@ -372,6 +450,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                             onChange={onChange}
                             tokenSeparators={[","]}
                             value={value}
+                            options={dataTag}
                             styleSelect={{ width: "100%" }}
                             required
                             label="Tags"
@@ -385,19 +464,18 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                       <Controller
                         control={control}
                         rules={{
-                          required: "role is required",
+                          required: "role_id is required",
                         }}
-                        name="role"
+                        name="role_id"
                         render={({ field: { onChange, value }, fieldState: { error } }) => (
                           <Select
-                            mode="tags"
-                            name="role"
+                            name="role_id"
                             onChange={onChange}
-                            tokenSeparators={[","]}
+                            options={dataRole}
                             value={value}
                             styleSelect={{ width: "100%" }}
                             required
-                            label="Role"
+                            label="role_id"
                             classNameLabel="block text-lg font-semibold text-black"
                           />
                         )}
@@ -408,14 +486,21 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                   <div>
                     {Object.keys(watch())
                       .filter(
-                        (filtering) => !["imgProfile", "username", "email"].includes(filtering)
+                        (filtering) =>
+                          ![
+                            "avatar_path",
+                            "username",
+                            "email",
+                            "confirmPassword",
+                            "password",
+                          ].includes(filtering)
                       )
                       .map((mapping) => {
                         const labelMap: any = {
-                          firstName: "First name",
-                          lastName: "Last name",
+                          first_name: "First name",
+                          last_name: "Last name",
                           tags: "Tags",
-                          role: "Role",
+                          role_id: "Role",
                         };
 
                         const valueMap: any = watch();
@@ -426,7 +511,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                               label={labelMap[mapping]}
                               className="text-lg font-semibold text-black"
                             />
-                            {mapping === "tags" || mapping === "role" ? (
+                            {mapping === "tags" ? (
                               <div className="flex gap-2 flex-wrap mt-2">
                                 {valueMap[mapping].map((item: string) => (
                                   <Text
@@ -436,6 +521,11 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                                   />
                                 ))}
                               </div>
+                            ) : mapping === "role_id" ? (
+                              <Text
+                                label={dataRole?.[valueMap[mapping]]?.label as string}
+                                className="text-base font-normal text-black"
+                              />
                             ) : (
                               <Text
                                 label={valueMap[mapping]}
@@ -458,12 +548,32 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex">
               <div className="w-1/2 px-2">
-                <Text label="Username " className="text-lg font-semibold text-black" />
-
-                <Text label="superadmin" className="text-sm font-normal text-black" />
-
-                {isEdit && (
+                {isEdit ? (
                   <div>
+                    <div>
+                      <Controller
+                        control={control}
+                        name="username"
+                        rules={{
+                          required: "Username is required",
+                        }}
+                        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                          <Input
+                            onChange={onChange}
+                            error={error}
+                            onBlur={onBlur}
+                            value={value}
+                            name="username"
+                            type="text"
+                            placeholder="Enter username"
+                            classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                            classNameLabel="block text-xl font-semibold text-black"
+                            label="username"
+                          />
+                        )}
+                      />
+                    </div>
+
                     <div className="mt-6">
                       <Controller
                         control={control}
@@ -489,16 +599,46 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                       />
                     </div>
                   </div>
+                ) : (
+                  <div>
+                    {" "}
+                    <Text label="Username " className="text-lg font-semibold text-black" />
+                    <Text
+                      label={getValues("username")}
+                      className="text-sm font-normal text-black"
+                    />
+                  </div>
                 )}
               </div>
 
               <div className="w-1/2 px-2">
-                <Text label="Email address" className="text-lg font-semibold text-black" />
-
-                <Text label="superadmin@goforward.com" className="text-sm font-normal text-black" />
-
-                {isEdit && (
+                {isEdit ? (
                   <div>
+                    <div>
+                      <Controller
+                        control={control}
+                        name="email"
+                        rules={{
+                          required: "Email is required",
+                        }}
+                        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                          <Input
+                            onChange={onChange}
+                            error={error}
+                            onBlur={onBlur}
+                            value={value}
+                            required
+                            name="email"
+                            type="email"
+                            placeholder="Enter email"
+                            classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                            classNameLabel="block text-xl font-semibold text-black"
+                            label="Email"
+                          />
+                        )}
+                      />
+                    </div>
+
                     <div className="mt-6">
                       <Controller
                         control={control}
@@ -525,6 +665,12 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                         )}
                       />
                     </div>
+                  </div>
+                ) : (
+                  <div>
+                    <Text label="Email address" className="text-lg font-semibold text-black" />
+
+                    <Text label={getValues("email")} className="text-sm font-normal text-black" />
                   </div>
                 )}
               </div>

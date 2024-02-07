@@ -7,6 +7,7 @@ import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
 import {
+  useDeleteBulkUserManagement,
   useDeleteUserManagement,
   useUserManagement,
 } from "@/services/user-management/useUserManagement";
@@ -310,7 +311,7 @@ export default function UserManagementPage() {
   };
 
   const { mutate: deleteUserManagement, isPending: isPendingDeleteUserManagement }: any =
-    useDeleteUserManagement({
+    useDeleteBulkUserManagement({
       options: {
         onSuccess: () => {
           refetchDocumentUserManagement();

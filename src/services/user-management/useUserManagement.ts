@@ -41,10 +41,10 @@ function useCreateUserManagement({ options }: any) {
   }) as any;
 }
 
-function useUpdateUserManagement({ options }: any) {
+function useUpdateUserManagement({ options, id }: any) {
   return useMutation({
     mutationFn: (updates) =>
-      client("/users", {
+      clientFormData(`/users/${id}`, {
         method: "PUT",
         data: updates,
       }),
@@ -62,10 +62,21 @@ function useDeleteUserManagement({ options }: any) {
   });
 }
 
+function useDeleteBulkUserManagement({ options }: any) {
+  return useMutation({
+    mutationFn: (query: any) =>
+      client(`/users?ids=${query.ids}`, {
+        method: "DELETE",
+      }),
+    ...options,
+  });
+}
+
 export {
   useCreateUserManagement,
   useUserManagement,
   useUpdateUserManagement,
   useDeleteUserManagement,
   useUserManagementById,
+  useDeleteBulkUserManagement,
 };

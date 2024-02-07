@@ -22,7 +22,7 @@ type FormProfileValues = {
   first_name: string;
   last_name: string;
   tags: string[];
-  role_id: string[];
+  role_id: string;
   username: string;
   email: string;
   password: string;
@@ -65,7 +65,7 @@ export default function ProfilePage() {
       first_name: "",
       last_name: "",
       tags: [],
-      role_id: [],
+      role_id: "",
       username: "",
       email: "",
       password: "",
@@ -458,7 +458,7 @@ export default function ProfilePage() {
                               </div>
                             ) : mapping === "role_id" ? (
                               <Text
-                                label={dataRole?.[valueMap[mapping]]?.label}
+                                label={dataRole?.[valueMap[mapping]]?.label as string}
                                 className="text-base font-normal text-black"
                               />
                             ) : (

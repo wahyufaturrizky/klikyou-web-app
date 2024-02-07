@@ -22,7 +22,7 @@ type FormProfileValues = {
   first_name: string;
   last_name: string;
   tags: string[];
-  role_id: string[];
+  role_id: string;
   username: string;
   email: string;
   password: string;
@@ -58,7 +58,7 @@ export default function AddProfilePage() {
       first_name: "",
       last_name: "",
       tags: [],
-      role_id: [],
+      role_id: "",
       username: "",
       email: "",
       password: "",
@@ -378,6 +378,10 @@ export default function AddProfilePage() {
                     name="email"
                     rules={{
                       required: "Email is required",
+                      pattern: {
+                        value: /^\S+@\S+$/i,
+                        message: "Invalid email address",
+                      },
                     }}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                       <Input
