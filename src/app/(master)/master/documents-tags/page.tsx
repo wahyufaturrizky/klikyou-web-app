@@ -75,6 +75,7 @@ export default function DocumentTagsPage() {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
     },
   });
 
@@ -198,12 +199,23 @@ export default function DocumentTagsPage() {
 
   useEffect(() => {
     if (dataDocumentTags) {
+      const { data: mainData } = dataDocumentTags.data;
+      const { data: dataListTable, meta } = mainData;
+
       setDataDocTag(
-        dataDocumentTags.data.data.map((item: DataDocumentTags) => ({
+        dataListTable.map((item: DataDocumentTags) => ({
           ...item,
           key: item.id,
         }))
       );
+
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          ...tableParams.pagination,
+          total: meta.total,
+        },
+      });
     }
   }, [dataDocumentTags]);
 
@@ -304,7 +316,7 @@ export default function DocumentTagsPage() {
 
   useEffect(() => {
     refetchDocumentTags();
-  }, [tableParams]);
+  }, [JSON.stringify(tableParams)]);
 
   const { mutate: createDocumentTags, isPending: isPendingCreateDocumentTags } =
     useCreateDocumentTags({

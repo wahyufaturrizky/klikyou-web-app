@@ -5,24 +5,26 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
-import { useProfile, useUpdateProfile } from "@/services/profile/useProfile";
+import { useCreateProfile, useProfile, useUpdateProfile } from "@/services/profile/useProfile";
 import { BackIcon, PencilIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { ConfigProvider, Spin, Table, TableProps, Upload } from "antd";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { DefaultOptionType } from "antd/es/cascader";
+import { UploadChangeParam, UploadFile } from "antd/es/upload";
 
 type FormProfileValues = {
-  imgProfile: string;
-  firstName: string;
-  lastName: string;
+  avatar_path: string;
+  first_name: string;
+  last_name: string;
   tags: string[];
-  role: string[];
+  role_id: string[];
   username: string;
   email: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword?: string;
 };
 
 interface DataType {
@@ -33,17 +35,28 @@ interface DataType {
   updatedAt: Date;
 }
 
+interface RoleType {
+  createdAt: string;
+  id: number;
+  name: string;
+  roleId: number;
+  updatedAt: string;
+}
+
 export default function ProfilePage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [avatarPathRaw, setAvatarPathRaw] = useState<UploadChangeParam<UploadFile<any>>>();
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
   const { watch, control, handleSubmit, setValue, getValues } = useForm<FormProfileValues>({
     defaultValues: {
-      imgProfile: "",
-      firstName: "",
-      lastName: "",
-      tags: ["Text1", "Text2", "Text3"],
-      role: ["Text1", "Text2", "Text3"],
+      avatar_path: "",
+      first_name: "",
+      last_name: "",
+      tags: [],
+      role_id: [],
       username: "",
       email: "",
       password: "",
@@ -55,21 +68,39 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (dataProfile) {
-      const { data } = dataProfile.data;
+      const { [0]: dataRaw } = dataProfile.data.data;
 
-      setValue("imgProfile", data?.imgProfile);
-      setValue("firstName", data?.firstName);
-      setValue("lastName", data?.lastName);
-      setValue("tags", data?.tags);
-      setValue("role", data?.role);
-      setValue("username", data?.username);
-      setValue("email", data?.email);
-      setValue("password", data?.password);
+      const convertRole = dataRaw?.role?.modules.map((itemRole: RoleType) => ({
+        label: itemRole.name,
+        value: itemRole.id,
+      }));
+
+      const convertTag = JSON.parse(dataRaw?.tags).map((itemRole: string) => ({
+        label: itemRole,
+        value: itemRole,
+      }));
+      setDataRole(convertRole);
+      setDataTag(convertTag);
+
+      setValue("avatar_path", dataRaw?.avatarPath);
+      setValue("first_name", dataRaw?.firstName);
+      setValue("last_name", dataRaw?.lastName);
+      setValue(
+        "tags",
+        convertTag.map((itemVal: DefaultOptionType) => itemVal.value)
+      );
+      setValue(
+        "role_id",
+        convertRole.map((itemVal: DefaultOptionType) => itemVal.value)
+      );
+      setValue("username", dataRaw?.username);
+      setValue("email", dataRaw?.email);
+      setValue("password", dataRaw?.password);
     }
   }, [dataProfile]);
 
-  const { mutate: updateUserManagement, isPending: isPendingUpdateUserManagement } =
-    useUpdateProfile({
+  const { mutate: createUserManagement, isPending: isPendingCreateUserManagement } =
+    useCreateProfile({
       options: {
         onSuccess: () => {
           refetchProfile();
@@ -141,7 +172,20 @@ export default function ProfilePage() {
   ];
 
   const onSubmit = (data: FormProfileValues) => {
-    updateUserManagement(data);
+    delete data.confirmPassword;
+
+    console.log(avatarPathRaw);
+
+    let formdata = new FormData();
+    formdata.append("username", "asdf");
+    formdata.append("email", "asdfdsaff@gmail.com");
+    formdata.append("password", "asdfdasfds");
+    formdata.append("first_name", "asdfasdffds");
+    formdata.append("last_name", "asdfasdffdsa");
+    formdata.append("tags", '["ok","okgas","ok"]');
+    formdata.append("role_id", "[]");
+
+    createUserManagement(formdata);
   };
 
   const uploadButton = (
@@ -162,13 +206,15 @@ export default function ProfilePage() {
         />
       </div>
 
-      <Button
-        type="button"
-        onClick={() => setIsEdit(!isEdit)}
-        label="Edit"
-        icon={<PencilIcon />}
-        className="mt-6 gap-2 flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-      />
+      {!isEdit && (
+        <Button
+          type="button"
+          onClick={() => setIsEdit(!isEdit)}
+          label="Edit"
+          icon={<PencilIcon />}
+          className="mt-6 gap-2 flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        />
+      )}
 
       <div className="gap-6 flex">
         <div className="w-1/2">
@@ -183,16 +229,17 @@ export default function ProfilePage() {
                   {isEdit ? (
                     <Controller
                       control={control}
-                      name="imgProfile"
+                      name="avatar_path"
                       render={({ field: { onChange, value } }) => (
                         <div>
                           <Upload
-                            name="imgProfile"
+                            name="avatar_path"
                             listType="picture-circle"
                             showUploadList={false}
                             action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
                             beforeUpload={beforeUpload}
                             onChange={(info) => {
+                              setAvatarPathRaw(info);
                               if (info.file.status === "uploading") {
                                 setLoadingImageAvatar(true);
                                 return;
@@ -223,8 +270,9 @@ export default function ProfilePage() {
                     />
                   ) : (
                     <ImageNext
-                      src={getValues("imgProfile") || "/placeholder-profile.png"}
+                      src={getValues("avatar_path") || "/placeholder-profile.png"}
                       width={180}
+                      priority={true}
                       height={180}
                       alt="logo-klikyou"
                       className="h-auto w-auto"
@@ -242,14 +290,14 @@ export default function ProfilePage() {
                         rules={{
                           required: "First name is required",
                         }}
-                        name="firstName"
+                        name="first_name"
                         render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                           <Input
                             onChange={onChange}
                             error={error}
                             onBlur={onBlur}
                             value={value}
-                            name="firstName"
+                            name="first_name"
                             type="text"
                             required
                             placeholder="Enter first name"
@@ -267,14 +315,14 @@ export default function ProfilePage() {
                         rules={{
                           required: "Last name is required",
                         }}
-                        name="lastName"
+                        name="last_name"
                         render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                           <Input
                             onChange={onChange}
                             error={error}
                             onBlur={onBlur}
                             value={value}
-                            name="lastName"
+                            name="last_name"
                             type="text"
                             required
                             placeholder="Enter last name"
@@ -293,11 +341,12 @@ export default function ProfilePage() {
                           required: "tags is required",
                         }}
                         name="tags"
-                        render={({ field: { onChange, value }, fieldState: { error } }) => (
+                        render={({ field: { onChange, value } }) => (
                           <Select
                             mode="tags"
                             name="tags"
                             onChange={onChange}
+                            options={dataTag}
                             tokenSeparators={[","]}
                             value={value}
                             styleSelect={{ width: "100%" }}
@@ -315,20 +364,23 @@ export default function ProfilePage() {
                         rules={{
                           required: "role is required",
                         }}
-                        name="role"
-                        render={({ field: { onChange, value }, fieldState: { error } }) => (
-                          <Select
-                            mode="tags"
-                            name="role"
-                            onChange={onChange}
-                            tokenSeparators={[","]}
-                            value={value}
-                            styleSelect={{ width: "100%" }}
-                            required
-                            label="Role"
-                            classNameLabel="block text-xl font-semibold text-black"
-                          />
-                        )}
+                        name="role_id"
+                        render={({ field: { onChange, value } }) => {
+                          return (
+                            <Select
+                              mode="tags"
+                              name="role_id"
+                              onChange={onChange}
+                              options={dataRole}
+                              tokenSeparators={[","]}
+                              value={value}
+                              styleSelect={{ width: "100%" }}
+                              required
+                              label="Role"
+                              classNameLabel="block text-xl font-semibold text-black"
+                            />
+                          );
+                        }}
                       />
                     </div>
                   </div>
@@ -338,38 +390,50 @@ export default function ProfilePage() {
                       .filter(
                         (filtering) =>
                           ![
-                            "imgProfile",
+                            "avatar_path",
                             "username",
                             "email",
                             "confirmPassword",
                             "password",
                           ].includes(filtering)
                       )
-                      .map((mapping) => {
+                      .map((mapping, index) => {
                         const labelMap: any = {
-                          firstName: "First name",
-                          lastName: "Last name",
+                          first_name: "First name",
+                          last_name: "Last name",
                           tags: "Tags",
-                          role: "Role",
+                          role_id: "Role",
                         };
 
                         const valueMap: any = watch();
 
                         return (
-                          <div className="mb-6" key={mapping}>
+                          <div className="mb-6" key={mapping + index}>
                             <Text
                               label={labelMap[mapping]}
                               className="text-xl font-semibold text-black"
                             />
-                            {mapping === "tags" || mapping === "role" ? (
-                              <div className="flex gap-2 flex-warp mt-2">
-                                {valueMap[mapping]?.map((item: string) => (
+                            {mapping === "tags" ? (
+                              <div className="flex gap-2 flex-wrap mt-2">
+                                {valueMap[mapping]?.map((item: string, indexTag: number) => (
                                   <Text
-                                    key={item}
+                                    key={item + indexTag}
                                     label={item}
                                     className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
                                   />
                                 ))}
+                              </div>
+                            ) : mapping === "role_id" ? (
+                              <div className="flex gap-2 flex-wrap mt-2">
+                                {dataRole?.map((item: DefaultOptionType, indexRole: number) => {
+                                  return (
+                                    <Text
+                                      key={indexRole}
+                                      label={item.label as string}
+                                      className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                    />
+                                  );
+                                })}
                               </div>
                             ) : (
                               <Text
@@ -393,18 +457,15 @@ export default function ProfilePage() {
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex">
               <div className="w-1/2 px-2">
-                <Text label="Username " className="text-xl font-semibold text-black" />
+                <Text label="Username" className="text-xl font-semibold text-black" />
 
-                <Text label="superadmin" className="text-base font-normal text-black" />
+                <Text label={getValues("username")} className="text-base font-normal text-black" />
 
                 {isEdit && (
                   <div>
                     <div className="mt-6">
                       <Controller
                         control={control}
-                        rules={{
-                          required: "Password is required",
-                        }}
                         name="password"
                         render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                           <Input
@@ -414,7 +475,6 @@ export default function ProfilePage() {
                             value={value}
                             name="password"
                             type="password"
-                            required
                             placeholder="Enter password"
                             classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                             classNameLabel="block text-xl font-semibold text-black"
@@ -430,21 +490,17 @@ export default function ProfilePage() {
               <div className="w-1/2 px-2">
                 <Text label="Email address" className="text-xl font-semibold text-black" />
 
-                <Text
-                  label="superadmin@goforward.com"
-                  className="text-base font-normal text-black"
-                />
+                <Text label={getValues("email")} className="text-base font-normal text-black" />
 
                 {isEdit && (
                   <div>
                     <div className="mt-6">
                       <Controller
                         control={control}
-                        rules={{
-                          required: "Confirm password is required",
-                          validate: (value) =>
-                            value === control._formValues.password || "The passwords do not match",
-                        }}
+                        // rules={{
+                        //   validate: (value) =>
+                        //     value === control._formValues.password || "The passwords do not match",
+                        // }}
                         name="confirmPassword"
                         render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                           <Input
@@ -454,7 +510,6 @@ export default function ProfilePage() {
                             value={value}
                             name="confirmPassword"
                             type="password"
-                            required
                             placeholder="Enter confirm password"
                             classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                             classNameLabel="block text-xl font-semibold text-black"
@@ -485,8 +540,8 @@ export default function ProfilePage() {
           <Button
             type="button"
             onClick={handleSubmit(onSubmit)}
-            loading={isPendingUpdateUserManagement}
-            disabled={isPendingUpdateUserManagement}
+            loading={isPendingCreateUserManagement}
+            disabled={isPendingCreateUserManagement}
             label="Save"
             className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           />

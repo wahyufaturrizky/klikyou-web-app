@@ -85,6 +85,7 @@ export default function ToDoPage() {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
     },
   });
 
@@ -142,7 +143,7 @@ export default function ToDoPage() {
       dataIndex: "tags",
       key: "tags",
       render: (text: string[]) => (
-        <div className="flex gap-2 flex-warp">
+        <div className="flex gap-2 flex-wrap">
           {text?.map((item: string) => {
             return (
               <Text
@@ -240,12 +241,23 @@ export default function ToDoPage() {
 
   useEffect(() => {
     if (dataRawToReview) {
+      const { data: mainData } = dataRawToReview.data;
+      const { data: dataListTable, meta } = mainData;
+
       setDataToReview(
-        dataRawToReview.data.data.map((item: DataToDoType) => ({
+        dataListTable.map((item: DataToDoType) => ({
           ...item,
           key: item.id,
         }))
       );
+
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          ...tableParams.pagination,
+          total: meta.total,
+        },
+      });
     }
   }, [dataRawToReview]);
 
@@ -311,7 +323,7 @@ export default function ToDoPage() {
 
   useEffect(() => {
     refetchRawToReview();
-  }, [tableParams]);
+  }, [JSON.stringify(tableParams)]);
 
   const { mutate: updateApproveReject, isPending: isPendingUpdateApproveReject } =
     useUpdateToReview({

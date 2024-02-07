@@ -109,33 +109,56 @@ const Layout = ({ ...props }: LayoutInterface) => {
   const ref = useRef<any>(null);
 
   const items: MenuProps["items"] = [
-    { icon: DashboardIcon, label: <Link href="/dashboard">Dashboard</Link> },
-    { icon: DocumentIcon, label: <Link href="/documents">Documents</Link> },
+    { icon: DashboardIcon, label: <Link href="/dashboard">Dashboard</Link>, key: "dashboard" },
+    { icon: DocumentIcon, label: <Link href="/documents">Documents</Link>, key: "documents" },
     {
       icon: ApprovalsIcon,
       label: "Approvals",
+      key: "approvals",
       children: [
-        { icon: ToReviewIcon, label: <Link href="/approvals/to-review">To Review</Link> },
-        { icon: HistoryIcon, label: <Link href="/approvals/history">History</Link> },
+        {
+          icon: ToReviewIcon,
+          label: <Link href="/approvals/to-review">To Review</Link>,
+          key: "to-review",
+        },
+        {
+          icon: HistoryIcon,
+          label: <Link href="/approvals/history">History</Link>,
+          key: "history",
+        },
       ],
     },
     {
       icon: ReceivedIcon,
       label: "Received",
+      key: "received",
       children: [
-        { icon: ToReviewIcon, label: <Link href="/received/to-do">To Do</Link> },
-        { icon: HistoryIcon, label: <Link href="/received/processed">Processed</Link> },
+        { icon: ToReviewIcon, label: <Link href="/received/to-do">To Do</Link>, key: "to-do" },
+        {
+          icon: HistoryIcon,
+          label: <Link href="/received/processed">Processed</Link>,
+          key: "processed",
+        },
       ],
     },
     {
       icon: MasterIcon,
       label: "Master",
+      key: "master",
       children: [
-        { icon: TagIcon, label: <Link href="/master/documents-tags">Document Tags</Link> },
+        {
+          icon: TagIcon,
+          label: <Link href="/master/documents-tags">Document Tags</Link>,
+          key: "documents-tags",
+        },
       ],
     },
-    { icon: UserIcon, label: <Link href="/user-management">User Management</Link> },
-    { icon: SettingIcon, label: <Link href="/settings">Settings</Link> },
+    {
+      icon: UserIcon,
+      label: <Link href="/user-management">User Management</Link>,
+      key: "user-management",
+    },
+    { icon: SettingIcon, label: <Link href="/settings">Settings</Link>, key: "settings" },
   ].map((item, index) => {
     const { icon, label, children } = item;
 
@@ -147,7 +170,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
         const { icon, label: subLabel } = child;
 
         return {
-          key: String(subLabel) + String(indexChild + 1),
+          key: String(index + 1) + "-" + String(indexChild + 1),
           icon: <div className="h-6 w-6">{createElement(icon)}</div>,
           label: <Text label={subLabel} className="font-bold" />,
         };

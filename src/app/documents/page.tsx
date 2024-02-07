@@ -71,6 +71,7 @@ export default function DocumentsPage() {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
     },
   });
 
@@ -117,7 +118,7 @@ export default function DocumentsPage() {
       dataIndex: "tags",
       key: "tags",
       render: (text: string[]) => (
-        <div className="flex gap-2 flex-warp">
+        <div className="flex gap-2 flex-wrap">
           {text?.map((item: string) => {
             return (
               <Text
@@ -178,7 +179,7 @@ export default function DocumentsPage() {
       dataIndex: "role",
       key: "role",
       render: (text: string[]) => (
-        <div className="flex gap-2 flex-warp">
+        <div className="flex gap-2 flex-wrap">
           {text?.map((item: string) => {
             return (
               <Text
@@ -231,12 +232,23 @@ export default function DocumentsPage() {
 
   useEffect(() => {
     if (dataDocument) {
+      const { data: mainData } = dataDocument.data;
+      const { data: dataListTable, meta } = mainData;
+
       setData(
-        dataDocument.data.data.map((item: DataDocumentsType) => ({
+        dataListTable.map((item: DataDocumentsType) => ({
           ...item,
           key: item.id,
         }))
       );
+
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          ...tableParams.pagination,
+          total: meta.total,
+        },
+      });
     }
   }, [dataDocument]);
 
@@ -331,7 +343,7 @@ export default function DocumentsPage() {
 
   useEffect(() => {
     refetchDocument();
-  }, [tableParams]);
+  }, [JSON.stringify(tableParams)]);
 
   return (
     <div className="p-6">

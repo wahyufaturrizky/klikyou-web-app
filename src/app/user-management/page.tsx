@@ -69,6 +69,7 @@ export default function UserManagementPage() {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
     },
   });
 
@@ -193,12 +194,23 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     if (dataUserManagement) {
+      const { data: mainData } = dataUserManagement.data;
+      const { data: dataListTable, meta } = mainData;
+
       setData(
-        dataUserManagement.data.data.map((item: DataUserManagementType) => ({
+        dataListTable.map((item: DataUserManagementType) => ({
           ...item,
           key: item.id,
         }))
       );
+
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          ...tableParams.pagination,
+          total: meta.total,
+        },
+      });
     }
   }, [dataUserManagement]);
 
@@ -294,7 +306,7 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     refetchDocumentUserManagement();
-  }, [tableParams]);
+  }, [JSON.stringify(tableParams)]);
 
   return (
     <div className="p-6">

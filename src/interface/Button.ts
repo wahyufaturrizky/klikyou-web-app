@@ -4,7 +4,7 @@ export type ButtonType = "submit" | "reset" | "button";
 
 export interface ButtonInterface {
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
   className: string;
   type: ButtonType;
   disabled?: boolean;

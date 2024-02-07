@@ -86,6 +86,7 @@ export default function ProcessedPage() {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
     },
   });
 
@@ -143,7 +144,7 @@ export default function ProcessedPage() {
       dataIndex: "tags",
       key: "tags",
       render: (text: string[]) => (
-        <div className="flex gap-2 flex-warp">
+        <div className="flex gap-2 flex-wrap">
           {text?.map((item: string) => {
             return (
               <Text
@@ -216,12 +217,23 @@ export default function ProcessedPage() {
 
   useEffect(() => {
     if (dataRawProcessed) {
+      const { data: mainData } = dataRawProcessed.data;
+      const { data: dataListTable, meta } = mainData;
+
       setDataProcessed(
-        dataRawProcessed.data.data.map((item: DataProcessedType) => ({
+        dataListTable.map((item: DataProcessedType) => ({
           ...item,
           key: item.id,
         }))
       );
+
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          ...tableParams.pagination,
+          total: meta.total,
+        },
+      });
     }
   }, [dataRawProcessed]);
 
@@ -287,7 +299,7 @@ export default function ProcessedPage() {
 
   useEffect(() => {
     refetchProcessed();
-  }, [tableParams]);
+  }, [JSON.stringify(tableParams)]);
 
   const { mutate: updateApproveReject, isPending: isPendingUpdateApproveReject } =
     useUpdateToReview({

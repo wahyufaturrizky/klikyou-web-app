@@ -103,6 +103,7 @@ export default function HistoryPage() {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
     },
   });
 
@@ -160,7 +161,7 @@ export default function HistoryPage() {
       dataIndex: "tags",
       key: "tags",
       render: (text: string[]) => (
-        <div className="flex gap-2 flex-warp">
+        <div className="flex gap-2 flex-wrap">
           {text?.map((item: string) => {
             return (
               <Text
@@ -256,12 +257,23 @@ export default function HistoryPage() {
 
   useEffect(() => {
     if (dataRawHistory) {
+      const { data: mainData } = dataRawHistory.data;
+      const { data: dataListTable, meta } = mainData;
+
       setDataHistory(
-        dataRawHistory.data.data.map((item: DataHistoryType) => ({
+        dataListTable.map((item: DataHistoryType) => ({
           ...item,
           key: item.id,
         }))
       );
+
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          ...tableParams.pagination,
+          total: meta.total,
+        },
+      });
     }
   }, [dataRawHistory]);
 
@@ -327,7 +339,7 @@ export default function HistoryPage() {
 
   useEffect(() => {
     refetchHistory();
-  }, [tableParams]);
+  }, [JSON.stringify(tableParams)]);
 
   const { mutate: updateApproveReject, isPending: isPendingUpdateApproveReject } =
     useUpdateToReview({

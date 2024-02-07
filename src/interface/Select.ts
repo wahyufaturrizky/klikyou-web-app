@@ -1,5 +1,5 @@
 import { DefaultOptionType } from "antd/es/cascader";
-import { CSSProperties, ChangeEvent, ChangeEventHandler, FocusEventHandler } from "react";
+import { CSSProperties, ChangeEventHandler } from "react";
 
 export interface SelectInterface {
   label?: string;

@@ -415,7 +415,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           className="text-xl font-semibold text-black"
                         />
                         {mapping === "tags" ? (
-                          <div className="flex gap-2 flex-warp mt-2">
+                          <div className="flex gap-2 flex-wrap mt-2">
                             {valueMap[mapping].map((item: string) => (
                               <Text
                                 key={item}
@@ -474,7 +474,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           className="text-xl font-semibold text-black"
                         />
                         {mapping === "collaborators" ? (
-                          <div className="flex gap-2 flex-warp mt-2">
+                          <div className="flex gap-2 flex-wrap mt-2">
                             {valueMap[mapping].map((item: string) => (
                               <Text
                                 key={item}
@@ -561,7 +561,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           className="text-xl font-semibold text-black"
                         />
                         {mapping === "collaborators" ? (
-                          <div className="flex gap-2 flex-warp mt-2">
+                          <div className="flex gap-2 flex-wrap mt-2">
                             {valueMap[mapping].map((item: string) => (
                               <Text
                                 key={item}
@@ -625,7 +625,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           className="text-xl font-semibold text-black"
                         />
                         {mapping === "collaborators" ? (
-                          <div className="flex gap-2 flex-warp mt-2">
+                          <div className="flex gap-2 flex-wrap mt-2">
                             {valueMap[mapping].map((item: string) => (
                               <Text
                                 key={item}
