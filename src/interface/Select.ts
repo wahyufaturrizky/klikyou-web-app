@@ -7,7 +7,7 @@ export interface SelectInterface {
   styleSelect?: CSSProperties;
   classNameLabel?: string;
   name: string;
-  tokenSeparators: string[];
+  tokenSeparators?: string[];
   options?: DefaultOptionType[];
   autoComplete?: string;
   placeholder?: string;

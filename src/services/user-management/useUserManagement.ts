@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client";
+import { clientFormData } from "@/services/client";
 
 const fetchUserManagement = async ({ query = {} }) => {
   return client("/users", {
@@ -18,7 +19,7 @@ const useUserManagement = ({ query = {}, options }: any = {}) => {
 };
 
 const fetchUserManagementById = async ({ id }: { id: string }) => {
-  return client(`/getUserManagement/${id}`).then((data) => data);
+  return client(`/users/${id}`).then((data) => data);
 };
 
 const useUserManagementById = ({ id, options }: any) => {
@@ -32,7 +33,7 @@ const useUserManagementById = ({ id, options }: any) => {
 function useCreateUserManagement({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
-      client("/createUserManagement", {
+      clientFormData("/users", {
         method: "POST",
         data: reqBody,
       }),
@@ -43,7 +44,7 @@ function useCreateUserManagement({ options }: any) {
 function useUpdateUserManagement({ options }: any) {
   return useMutation({
     mutationFn: (updates) =>
-      client("/updateUserManagement", {
+      client("/users", {
         method: "PUT",
         data: updates,
       }),
@@ -54,7 +55,7 @@ function useUpdateUserManagement({ options }: any) {
 function useDeleteUserManagement({ options }: any) {
   return useMutation({
     mutationFn: (updates: any) =>
-      client(`/updateUserManagement/${updates.ids}`, {
+      client(`/users/${updates.ids}`, {
         method: "DELETE",
       }),
     ...options,

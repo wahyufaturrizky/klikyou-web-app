@@ -4,48 +4,61 @@ import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
-import UseDateTimeFormat from "@/hook/useDateFormat";
+import { useCreateUserManagement } from "@/services/user-management/useUserManagement";
 import { BackIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { TableProps, Upload, UploadProps } from "antd";
+import { Spin, Upload, message } from "antd";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useSignIn } from "@/services/auth/useAuth";
-import { useCreateUserManagement } from "@/services/user-management/useUserManagement";
+import { UploadChangeParam, UploadFile } from "antd/es/upload";
+import { useRole } from "@/services/role/useRole";
+import { DefaultOptionType } from "antd/es/cascader";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 
 type FormProfileValues = {
-  imgProfile: string;
-  firstName: string;
-  lastName: string;
+  avatar_path: string;
+  first_name: string;
+  last_name: string;
   tags: string[];
-  role: string[];
+  role_id: string[];
   username: string;
   email: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword?: string;
 };
 
-interface DataType {
-  key: string;
-  createdBy: string;
-  createdAt: Date;
-  updatedBy: string;
-  updatedAt: Date;
+interface RoleType {
+  createdAt: string;
+  id: number;
+  levelName: string;
+  updatedAt: string;
+}
+
+interface TagType {
+  id: number;
+  code: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export default function AddProfilePage() {
   const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [avatarPathRaw, setAvatarPathRaw] = useState<UploadChangeParam<UploadFile<any>>>();
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
+  const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
-  const { watch, control, handleSubmit, setValue } = useForm<FormProfileValues>({
+  const { control, handleSubmit } = useForm<FormProfileValues>({
     defaultValues: {
-      imgProfile: "/placeholder-profile.png",
-      firstName: "",
-      lastName: "",
-      tags: ["Text1", "Text2", "Text3"],
-      role: ["Text1", "Text2", "Text3"],
+      avatar_path: "",
+      first_name: "",
+      last_name: "",
+      tags: [],
+      role_id: [],
       username: "",
       email: "",
       password: "",
@@ -53,80 +66,73 @@ export default function AddProfilePage() {
     },
   });
 
-  const columns: TableProps<DataType>["columns"] = [
-    {
-      title: "Created By",
-      dataIndex: "createdBy",
-      key: "createdBy",
-      render: (text: string) => {
-        return (
-          <div className="gap-2 flex items-center">
-            <ImageNext
-              src="/placeholder-profile.png"
-              width={32}
-              height={32}
-              alt="logo-klikyou"
-              className="h-[32px] w-[32px]"
-            />
-            <Text label={text} className="text-base font-normal text-black" />
-          </div>
-        );
-      },
-    },
-    {
-      title: "Created At",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (text: Date) => UseDateTimeFormat(text),
-    },
-    {
-      title: "Updated By",
-      dataIndex: "updatedBy",
-      key: "updatedBy",
-      render: (text: string) => {
-        return (
-          <div className="gap-2 flex items-center">
-            <ImageNext
-              src="/placeholder-profile.png"
-              width={32}
-              height={32}
-              alt="logo-klikyou"
-              className="h-[32px] w-[32px]"
-            />
-            <Text label={text} className="text-base font-normal text-black" />
-          </div>
-        );
-      },
-    },
-    {
-      title: "Updated At",
-      dataIndex: "updatedAt",
-      key: "updatedAt",
-      render: (text: Date) => UseDateTimeFormat(text),
-    },
-  ];
+  const { data: dataListRole, isPending: isPendingRole } = useRole();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
 
-  const data: DataType[] = [
-    {
-      key: "1",
-      createdBy: "Zayn Malik",
-      createdAt: new Date(),
-      updatedBy: "Edward Timothy",
-      updatedAt: new Date(),
-    },
-  ];
+  useEffect(() => {
+    const fetchDataRole = () => {
+      setDataRole(
+        dataListRole.data.data.map((itemRole: RoleType) => ({
+          label: itemRole.levelName,
+          value: itemRole.id,
+        }))
+      );
+    };
+
+    const fetchDataTag = () => {
+      setDataTag(
+        dataListTag.data.data.data.map((itemTag: TagType) => ({
+          label: itemTag.name,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    if (dataListRole) {
+      fetchDataRole();
+    }
+
+    if (dataListTag) {
+      fetchDataTag();
+    }
+  }, [dataListRole, dataListTag]);
 
   const { mutate: createUserManagement, isPending: isPendingCreateUserManagement } =
     useCreateUserManagement({
       options: {
-        onSuccess: () => {
+        onSuccess: (res: any) => {
+          messageApi.open({
+            type: "success",
+            content: "Success create user",
+          });
+
           router.back();
+        },
+        onError: () => {
+          messageApi.open({
+            type: "error",
+            content: "Failed create user",
+          });
         },
       },
     });
 
   const onSubmit = (data: FormProfileValues) => {
-    createUserManagement(data);
+    delete data.confirmPassword;
+
+    const { username, email, password, first_name, last_name, tags, role_id } = data;
+
+    let formdata = new FormData();
+    formdata.append("username", username);
+    formdata.append("email", email);
+    formdata.append("password", password);
+    formdata.append("first_name", first_name);
+    formdata.append("last_name", last_name);
+    formdata.append("tags", JSON.stringify(tags));
+    formdata.append("role_id", JSON.stringify(role_id));
+    formdata.append("avatar_path", avatarPathRaw?.file as any);
+
+    createUserManagement(formdata);
   };
 
   const uploadButton = (
@@ -136,8 +142,12 @@ export default function AddProfilePage() {
     </button>
   );
 
+  const isLoading = isPendingRole || isPendingTag;
+
   return (
     <div className="p-6">
+      {contextHolder}
+      {isLoading && <Spin fullscreen />}
       <div className="flex gap-4 items-center">
         <BackIcon
           style={{ color: "#2379AA", height: 24, width: 24 }}
@@ -158,16 +168,17 @@ export default function AddProfilePage() {
                 <div className="flex justify-center mt-6">
                   <Controller
                     control={control}
-                    name="imgProfile"
+                    name="avatar_path"
                     render={({ field: { onChange, value } }) => (
                       <div>
                         <Upload
-                          name="imgProfile"
+                          name="avatar_path"
                           listType="picture-circle"
                           showUploadList={false}
                           action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
                           beforeUpload={beforeUpload}
                           onChange={(info) => {
+                            setAvatarPathRaw(info);
                             if (info.file.status === "uploading") {
                               setLoadingImageAvatar(true);
                               return;
@@ -207,14 +218,14 @@ export default function AddProfilePage() {
                       rules={{
                         required: "First name is required",
                       }}
-                      name="firstName"
+                      name="first_name"
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <Input
                           onChange={onChange}
                           error={error}
                           onBlur={onBlur}
                           value={value}
-                          name="firstName"
+                          name="first_name"
                           type="text"
                           required
                           placeholder="Enter first name"
@@ -232,14 +243,14 @@ export default function AddProfilePage() {
                       rules={{
                         required: "Last name is required",
                       }}
-                      name="lastName"
+                      name="last_name"
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <Input
                           onChange={onChange}
                           error={error}
                           onBlur={onBlur}
                           value={value}
-                          name="lastName"
+                          name="last_name"
                           type="text"
                           required
                           placeholder="Enter last name"
@@ -263,6 +274,7 @@ export default function AddProfilePage() {
                           mode="tags"
                           name="tags"
                           onChange={onChange}
+                          options={dataTag}
                           tokenSeparators={[","]}
                           value={value}
                           styleSelect={{ width: "100%" }}
@@ -278,19 +290,18 @@ export default function AddProfilePage() {
                     <Controller
                       control={control}
                       rules={{
-                        required: "role is required",
+                        required: "role_id is required",
                       }}
-                      name="role"
+                      name="role_id"
                       render={({ field: { onChange, value }, fieldState: { error } }) => (
                         <Select
-                          mode="tags"
-                          name="role"
+                          name="role_id"
+                          options={dataRole}
                           onChange={onChange}
-                          tokenSeparators={[","]}
                           value={value}
                           styleSelect={{ width: "100%" }}
                           required
-                          label="Role"
+                          label="role_id"
                           classNameLabel="block text-lg font-semibold text-black"
                         />
                       )}
@@ -308,27 +319,47 @@ export default function AddProfilePage() {
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex">
               <div className="w-1/2 px-2">
-                <Text label="Username " className="text-lg font-semibold text-black" />
-
-                <Text label="superadmin" className="text-xs font-normal text-black" />
+                <div>
+                  <Controller
+                    control={control}
+                    name="username"
+                    rules={{
+                      required: "Username is required",
+                    }}
+                    render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                      <Input
+                        onChange={onChange}
+                        error={error}
+                        onBlur={onBlur}
+                        value={value}
+                        name="username"
+                        type="text"
+                        placeholder="Enter username"
+                        classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                        classNameLabel="block text-xl font-semibold text-black"
+                        label="username"
+                      />
+                    )}
+                  />
+                </div>
 
                 <div>
                   <div className="mt-6">
                     <Controller
                       control={control}
+                      name="password"
                       rules={{
                         required: "Password is required",
                       }}
-                      name="password"
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <Input
                           onChange={onChange}
                           error={error}
                           onBlur={onBlur}
                           value={value}
+                          required
                           name="password"
                           type="password"
-                          required
                           placeholder="Enter password"
                           classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                           classNameLabel="block text-lg font-semibold text-black"
@@ -341,9 +372,30 @@ export default function AddProfilePage() {
               </div>
 
               <div className="w-1/2 px-2">
-                <Text label="Email address" className="text-lg font-semibold text-black" />
-
-                <Text label="superadmin@goforward.com" className="text-xs font-normal text-black" />
+                <div>
+                  <Controller
+                    control={control}
+                    name="email"
+                    rules={{
+                      required: "Email is required",
+                    }}
+                    render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                      <Input
+                        onChange={onChange}
+                        error={error}
+                        onBlur={onBlur}
+                        value={value}
+                        required
+                        name="email"
+                        type="email"
+                        placeholder="Enter email"
+                        classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                        classNameLabel="block text-xl font-semibold text-black"
+                        label="Email"
+                      />
+                    )}
+                  />
+                </div>
 
                 <div>
                   <div className="mt-6">
@@ -361,9 +413,9 @@ export default function AddProfilePage() {
                           error={error}
                           onBlur={onBlur}
                           value={value}
+                          required
                           name="confirmPassword"
                           type="password"
-                          required
                           placeholder="Enter confirm password"
                           classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                           classNameLabel="block text-lg font-semibold text-black"

@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { client } from "../client";
+import { client, clientFormData } from "../client";
 
 const fetchProfile = async ({ query = {} }) => {
   return client("/my-profile", {
@@ -20,7 +20,7 @@ const useProfile = ({ query = {}, options }: any = {}) => {
 function useCreateProfile({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
-      client("/my-profile", {
+      clientFormData("/my-profile", {
         method: "POST",
         data: reqBody,
       }),

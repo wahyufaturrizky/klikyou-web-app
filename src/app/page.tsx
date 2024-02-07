@@ -110,10 +110,10 @@ export default function Home() {
                 control={control}
                 rules={{
                   required: "Email is required",
-                  // pattern: {
-                  //   value: /^\S+@\S+$/i,
-                  //   message: "Invalid email address",
-                  // },
+                  pattern: {
+                    value: /^\S+@\S+$/i,
+                    message: "Invalid email address",
+                  },
                 }}
                 name="email"
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (

@@ -15,6 +15,7 @@ import { DefaultOptionType } from "antd/es/cascader";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 
 type FormProfileValues = {
   avatar_path: string;
@@ -43,6 +44,14 @@ interface RoleType {
   updatedAt: string;
 }
 
+interface TagType {
+  id: number;
+  code: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function ProfilePage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
@@ -66,34 +75,45 @@ export default function ProfilePage() {
 
   const { data: dataProfile, refetch: refetchProfile, isPending: isPendingProfile } = useProfile();
 
-  const { data: dataListRole, refetch: refetchRole, isPending: isPendingRole } = useRole();
+  const { data: dataListRole, isPending: isPendingRole } = useRole();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
 
   useEffect(() => {
-    if (dataListRole) {
+    const fetchDataRole = () => {
       setDataRole(
         dataListRole.data.data.map((itemRole: RoleType) => ({
           label: itemRole.levelName,
           value: itemRole.id,
         }))
       );
+    };
+
+    const fetchDataTag = () => {
+      setDataTag(
+        dataListTag.data.data.data.map((itemTag: TagType) => ({
+          label: itemTag.name,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    if (dataListRole) {
+      fetchDataRole();
     }
-  }, [dataListRole]);
+
+    if (dataListTag) {
+      fetchDataTag();
+    }
+  }, [dataListRole, dataListTag]);
 
   useEffect(() => {
     if (dataProfile) {
       const { [0]: dataRaw } = dataProfile.data.data;
 
-      const convertRole = dataRaw?.role?.modules.map((itemRole: any) => ({
-        label: itemRole.name,
-        value: itemRole.id,
-      }));
-
       const convertTag = JSON.parse(dataRaw?.tags).map((itemRole: string) => ({
         label: itemRole,
         value: itemRole,
       }));
-
-      setDataTag(convertTag);
 
       setValue("avatar_path", dataRaw?.avatarPath);
       setValue("first_name", dataRaw?.firstName);
@@ -102,10 +122,7 @@ export default function ProfilePage() {
         "tags",
         convertTag.map((itemVal: DefaultOptionType) => itemVal.value)
       );
-      setValue(
-        "role_id",
-        convertRole.map((itemVal: DefaultOptionType) => itemVal.value)
-      );
+      setValue("role_id", dataRaw?.role.id);
       setValue("username", dataRaw?.username);
       setValue("email", dataRaw?.email);
       setValue("password", dataRaw?.password);
@@ -187,14 +204,18 @@ export default function ProfilePage() {
   const onSubmit = (data: FormProfileValues) => {
     delete data.confirmPassword;
 
+    const { username, email, password, first_name, last_name, tags, role_id } = data;
+
     let formdata = new FormData();
-    formdata.append("username", "asdf");
-    formdata.append("email", "asdfdsaff@gmail.com");
-    formdata.append("password", "asdfdasfds");
-    formdata.append("first_name", "asdfasdffds");
-    formdata.append("last_name", "asdfasdffdsa");
-    formdata.append("tags", '["ok","okgas","ok"]');
-    formdata.append("role_id", "[]");
+
+    formdata.append("username", username);
+    formdata.append("email", email);
+    formdata.append("password", password);
+    formdata.append("first_name", first_name);
+    formdata.append("last_name", last_name);
+    formdata.append("tags", JSON.stringify(tags));
+    formdata.append("role_id", JSON.stringify(role_id));
+    formdata.append("avatar_path", avatarPathRaw?.file as any);
 
     createUserManagement(formdata);
   };
@@ -206,9 +227,11 @@ export default function ProfilePage() {
     </button>
   );
 
+  const isLoading = isPendingRole || isPendingProfile || isPendingTag;
+
   return (
     <div className="p-6">
-      {isPendingProfile && <Spin fullscreen />}
+      {isLoading && <Spin fullscreen />}
       <div className="flex gap-4 items-center">
         {isEdit && <BackIcon style={{ color: "#2379AA" }} onClick={() => setIsEdit(false)} />}
         <Text
@@ -379,11 +402,9 @@ export default function ProfilePage() {
                         render={({ field: { onChange, value } }) => {
                           return (
                             <Select
-                              mode="tags"
                               name="role_id"
                               onChange={onChange}
                               options={dataRole}
-                              tokenSeparators={[","]}
                               value={value}
                               styleSelect={{ width: "100%" }}
                               required
@@ -424,6 +445,7 @@ export default function ProfilePage() {
                               label={labelMap[mapping]}
                               className="text-xl font-semibold text-black"
                             />
+
                             {mapping === "tags" ? (
                               <div className="flex gap-2 flex-wrap mt-2">
                                 {valueMap[mapping]?.map((item: string, indexTag: number) => (
@@ -435,17 +457,10 @@ export default function ProfilePage() {
                                 ))}
                               </div>
                             ) : mapping === "role_id" ? (
-                              <div className="flex gap-2 flex-wrap mt-2">
-                                {dataRole?.map((item: DefaultOptionType, indexRole: number) => {
-                                  return (
-                                    <Text
-                                      key={indexRole}
-                                      label={item.label as string}
-                                      className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
-                                    />
-                                  );
-                                })}
-                              </div>
+                              <Text
+                                label={dataRole?.[valueMap[mapping]]?.label}
+                                className="text-base font-normal text-black"
+                              />
                             ) : (
                               <Text
                                 label={valueMap[mapping]}
@@ -468,12 +483,32 @@ export default function ProfilePage() {
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex">
               <div className="w-1/2 px-2">
-                <Text label="Username" className="text-xl font-semibold text-black" />
-
-                <Text label={getValues("username")} className="text-base font-normal text-black" />
-
-                {isEdit && (
+                {isEdit ? (
                   <div>
+                    <div>
+                      <Controller
+                        control={control}
+                        name="username"
+                        rules={{
+                          required: "Username is required",
+                        }}
+                        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                          <Input
+                            onChange={onChange}
+                            error={error}
+                            onBlur={onBlur}
+                            value={value}
+                            name="username"
+                            type="text"
+                            placeholder="Enter username"
+                            classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                            classNameLabel="block text-xl font-semibold text-black"
+                            label="username"
+                          />
+                        )}
+                      />
+                    </div>
+
                     <div className="mt-6">
                       <Controller
                         control={control}
@@ -495,16 +530,46 @@ export default function ProfilePage() {
                       />
                     </div>
                   </div>
+                ) : (
+                  <div>
+                    <Text label="Username" className="text-xl font-semibold text-black" />
+
+                    <Text
+                      label={getValues("username")}
+                      className="text-base font-normal text-black"
+                    />
+                  </div>
                 )}
               </div>
 
               <div className="w-1/2 px-2">
-                <Text label="Email address" className="text-xl font-semibold text-black" />
-
-                <Text label={getValues("email")} className="text-base font-normal text-black" />
-
-                {isEdit && (
+                {isEdit ? (
                   <div>
+                    <div>
+                      <Controller
+                        control={control}
+                        name="email"
+                        rules={{
+                          required: "Email is required",
+                        }}
+                        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                          <Input
+                            onChange={onChange}
+                            error={error}
+                            onBlur={onBlur}
+                            value={value}
+                            required
+                            name="email"
+                            type="email"
+                            placeholder="Enter email"
+                            classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                            classNameLabel="block text-xl font-semibold text-black"
+                            label="Email"
+                          />
+                        )}
+                      />
+                    </div>
+
                     <div className="mt-6">
                       <Controller
                         control={control}
@@ -529,6 +594,12 @@ export default function ProfilePage() {
                         )}
                       />
                     </div>
+                  </div>
+                ) : (
+                  <div>
+                    <Text label="Email address" className="text-xl font-semibold text-black" />
+
+                    <Text label={getValues("email")} className="text-base font-normal text-black" />
                   </div>
                 )}
               </div>

@@ -35,3 +35,39 @@ export async function client(
       console.log(e);
     });
 }
+
+export async function clientFormData(
+  endpoint: string | string[],
+  { data, method = "GET", params, headers: customHeaders, ...customConfig }: any = {}
+) {
+  const token = localStorage.getItem("access_token");
+  const apiURL = process.env.NEXT_PUBLIC_BASE_URL;
+
+  const config = {
+    url: `${apiURL}${endpoint}`,
+    method: method || (data ? "POST" : "GET"),
+    headers: {
+      "Content-Type": "multipart/form-data",
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...customHeaders,
+    },
+    ...customConfig,
+  };
+
+  if (params) {
+    config.params = params;
+    config.method = "GET";
+  }
+
+  if (data) {
+    config.data = data;
+  }
+
+  return axios(config)
+    .then(async (response: any) => {
+      return response;
+    })
+    .catch((e: any) => {
+      console.log(e);
+    });
+}
