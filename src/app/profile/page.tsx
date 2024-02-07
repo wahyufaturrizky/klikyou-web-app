@@ -6,6 +6,7 @@ import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import { useCreateProfile, useProfile } from "@/services/profile/useProfile";
+import { useRole } from "@/services/role/useRole";
 import { BackIcon, PencilIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
@@ -38,8 +39,7 @@ interface DataType {
 interface RoleType {
   createdAt: string;
   id: number;
-  name: string;
-  roleId: number;
+  levelName: string;
   updatedAt: string;
 }
 
@@ -66,11 +66,24 @@ export default function ProfilePage() {
 
   const { data: dataProfile, refetch: refetchProfile, isPending: isPendingProfile } = useProfile();
 
+  const { data: dataListRole, refetch: refetchRole, isPending: isPendingRole } = useRole();
+
+  useEffect(() => {
+    if (dataListRole) {
+      setDataRole(
+        dataListRole.data.data.map((itemRole: RoleType) => ({
+          label: itemRole.levelName,
+          value: itemRole.id,
+        }))
+      );
+    }
+  }, [dataListRole]);
+
   useEffect(() => {
     if (dataProfile) {
       const { [0]: dataRaw } = dataProfile.data.data;
 
-      const convertRole = dataRaw?.role?.modules.map((itemRole: RoleType) => ({
+      const convertRole = dataRaw?.role?.modules.map((itemRole: any) => ({
         label: itemRole.name,
         value: itemRole.id,
       }));
@@ -79,7 +92,7 @@ export default function ProfilePage() {
         label: itemRole,
         value: itemRole,
       }));
-      setDataRole(convertRole);
+
       setDataTag(convertTag);
 
       setValue("avatar_path", dataRaw?.avatarPath);

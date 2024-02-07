@@ -54,18 +54,7 @@ export default function DocumentsPage() {
       selectedRowKeys: [],
     },
   });
-  const [data, setData] = useState<DataDocumentsType[]>([
-    {
-      id: "101",
-      docName: "Project Antasari - Quotation",
-      tags: ["Quotation", "Project"],
-      role: ["Quotation", "Project"],
-      file: "file.pdf",
-      status: "(3/3) Fully approved",
-      latestAction: "(3/3) Fully approved",
-      updateAt: new Date(),
-    },
-  ]);
+  const [dataListDocument, setDataListDocument] = useState<DataDocumentsType[]>([]);
 
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
@@ -209,7 +198,7 @@ export default function DocumentsPage() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setData([]);
+      setDataListDocument([]);
     }
   };
 
@@ -235,7 +224,7 @@ export default function DocumentsPage() {
       const { data: mainData } = dataDocument.data;
       const { data: dataListTable, meta } = mainData;
 
-      setData(
+      setDataListDocument(
         dataListTable.map((item: DataDocumentsType) => ({
           ...item,
           key: item.id,
@@ -363,7 +352,7 @@ export default function DocumentsPage() {
               setShowDelete({
                 open: true,
                 type: "selection",
-                data: { data, selectedRowKeys },
+                data: { data: dataListDocument, selectedRowKeys },
               })
             }
             label="Delete"
@@ -428,7 +417,7 @@ export default function DocumentsPage() {
         >
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={dataListDocument}
             scroll={{ x: 1500 }}
             loading={isPendingDocument}
             pagination={tableParams.pagination}

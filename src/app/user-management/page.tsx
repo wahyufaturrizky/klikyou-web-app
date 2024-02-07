@@ -3,7 +3,7 @@ import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import Text from "@/components/Text";
-import UseDateTimeFormat from "@/hook/useDateFormat";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
 import {
@@ -22,11 +22,34 @@ export interface OptionInterface {
   value: string;
 }
 
+interface ModuleRoleType {
+  id: number;
+  roleId: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface RoleResType {
+  id: number;
+  levelName: string;
+  createdAt: string;
+  updatedAt: string;
+  modules: ModuleRoleType[];
+}
+
 export interface DataUserManagementType {
   id: string;
   name: string;
-  emailAddress: string;
+  email: string;
   level: string;
+  firstName: string;
+  username: string;
+  roleId: number;
+  lastName: string;
+  role: RoleResType;
+  tags: string;
+  avatarPath: string;
   updateAt: Date;
 }
 
@@ -55,15 +78,7 @@ export default function UserManagementPage() {
       selectedRowKeys: [],
     },
   });
-  const [data, setData] = useState<DataUserManagementType[]>([
-    {
-      id: "101",
-      name: "Project Antasari - Quotation",
-      emailAddress: "wahyu@mail.com",
-      level: "Admin",
-      updateAt: new Date(),
-    },
-  ]);
+  const [dataListUser, setDataListUser] = useState<DataUserManagementType[]>([]);
 
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
@@ -100,21 +115,22 @@ export default function UserManagementPage() {
     },
     {
       title: "User full name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "username",
+      key: "username",
       render: (text: string, record: DataUserManagementType) => {
-        const { id } = record;
+        const { avatarPath, firstName, lastName, id } = record;
         return (
           <div className="gap-2 flex items-center">
             <ImageNext
-              src="/placeholder-profile.png"
+              src={avatarPath || "/placeholder-profile.png"}
+              priority
               width={32}
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px]"
+              className="h-[32px] w-[32px] rounded-full"
             />
             <Link href={`/user-management/view/${id}`}>
-              <Text label={text} className="text-base font-normal" />
+              <Text label={`${firstName} ${lastName}`} className="text-base font-normal" />
             </Link>
           </div>
         );
@@ -122,25 +138,25 @@ export default function UserManagementPage() {
     },
     {
       title: "Email address",
-      dataIndex: "emailAddress",
-      key: "emailAddress",
+      dataIndex: "email",
+      key: "email",
       render: (text: string) => {
         return <Text label={text} className="text-base font-normal text-black" />;
       },
     },
     {
       title: "Level",
-      dataIndex: "level",
-      key: "level",
-      render: (text: string) => {
-        return <Text label={text} className="text-base font-normal text-black" />;
+      dataIndex: "role",
+      key: "role",
+      render: (text: RoleResType) => {
+        return <Text label={text.levelName} className="text-base font-normal text-black" />;
       },
     },
     {
       title: "Update At",
-      dataIndex: "updateAt",
-      key: "updateAt",
-      render: (text: Date) => UseDateTimeFormat(text),
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+      render: (text: Date) => UseConvertDateFormat(text),
     },
     {
       title: "Action",
@@ -171,7 +187,7 @@ export default function UserManagementPage() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setData([]);
+      setDataListUser([]);
     }
   };
 
@@ -197,7 +213,7 @@ export default function UserManagementPage() {
       const { data: mainData } = dataUserManagement.data;
       const { data: dataListTable, meta } = mainData;
 
-      setData(
+      setDataListUser(
         dataListTable.map((item: DataUserManagementType) => ({
           ...item,
           key: item.id,
@@ -286,7 +302,7 @@ export default function UserManagementPage() {
         return data.selectedRowKeys.length > 1
           ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
           : `Are you sure to delete document ${
-              data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.branchName
+              data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.email
             } ?`;
       default:
         return `Are you sure to delete document ${data?.name} ?`;
@@ -326,7 +342,7 @@ export default function UserManagementPage() {
               setShowDelete({
                 open: true,
                 type: "selection",
-                data: { data, selectedRowKeys },
+                data: { data: dataListUser, selectedRowKeys },
               })
             }
             label="Delete"
@@ -391,7 +407,7 @@ export default function UserManagementPage() {
         >
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={dataListUser}
             scroll={{ x: 1500 }}
             loading={isPendingUserManagement}
             pagination={tableParams.pagination}

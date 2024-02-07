@@ -1,9 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client";
-import { useUserManagementById } from "@/services/user-management/useUserManagement";
 
 const fetchDocument = async ({ query = {} }) => {
-  return client("/getDocument", {
+  return client("/document", {
     params: {
       ...query,
     },
@@ -19,7 +18,7 @@ const useDocument = ({ query = {}, options }: any = {}) => {
 };
 
 const fetchDocumentById = async ({ id }: { id: string }) => {
-  return client(`/getDocument/${id}`).then((data) => data);
+  return client(`/document/${id}`).then((data) => data);
 };
 
 const useDocumentById = ({ id, options }: any) => {
@@ -33,7 +32,7 @@ const useDocumentById = ({ id, options }: any) => {
 function useCreateDocument({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
-      client("/createDocument", {
+      client("/document", {
         method: "POST",
         data: reqBody,
       }),
@@ -44,7 +43,7 @@ function useCreateDocument({ options }: any) {
 function useUpdateDocument({ options }: any) {
   return useMutation({
     mutationFn: (updates) =>
-      client("/updateDocument", {
+      client("/document", {
         method: "PUT",
         data: updates,
       }),
@@ -55,11 +54,11 @@ function useUpdateDocument({ options }: any) {
 function useDeleteDocument({ options }: any) {
   return useMutation({
     mutationFn: (updates: any) =>
-      client(`/updateDocument?ids=${updates.ids}`, {
+      client(`/document?ids=${updates.ids}`, {
         method: "DELETE",
       }),
     ...options,
   });
 }
 
-export { useCreateDocument, useDocument, useUpdateDocument, useDeleteDocument, useDocumentById };
+export { useCreateDocument, useDeleteDocument, useDocument, useDocumentById, useUpdateDocument };
