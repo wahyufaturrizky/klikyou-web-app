@@ -54,10 +54,9 @@ function useUpdateDocument({ options }: any) {
 
 function useDeleteDocument({ options }: any) {
   return useMutation({
-    mutationFn: (updates) =>
-      client("/updateDocument", {
+    mutationFn: (updates: any) =>
+      client(`/updateDocument?ids=${updates.ids}`, {
         method: "DELETE",
-        data: updates,
       }),
     ...options,
   });

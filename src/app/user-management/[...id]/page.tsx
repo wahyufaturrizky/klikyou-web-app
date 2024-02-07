@@ -613,11 +613,11 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                 loading={isPendingDeleteUserManagement}
                 disabled={isPendingDeleteUserManagement}
                 type="button"
-                onClick={() =>
+                onClick={() => {
                   deleteUserManagement({
                     ids: [id],
-                  })
-                }
+                  });
+                }}
                 label="Yes"
                 className="flex justify-center items-center rounded-md bg-red px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               />

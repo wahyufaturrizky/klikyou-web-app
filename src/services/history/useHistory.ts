@@ -53,8 +53,8 @@ function useUpdateHistory({ options }: any) {
 
 function useDeleteHistory({ options }: any) {
   return useMutation({
-    mutationFn: (updates) =>
-      client("/approvals/history", {
+    mutationFn: (updates: any) =>
+      client(`/approvals/history?ids=${updates.ids}`, {
         method: "DELETE",
         data: updates,
       }),

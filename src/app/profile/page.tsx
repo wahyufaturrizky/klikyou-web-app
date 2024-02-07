@@ -5,15 +5,15 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
-import { useCreateProfile, useProfile, useUpdateProfile } from "@/services/profile/useProfile";
+import { useCreateProfile, useProfile } from "@/services/profile/useProfile";
 import { BackIcon, PencilIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { ConfigProvider, Spin, Table, TableProps, Upload } from "antd";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
 import { DefaultOptionType } from "antd/es/cascader";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 type FormProfileValues = {
   avatar_path: string;
@@ -173,8 +173,6 @@ export default function ProfilePage() {
 
   const onSubmit = (data: FormProfileValues) => {
     delete data.confirmPassword;
-
-    console.log(avatarPathRaw);
 
     let formdata = new FormData();
     formdata.append("username", "asdf");

@@ -291,7 +291,7 @@ export default function DocumentTagsPage() {
         return data.selectedRowKeys.length > 1
           ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
           : `Are you sure to delete document ${
-              data?.data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.branchName
+              data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.name
             } ?`;
       default:
         return `Are you sure to delete document ${data?.name} ?`;
@@ -609,11 +609,13 @@ export default function DocumentTagsPage() {
                 loading={isPendingDeleteDocumentTags}
                 disabled={isPendingDeleteDocumentTags}
                 type="button"
-                onClick={() =>
+                onClick={() => {
+                  const rawData = selectedRowKeys.join(",");
+
                   deleteDocumentTags({
-                    id: selectedRowKeys[0],
-                  })
-                }
+                    ids: rawData,
+                  });
+                }}
                 label="Yes"
                 className="flex justify-center items-center rounded-md bg-red px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               />

@@ -53,10 +53,9 @@ function useUpdateUserManagement({ options }: any) {
 
 function useDeleteUserManagement({ options }: any) {
   return useMutation({
-    mutationFn: (updates) =>
-      client("/updateUserManagement", {
+    mutationFn: (updates: any) =>
+      client(`/updateUserManagement/${updates.ids}`, {
         method: "DELETE",
-        data: updates,
       }),
     ...options,
   });

@@ -41,8 +41,8 @@ function useUpdateDocumentTags({ options, id }: any) {
 
 function useDeleteDocumentTags({ options }: any) {
   return useMutation({
-    mutationFn: ({ id }: { id: string }) =>
-      client(`/master-document-tags/${id}`, {
+    mutationFn: (query: any) =>
+      client(`/master-document-tags?ids=${query.ids}`, {
         method: "DELETE",
       }),
     ...options,
