@@ -219,7 +219,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
     formdata.append("last_name", last_name);
     formdata.append("tags", JSON.stringify(tags));
     formdata.append("role_id", JSON.stringify(role_id));
-    formdata.append("avatar_path", avatarPathRaw?.file as any);
+    formdata.append("avatar_path", avatarPathRaw?.file.originFileObj as any);
 
     updateUserManagement(formdata);
   };

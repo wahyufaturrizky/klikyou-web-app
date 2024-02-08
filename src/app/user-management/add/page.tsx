@@ -122,7 +122,7 @@ export default function AddProfilePage() {
 
     const { username, email, password, first_name, last_name, tags, role_id } = data;
 
-    let formdata = new FormData();
+    const formdata = new FormData();
     formdata.append("username", username);
     formdata.append("email", email);
     formdata.append("password", password);
@@ -130,7 +130,7 @@ export default function AddProfilePage() {
     formdata.append("last_name", last_name);
     formdata.append("tags", JSON.stringify(tags));
     formdata.append("role_id", JSON.stringify(role_id));
-    formdata.append("avatar_path", avatarPathRaw?.file as any);
+    formdata.append("avatar_path", avatarPathRaw?.file.originFileObj as any);
 
     createUserManagement(formdata);
   };
