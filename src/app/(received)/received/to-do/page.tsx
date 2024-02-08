@@ -5,7 +5,6 @@ import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { TableParams } from "@/interface/Table";
 import { useToReview, useUpdateToReview } from "@/services/to-view/useToReview";
 import { DownloadIcon, FilterIcon, PeopleCheckIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
@@ -81,7 +80,7 @@ export default function ToDoPage() {
     },
   ]);
 
-  const [tableParams, setTableParams] = useState<TableParams>({
+  const [tableParams, setTableParams] = useState<any>({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -128,6 +127,7 @@ export default function ToDoPage() {
     {
       title: "Document name",
       dataIndex: "docName",
+      sorter: true,
       key: "docName",
       render: (text: string, record: DataToDoType) => {
         const { id } = record;
@@ -141,6 +141,7 @@ export default function ToDoPage() {
     {
       title: "Tags",
       dataIndex: "tags",
+      sorter: true,
       key: "tags",
       render: (text: string[]) => (
         <div className="flex gap-2 flex-wrap">
@@ -159,6 +160,7 @@ export default function ToDoPage() {
     {
       title: "Update At",
       dataIndex: "updateAt",
+      sorter: true,
       key: "updateAt",
       render: (text: Date) => UseDateTimeFormat(text),
     },
@@ -236,6 +238,11 @@ export default function ToDoPage() {
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
+      orderBy: tableParams?.field
+        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
+        : "",
+      updated_at_start: getValuesFilter("date")[0],
+      updated_at_end: getValuesFilter("date")[1],
     },
   });
 
@@ -450,8 +457,10 @@ export default function ToDoPage() {
           <Controller
             control={controlFilter}
             name="date"
-            render={({ field: { onChange } }: any) => {
-              return <DatePicker.RangePicker format="YYYY/MM/DD" onChange={onChange} />;
+            render={({ field: { onChange, value } }: any) => {
+              return (
+                <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+              );
             }}
           />
 

@@ -5,24 +5,23 @@ import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { TableParams } from "@/interface/Table";
 import { useToReview, useUpdateToReview } from "@/services/to-view/useToReview";
 import { CheckIcon, FileIcon, FilterIcon, RejectIcon, SearchIcon } from "@/style/icon";
+import { UploadOutlined } from "@ant-design/icons";
 import {
+  Button as ButtonAntd,
   Checkbox,
   ConfigProvider,
   DatePicker,
   Modal,
   Table,
   TableProps,
-  message,
-  Button as ButtonAntd,
   Upload,
+  message,
 } from "antd";
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { UploadOutlined } from "@ant-design/icons";
 
 export interface OptionInterface {
   label: string;
@@ -81,7 +80,7 @@ export default function ToReviewPage() {
     },
   ]);
 
-  const [tableParams, setTableParams] = useState<TableParams>({
+  const [tableParams, setTableParams] = useState<any>({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -129,6 +128,7 @@ export default function ToReviewPage() {
       title: "Document name",
       dataIndex: "docName",
       key: "docName",
+      sorter: true,
       render: (text: string, record: DataToReviewType) => {
         const { id } = record;
         return (
@@ -141,6 +141,7 @@ export default function ToReviewPage() {
     {
       title: "Tags",
       dataIndex: "tags",
+      sorter: true,
       key: "tags",
       render: (text: string[]) => (
         <div className="flex gap-2 flex-wrap">
@@ -176,6 +177,7 @@ export default function ToReviewPage() {
     {
       title: "Status",
       dataIndex: "status",
+      sorter: true,
       key: "status",
       render: (text: string) => {
         return (
@@ -188,6 +190,7 @@ export default function ToReviewPage() {
     },
     {
       title: "Update At",
+      sorter: true,
       dataIndex: "updateAt",
       key: "updateAt",
       render: (text: Date) => UseDateTimeFormat(text),
@@ -274,6 +277,11 @@ export default function ToReviewPage() {
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
+      orderBy: tableParams?.field
+        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
+        : "",
+      updated_at_start: getValuesFilter("date")[0],
+      updated_at_end: getValuesFilter("date")[1],
     },
   });
 
@@ -545,8 +553,10 @@ export default function ToReviewPage() {
           <Controller
             control={controlFilter}
             name="date"
-            render={({ field: { onChange } }: any) => {
-              return <DatePicker.RangePicker format="YYYY/MM/DD" onChange={onChange} />;
+            render={({ field: { onChange, value } }: any) => {
+              return (
+                <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+              );
             }}
           />
 

@@ -5,10 +5,9 @@ import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { TableParams } from "@/interface/Table";
 import { useDeleteHistory, useHistory } from "@/services/history/useHistory";
 import { useUpdateToReview } from "@/services/to-view/useToReview";
-import { CheckIcon, FileIcon, FilterIcon, RejectIcon, SearchIcon, TrashIcon } from "@/style/icon";
+import { FileIcon, FilterIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
   Button as ButtonAntd,
@@ -99,7 +98,7 @@ export default function HistoryPage() {
     },
   ]);
 
-  const [tableParams, setTableParams] = useState<TableParams>({
+  const [tableParams, setTableParams] = useState<any>({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -147,6 +146,7 @@ export default function HistoryPage() {
       title: "Document name",
       dataIndex: "docName",
       key: "docName",
+      sorter: true,
       render: (text: string, record: DataHistoryType) => {
         const { id } = record;
         return (
@@ -160,6 +160,7 @@ export default function HistoryPage() {
       title: "Tags",
       dataIndex: "tags",
       key: "tags",
+      sorter: true,
       render: (text: string[]) => (
         <div className="flex gap-2 flex-wrap">
           {text?.map((item: string) => {
@@ -195,6 +196,7 @@ export default function HistoryPage() {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      sorter: true,
       render: (text: string) => {
         return (
           <Text
@@ -208,6 +210,7 @@ export default function HistoryPage() {
       title: "Update At",
       dataIndex: "updateAt",
       key: "updateAt",
+      sorter: true,
       render: (text: Date) => UseDateTimeFormat(text),
     },
     {
@@ -247,11 +250,15 @@ export default function HistoryPage() {
   } = useHistory({
     query: {
       search: debounceSearch,
-      date: getValuesFilter("date"),
       status: getValuesFilter("status").join(","),
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
+      orderBy: tableParams?.field
+        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
+        : "",
+      updated_at_start: getValuesFilter("date")[0],
+      updated_at_end: getValuesFilter("date")[1],
     },
   });
 
@@ -522,8 +529,10 @@ export default function HistoryPage() {
           <Controller
             control={controlFilter}
             name="date"
-            render={({ field: { onChange } }: any) => {
-              return <DatePicker.RangePicker format="YYYY/MM/DD" onChange={onChange} />;
+            render={({ field: { onChange, value } }: any) => {
+              return (
+                <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+              );
             }}
           />
 

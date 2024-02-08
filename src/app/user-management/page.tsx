@@ -5,7 +5,6 @@ import Input from "@/components/Input";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { TableParams } from "@/interface/Table";
 import {
   useDeleteBulkUserManagement,
   useUserManagement,

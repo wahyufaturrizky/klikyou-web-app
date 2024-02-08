@@ -4,7 +4,6 @@ import Input from "@/components/Input";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { TableParams } from "@/interface/Table";
 import {
   useCreateDocumentTags,
   useDeleteDocumentTags,
@@ -71,7 +70,7 @@ export default function DocumentTagsPage() {
   });
   const [dataDocTag, setDataDocTag] = useState<DataDocumentTags[]>();
 
-  const [tableParams, setTableParams] = useState<TableParams>({
+  const [tableParams, setTableParams] = useState<any>({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -118,6 +117,7 @@ export default function DocumentTagsPage() {
     },
     {
       title: "Code",
+      sorter: true,
       dataIndex: "code",
       key: "code",
       render: (text: string) => {
@@ -126,6 +126,7 @@ export default function DocumentTagsPage() {
     },
     {
       title: "Tag Name",
+      sorter: true,
       dataIndex: "name",
       key: "name",
       render: (text: string) => {
@@ -135,6 +136,7 @@ export default function DocumentTagsPage() {
     {
       title: "Update At",
       dataIndex: "updatedAt",
+      sorter: true,
       key: "updatedAt",
       render: (text: Date) => UseConvertDateFormat(text),
     },
@@ -194,6 +196,11 @@ export default function DocumentTagsPage() {
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
+      orderBy: tableParams?.field
+        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
+        : "",
+      updated_at_start: getValuesFilter("date")[0],
+      updated_at_end: getValuesFilter("date")[1],
     },
   });
 
@@ -512,8 +519,10 @@ export default function DocumentTagsPage() {
           <Controller
             control={controlFilter}
             name="date"
-            render={({ field: { onChange } }: any) => {
-              return <DatePicker.RangePicker format="YYYY/MM/DD" onChange={onChange} />;
+            render={({ field: { onChange, value } }: any) => {
+              return (
+                <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+              );
             }}
           />
 

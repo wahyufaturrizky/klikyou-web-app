@@ -5,11 +5,9 @@ import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { TableParams } from "@/interface/Table";
-import { useHistory } from "@/services/history/useHistory";
 import { useProcessed } from "@/services/processed/useProcessed";
 import { useUpdateToReview } from "@/services/to-view/useToReview";
-import { FileIcon, FilterIcon, SearchIcon, DownloadIcon } from "@/style/icon";
+import { DownloadIcon, FilterIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
   Button as ButtonAntd,
@@ -25,7 +23,6 @@ import {
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { DataToDoType } from "@/app/(received)/received/to-do/page";
 
 export interface OptionInterface {
   label: string;
@@ -82,7 +79,7 @@ export default function ProcessedPage() {
     },
   ]);
 
-  const [tableParams, setTableParams] = useState<TableParams>({
+  const [tableParams, setTableParams] = useState<any>({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -129,6 +126,7 @@ export default function ProcessedPage() {
     {
       title: "Document name",
       dataIndex: "docName",
+      sorter: true,
       key: "docName",
       render: (text: string, record: DataProcessedType) => {
         const { id } = record;
@@ -142,6 +140,7 @@ export default function ProcessedPage() {
     {
       title: "Tags",
       dataIndex: "tags",
+      sorter: true,
       key: "tags",
       render: (text: string[]) => (
         <div className="flex gap-2 flex-wrap">
@@ -160,6 +159,7 @@ export default function ProcessedPage() {
     {
       title: "Update At",
       dataIndex: "updateAt",
+      sorter: true,
       key: "updateAt",
       render: (text: Date) => UseDateTimeFormat(text),
     },
@@ -212,6 +212,11 @@ export default function ProcessedPage() {
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
+      orderBy: tableParams?.field
+        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
+        : "",
+      updated_at_start: getValuesFilter("date")[0],
+      updated_at_end: getValuesFilter("date")[1],
     },
   });
 
@@ -426,8 +431,10 @@ export default function ProcessedPage() {
           <Controller
             control={controlFilter}
             name="date"
-            render={({ field: { onChange } }: any) => {
-              return <DatePicker.RangePicker format="YYYY/MM/DD" onChange={onChange} />;
+            render={({ field: { onChange, value } }: any) => {
+              return (
+                <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+              );
             }}
           />
 

@@ -4,7 +4,6 @@ import Input from "@/components/Input";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { TableParams } from "@/interface/Table";
 import { useDeleteBulkDocument, useDocument } from "@/services/document/useDocument";
 import { FileIcon, FilterIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
@@ -56,7 +55,7 @@ export default function DocumentsPage() {
   });
   const [dataListDocument, setDataListDocument] = useState<DataDocumentsType[]>([]);
 
-  const [tableParams, setTableParams] = useState<TableParams>({
+  const [tableParams, setTableParams] = useState<any>({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -92,6 +91,7 @@ export default function DocumentsPage() {
     {
       title: "Document name",
       dataIndex: "docName",
+      sorter: true,
       key: "docName",
       render: (text: string, record: DataDocumentsType) => {
         const { id } = record;
@@ -106,6 +106,7 @@ export default function DocumentsPage() {
       title: "Tags",
       dataIndex: "tags",
       key: "tags",
+      sorter: true,
       render: (text: string[]) => (
         <div className="flex gap-2 flex-wrap">
           {text?.map((item: string) => {
@@ -140,6 +141,7 @@ export default function DocumentsPage() {
     {
       title: "Status",
       dataIndex: "status",
+      sorter: true,
       key: "status",
       render: (text: string) => {
         return (
@@ -152,6 +154,7 @@ export default function DocumentsPage() {
     },
     {
       title: "Latest Action",
+      sorter: true,
       dataIndex: "latestAction",
       key: "latestAction",
       render: (text: string) => {
@@ -165,6 +168,7 @@ export default function DocumentsPage() {
     },
     {
       title: "Role",
+      sorter: true,
       dataIndex: "role",
       key: "role",
       render: (text: string[]) => (
@@ -184,6 +188,7 @@ export default function DocumentsPage() {
     {
       title: "Update At",
       dataIndex: "updateAt",
+      sorter: true,
       key: "updateAt",
       render: (text: Date) => UseDateTimeFormat(text),
     },
@@ -216,6 +221,11 @@ export default function DocumentsPage() {
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
+      orderBy: tableParams?.field
+        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
+        : "",
+      updated_at_start: getValuesFilter("date")[0],
+      updated_at_end: getValuesFilter("date")[1],
     },
   });
 
@@ -473,8 +483,10 @@ export default function DocumentsPage() {
           <Controller
             control={controlFilter}
             name="date"
-            render={({ field: { onChange } }: any) => {
-              return <DatePicker.RangePicker format="YYYY/MM/DD" onChange={onChange} />;
+            render={({ field: { onChange, value } }: any) => {
+              return (
+                <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+              );
             }}
           />
 
