@@ -353,7 +353,6 @@ export default function ToReviewPage() {
   const rowSelection = {
     selectedRowKeys,
     onChange: (selectedRowKeys: Key[], selectedRows: DataToReviewType[]) => {
-      console.log("🚀 ~ ToReviewPage ~ selectedRows:", selectedRows);
       setSelectedRowKeys(selectedRowKeys);
       setSelectedRows(selectedRows);
     },

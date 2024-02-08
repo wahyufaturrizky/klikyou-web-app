@@ -5,7 +5,11 @@ import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
-import { useDeleteDocument, useDocument } from "@/services/document/useDocument";
+import {
+  useDeleteBulkDocument,
+  useDeleteDocument,
+  useDocument,
+} from "@/services/document/useDocument";
 import { FileIcon, FilterIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
 import Link from "next/link";
@@ -320,15 +324,17 @@ export default function DocumentsPage() {
     }
   };
 
-  const { mutate: deleteDocument, isPending: isPendingDeleteDocument }: any = useDeleteDocument({
-    options: {
-      onSuccess: () => {
-        refetchDocument();
-        resetShowDelete();
-        setSelectedRowKeys([]);
+  const { mutate: deleteDocument, isPending: isPendingDeleteDocument }: any = useDeleteBulkDocument(
+    {
+      options: {
+        onSuccess: () => {
+          refetchDocument();
+          resetShowDelete();
+          setSelectedRowKeys([]);
+        },
       },
-    },
-  });
+    }
+  );
 
   useEffect(() => {
     refetchDocument();

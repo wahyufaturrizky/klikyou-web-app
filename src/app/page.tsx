@@ -46,6 +46,7 @@ export default function Home() {
         localStorage.setItem("user_profile", JSON.stringify(data));
 
         localStorage.setItem("currentMenu", "1");
+        localStorage.setItem("openKeys", "[]");
 
         router.push("/dashboard");
       },

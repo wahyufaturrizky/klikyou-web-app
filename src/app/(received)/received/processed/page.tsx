@@ -291,7 +291,6 @@ export default function ProcessedPage() {
   const rowSelection = {
     selectedRowKeys,
     onChange: (selectedRowKeys: Key[], selectedRows: DataProcessedType[]) => {
-      console.log("🚀 ~ ToReviewPage ~ selectedRows:", selectedRows);
       setSelectedRowKeys(selectedRowKeys);
       setSelectedRows(selectedRows);
     },

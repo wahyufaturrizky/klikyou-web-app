@@ -331,7 +331,6 @@ export default function HistoryPage() {
   const rowSelection = {
     selectedRowKeys,
     onChange: (selectedRowKeys: Key[], selectedRows: DataHistoryType[]) => {
-      console.log("🚀 ~ ToReviewPage ~ selectedRows:", selectedRows);
       setSelectedRowKeys(selectedRowKeys);
       setSelectedRows(selectedRows);
     },

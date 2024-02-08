@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client";
 
 const fetchDocument = async ({ query = {} }) => {
-  return client("/document", {
+  return client("/documents", {
     params: {
       ...query,
     },
@@ -11,19 +11,19 @@ const fetchDocument = async ({ query = {} }) => {
 
 const useDocument = ({ query = {}, options }: any = {}) => {
   return useQuery({
-    queryKey: ["document", query],
+    queryKey: ["documents", query],
     queryFn: () => fetchDocument({ query }),
     ...options,
   }) as any;
 };
 
 const fetchDocumentById = async ({ id }: { id: string }) => {
-  return client(`/document/${id}`).then((data) => data);
+  return client(`/documents/${id}`).then((data) => data);
 };
 
 const useDocumentById = ({ id, options }: any) => {
   return useQuery({
-    queryKey: ["document", id],
+    queryKey: ["documents", id],
     queryFn: () => fetchDocumentById({ id }),
     ...options,
   }) as any;
@@ -32,7 +32,7 @@ const useDocumentById = ({ id, options }: any) => {
 function useCreateDocument({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
-      client("/document", {
+      client("/documents", {
         method: "POST",
         data: reqBody,
       }),
@@ -43,7 +43,7 @@ function useCreateDocument({ options }: any) {
 function useUpdateDocument({ options }: any) {
   return useMutation({
     mutationFn: (updates) =>
-      client("/document", {
+      client("/documents", {
         method: "PUT",
         data: updates,
       }),
@@ -54,11 +54,28 @@ function useUpdateDocument({ options }: any) {
 function useDeleteDocument({ options }: any) {
   return useMutation({
     mutationFn: (updates: any) =>
-      client(`/document?ids=${updates.ids}`, {
+      client(`/documents/${updates.id}`, {
         method: "DELETE",
       }),
     ...options,
   });
 }
 
-export { useCreateDocument, useDeleteDocument, useDocument, useDocumentById, useUpdateDocument };
+function useDeleteBulkDocument({ options }: any) {
+  return useMutation({
+    mutationFn: (query: any) =>
+      client(`/documents?ids=${query.ids}`, {
+        method: "DELETE",
+      }),
+    ...options,
+  });
+}
+
+export {
+  useCreateDocument,
+  useDeleteBulkDocument,
+  useDeleteDocument,
+  useDocument,
+  useDocumentById,
+  useUpdateDocument,
+};

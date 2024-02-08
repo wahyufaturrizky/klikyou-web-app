@@ -315,7 +315,6 @@ export default function ToDoPage() {
   const rowSelection = {
     selectedRowKeys,
     onChange: (selectedRowKeys: Key[], selectedRows: DataToDoType[]) => {
-      console.log("🚀 ~ ToReviewPage ~ selectedRows:", selectedRows);
       setSelectedRowKeys(selectedRowKeys);
       setSelectedRows(selectedRows);
     },

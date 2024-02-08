@@ -6,6 +6,8 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
+import { useRole } from "@/services/role/useRole";
 import {
   useDeleteUserManagement,
   useUpdateUserManagement,
@@ -15,14 +17,11 @@ import { BackIcon, PencilIcon, TrashIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { ConfigProvider, Modal, Spin, Table, TableProps, Upload, message } from "antd";
+import { DefaultOptionType } from "antd/es/cascader";
+import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { DataUserManagementType } from "../page";
-import { DefaultOptionType } from "antd/es/cascader";
-import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
-import { useRole } from "@/services/role/useRole";
-import { UploadChangeParam, UploadFile } from "antd/es/upload";
 
 type FormProfileValues = {
   avatar_path: string;

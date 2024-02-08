@@ -35,6 +35,8 @@ import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
 
+type MenuItem = Required<MenuProps>["items"][number];
+
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
 const { useBreakpoint } = Grid;
@@ -65,6 +67,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
 
   const pathname = usePathname();
   const [currentMenu, setCurrentMenu] = useState<string | null>(null);
+  const [openKeys, setOpenKeys] = useState<string[] | undefined>();
 
   useEffect(() => {
     const handleFetchUserProfile = () => {
@@ -83,8 +86,14 @@ const Layout = ({ ...props }: LayoutInterface) => {
       setCurrentMenu(localStorage.getItem("currentMenu"));
     };
 
+    const handleGetOpenKeysMenu = () => {
+      const parseOpenKeys = JSON.parse(localStorage.getItem("openKeys") as string);
+      setOpenKeys(parseOpenKeys);
+    };
+
     handleGetCurrentMenu();
-  });
+    handleGetOpenKeysMenu();
+  }, []);
 
   const pathNameList: any = {
     "/dashboard": "Dashboard",
@@ -240,7 +249,24 @@ const Layout = ({ ...props }: LayoutInterface) => {
   }, []);
 
   const onClickMenu: MenuProps["onClick"] = (e) => {
+    setCurrentMenu(e.key);
     localStorage.setItem("currentMenu", e.key);
+  };
+
+  const onOpenChange: MenuProps["onOpenChange"] = (keys) => {
+    const latestOpenKey = keys.find((key) => openKeys?.indexOf(key) === -1);
+    if (
+      latestOpenKey &&
+      items.map((itemSubMenu: MenuItem) => itemSubMenu?.key).indexOf(latestOpenKey!) === -1
+    ) {
+      setOpenKeys(keys);
+      localStorage.setItem("openKeys", JSON.stringify(keys));
+    } else {
+      const resKeys = latestOpenKey ? [latestOpenKey] : [];
+      setOpenKeys(resKeys);
+
+      localStorage.setItem("openKeys", JSON.stringify(resKeys));
+    }
   };
 
   const screens = useBreakpoint();
@@ -292,7 +318,9 @@ const Layout = ({ ...props }: LayoutInterface) => {
               </div>
               <Menu
                 onClick={onClickMenu}
-                selectedKeys={[currentMenu || ""]}
+                selectedKeys={[currentMenu ?? ""]}
+                onOpenChange={onOpenChange}
+                openKeys={openKeys}
                 theme="light"
                 mode="inline"
                 items={items}
