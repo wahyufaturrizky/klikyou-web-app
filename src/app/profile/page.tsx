@@ -112,18 +112,10 @@ export default function ProfilePage() {
     if (dataProfile) {
       const { [0]: dataRaw } = dataProfile.data.data;
 
-      const convertTag = JSON.parse(dataRaw?.tags).map((itemRole: string) => ({
-        label: itemRole,
-        value: itemRole,
-      }));
-
       setValue("avatar_path", dataRaw?.avatarPath);
       setValue("first_name", dataRaw?.firstName);
       setValue("last_name", dataRaw?.lastName);
-      setValue(
-        "tags",
-        convertTag.map((itemVal: DefaultOptionType) => itemVal.value)
-      );
+      setValue("tags", JSON.parse(dataRaw?.tags));
       setValue("role_id", dataRaw?.role.id);
       setValue("username", dataRaw?.username);
       setValue("email", dataRaw?.email);

@@ -227,12 +227,16 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
 
   useEffect(() => {
     if (dataUserManagement) {
-      setValue("avatar_path", dataUserManagement?.data?.avatarPath);
-      setValue("first_name", dataUserManagement?.data?.firstName);
-      setValue("last_name", dataUserManagement?.data?.lastName);
-      setValue("tags", dataUserManagement?.data?.tags);
-      setValue("role_id", dataUserManagement?.data?.roleId);
-      setValue("username", dataUserManagement?.data?.username);
+      const { data: mainData } = dataUserManagement;
+      const { data: rawData } = mainData;
+
+      setValue("avatar_path", rawData?.avatarPath);
+      setValue("first_name", rawData?.firstName);
+      setValue("last_name", rawData?.lastName);
+      setValue("tags", JSON.parse(rawData?.tags));
+      setValue("role_id", rawData?.role.id);
+      setValue("username", rawData?.username);
+      setValue("email", rawData?.email);
     }
   }, [dataUserManagement]);
 

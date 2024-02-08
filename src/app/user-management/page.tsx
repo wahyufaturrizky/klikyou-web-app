@@ -8,7 +8,6 @@ import useDebounce from "@/hook/useDebounce";
 import { TableParams } from "@/interface/Table";
 import {
   useDeleteBulkUserManagement,
-  useDeleteUserManagement,
   useUserManagement,
 } from "@/services/user-management/useUserManagement";
 import { FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
