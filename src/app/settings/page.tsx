@@ -48,12 +48,12 @@ export default function SettingsPage() {
     useCreateSettings({
       options: {
         onSuccess: () => {
+          refetchSettings();
+
           messageApi.open({
             type: "success",
             content: "Success update settings",
           });
-
-          refetchSettings();
         },
       },
     });
