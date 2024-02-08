@@ -917,7 +917,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               name="tags"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Select
-                  mode="tags"
+                  mode="multiple"
                   name="tags"
                   onChange={onChange}
                   tokenSeparators={[","]}

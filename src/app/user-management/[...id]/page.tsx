@@ -264,7 +264,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
   const renderConfirmationText = (type: any, data: any) => {
     switch (type) {
       case "single":
-        return `Are you sure to delete document ${data?.name} ?`;
+        return `Are you sure to delete document ${data?.data?.data?.email} ?`;
       default:
         break;
     }
@@ -295,6 +295,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
             setShowDelete({
               open: true,
               type: "single",
+              data: dataUserManagement,
             })
           }
           label="Delete"
@@ -444,9 +445,9 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                           required: "tags is required",
                         }}
                         name="tags"
-                        render={({ field: { onChange, value }, fieldState: { error } }) => (
+                        render={({ field: { onChange, value } }) => (
                           <Select
-                            mode="tags"
+                            mode="multiple"
                             name="tags"
                             onChange={onChange}
                             tokenSeparators={[","]}
@@ -578,9 +579,6 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                     <div className="mt-6">
                       <Controller
                         control={control}
-                        rules={{
-                          required: "Password is required",
-                        }}
                         name="password"
                         render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                           <Input
@@ -590,7 +588,6 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                             value={value}
                             name="password"
                             type="password"
-                            required
                             placeholder="Enter password"
                             classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                             classNameLabel="block text-lg font-semibold text-black"
@@ -644,7 +641,6 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                       <Controller
                         control={control}
                         rules={{
-                          required: "Confirm password is required",
                           validate: (value) =>
                             value === control._formValues.password || "The passwords do not match",
                         }}
@@ -657,7 +653,6 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                             value={value}
                             name="confirmPassword"
                             type="password"
-                            required
                             placeholder="Enter confirm password"
                             classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                             classNameLabel="block text-lg font-semibold text-black"

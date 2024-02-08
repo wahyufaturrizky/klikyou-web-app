@@ -155,7 +155,7 @@ export default function AddDocumentPage() {
                       name="tags"
                       render={({ field: { onChange, value }, fieldState: { error } }) => (
                         <Select
-                          mode="tags"
+                          mode="multiple"
                           name="tags"
                           onChange={onChange}
                           tokenSeparators={[","]}

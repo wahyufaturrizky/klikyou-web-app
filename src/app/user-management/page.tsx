@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
+type ColumnsType<T> = TableProps<T>["columns"];
+
 export interface OptionInterface {
   label: string;
   value: string;
@@ -80,7 +82,7 @@ export default function UserManagementPage() {
   });
   const [dataListUser, setDataListUser] = useState<DataUserManagementType[]>([]);
 
-  const [tableParams, setTableParams] = useState<TableParams>({
+  const [tableParams, setTableParams] = useState<any>({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -103,7 +105,7 @@ export default function UserManagementPage() {
     },
   });
 
-  const columns: TableProps<DataUserManagementType>["columns"] = [
+  const columns: ColumnsType<DataUserManagementType> = [
     {
       title: "ID",
       dataIndex: "id",
@@ -117,6 +119,7 @@ export default function UserManagementPage() {
       title: "User full name",
       dataIndex: "username",
       key: "username",
+      sorter: true,
       render: (text: string, record: DataUserManagementType) => {
         const { avatarPath, firstName, lastName, id } = record;
         return (
@@ -140,6 +143,7 @@ export default function UserManagementPage() {
       title: "Email address",
       dataIndex: "email",
       key: "email",
+      sorter: true,
       render: (text: string) => {
         return <Text label={text} className="text-base font-normal text-black" />;
       },
@@ -148,6 +152,7 @@ export default function UserManagementPage() {
       title: "Level",
       dataIndex: "role",
       key: "role",
+      sorter: true,
       render: (text: RoleResType) => {
         return <Text label={text.levelName} className="text-base font-normal text-black" />;
       },
@@ -156,6 +161,7 @@ export default function UserManagementPage() {
       title: "Update At",
       dataIndex: "updatedAt",
       key: "updatedAt",
+      sorter: true,
       render: (text: Date) => UseConvertDateFormat(text),
     },
     {
@@ -200,13 +206,21 @@ export default function UserManagementPage() {
   } = useUserManagement({
     query: {
       search: debounceSearch,
-      date: getValuesFilter("date"),
       status: getValuesFilter("status").join(","),
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
+      orderBy: tableParams?.field
+        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
+        : "",
+      updated_at_start: getValuesFilter("date")[0],
+      updated_at_end: getValuesFilter("date")[1],
     },
   });
+
+  useEffect(() => {
+    refetchDocumentUserManagement();
+  }, [JSON.stringify(tableParams)]);
 
   useEffect(() => {
     if (dataUserManagement) {
@@ -284,8 +298,7 @@ export default function UserManagementPage() {
     });
   };
 
-  const onSubmitFilter = (data: FormFilterValues) => {
-    refetchDocumentUserManagement();
+  const onSubmitFilter = () => {
     setIsShowModalFilter(false);
   };
 
@@ -319,10 +332,6 @@ export default function UserManagementPage() {
         },
       },
     });
-
-  useEffect(() => {
-    refetchDocumentUserManagement();
-  }, [JSON.stringify(tableParams)]);
 
   return (
     <div className="p-6">
@@ -461,8 +470,10 @@ export default function UserManagementPage() {
           <Controller
             control={controlFilter}
             name="date"
-            render={({ field: { onChange } }: any) => {
-              return <DatePicker.RangePicker format="YYYY/MM/DD" onChange={onChange} />;
+            render={({ field: { onChange, value } }: any) => {
+              return (
+                <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+              );
             }}
           />
 

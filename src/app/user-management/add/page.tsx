@@ -271,7 +271,7 @@ export default function AddProfilePage() {
                       name="tags"
                       render={({ field: { onChange, value }, fieldState: { error } }) => (
                         <Select
-                          mode="tags"
+                          mode="multiple"
                           name="tags"
                           onChange={onChange}
                           options={dataTag}
