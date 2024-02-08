@@ -64,8 +64,6 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const [dataById, setDataById] = useState<DataUserManagementType>();
-
   const [dataRole, setDatarole] = useState<DefaultOptionType[]>([]);
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
@@ -83,7 +81,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
     },
   });
 
-  const { watch, control, handleSubmit, getValues } = useForm<FormProfileValues>({
+  const { watch, control, handleSubmit, getValues, setValue } = useForm<FormProfileValues>({
     defaultValues: {
       avatar_path: "/placeholder-profile.png",
       first_name: "",
@@ -230,12 +228,12 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
 
   useEffect(() => {
     if (dataUserManagement) {
-      setDataById(
-        dataUserManagement.data.data.map((item: DataUserManagementType) => ({
-          ...item,
-          key: item.id,
-        }))
-      );
+      setValue("avatar_path", dataUserManagement?.data?.avatarPath);
+      setValue("first_name", dataUserManagement?.data?.firstName);
+      setValue("last_name", dataUserManagement?.data?.lastName);
+      setValue("tags", dataUserManagement?.data?.tags);
+      setValue("role_id", dataUserManagement?.data?.roleId);
+      setValue("username", dataUserManagement?.data?.username);
     }
   }, [dataUserManagement]);
 
