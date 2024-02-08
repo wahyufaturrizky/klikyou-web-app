@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { client } from "../client";
+import { client, clientFormData } from "../client";
 
 const fetchSettings = async ({ query = {} }) => {
   return client("/settings", {
@@ -20,7 +20,7 @@ const useSettings = ({ query = {}, options }: any = {}) => {
 function useCreateSettings({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
-      client("/settings", {
+      clientFormData("/settings", {
         method: "POST",
         data: reqBody,
       }),
@@ -50,4 +50,4 @@ function useDeleteSettings({ options }: any) {
   });
 }
 
-export { useCreateSettings, useSettings, useUpdateSettings, useDeleteSettings };
+export { useCreateSettings, useDeleteSettings, useSettings, useUpdateSettings };

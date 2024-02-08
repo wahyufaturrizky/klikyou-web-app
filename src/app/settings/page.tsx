@@ -7,9 +7,10 @@ import Text from "@/components/Text";
 import { useCreateSettings, useSettings } from "@/services/settings/useSettings";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { Spin, Upload } from "antd";
+import { Spin, Upload, message } from "antd";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { UploadChangeParam, UploadFile } from "antd/es/upload";
 
 type FormSettingsValues = {
   company_image_path: string;
@@ -22,6 +23,9 @@ type FormSettingsValues = {
 
 export default function SettingsPage() {
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
+  const [avatarPathRaw, setAvatarPathRaw] = useState<UploadChangeParam<UploadFile<any>>>();
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const { control, handleSubmit, setValue } = useForm<FormSettingsValues>({
     defaultValues: {
@@ -44,13 +48,29 @@ export default function SettingsPage() {
     useCreateSettings({
       options: {
         onSuccess: () => {
+          messageApi.open({
+            type: "success",
+            content: "Success update settings",
+          });
+
           refetchSettings();
         },
       },
     });
 
   const onSubmit = (data: FormSettingsValues) => {
-    createUserManagement(data);
+    const { company_name, company_address, npwp, tel, email } = data;
+
+    let formdata = new FormData();
+
+    formdata.append("company_name", company_name);
+    formdata.append("company_address", company_address);
+    formdata.append("npwp", npwp);
+    formdata.append("tel", tel);
+    formdata.append("email", email);
+    formdata.append("company_image_path", avatarPathRaw?.file.originFileObj as any);
+
+    createUserManagement(formdata);
   };
 
   const uploadButton = (
@@ -77,6 +97,7 @@ export default function SettingsPage() {
 
   return (
     <div className="p-6">
+      {contextHolder}
       {isPendingSettings && <Spin fullscreen />}
       <div className="flex gap-4 items-center">
         <Text label="Change setting" className="text-3xl font-normal text-secondary-blue" />
@@ -104,6 +125,7 @@ export default function SettingsPage() {
                           action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
                           beforeUpload={beforeUpload}
                           onChange={(info) => {
+                            setAvatarPathRaw(info);
                             if (info.file.status === "uploading") {
                               setLoadingImageAvatar(true);
                               return;
@@ -123,7 +145,7 @@ export default function SettingsPage() {
                               width={100}
                               height={100}
                               alt="logo-klikyou"
-                              className="h-[180px] w-[180px] rounded-full"
+                              className="h-[100px] w-[100px] rounded-full"
                             />
                           ) : (
                             uploadButton

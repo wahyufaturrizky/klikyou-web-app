@@ -8,6 +8,12 @@ const nextConfig = {
         port: "",
         pathname: "/uploads/profile/**",
       },
+      {
+        protocol: "https",
+        hostname: "klikyou-das-api.demo-kota.com",
+        port: "",
+        pathname: "/uploads/settings/**",
+      },
     ],
   },
 };

@@ -10,7 +10,7 @@ import { useRole } from "@/services/role/useRole";
 import { BackIcon, PencilIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { ConfigProvider, Spin, Table, TableProps, Upload } from "antd";
+import { ConfigProvider, Spin, Table, TableProps, Upload, message } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useEffect, useState } from "react";
@@ -58,6 +58,8 @@ export default function ProfilePage() {
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
   const [avatarPathRaw, setAvatarPathRaw] = useState<UploadChangeParam<UploadFile<any>>>();
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const { watch, control, handleSubmit, setValue, getValues } = useForm<FormProfileValues>({
     defaultValues: {
@@ -133,6 +135,11 @@ export default function ProfilePage() {
     useCreateProfile({
       options: {
         onSuccess: () => {
+          messageApi.open({
+            type: "success",
+            content: "Success update profile",
+          });
+
           refetchProfile();
         },
       },
@@ -231,6 +238,7 @@ export default function ProfilePage() {
 
   return (
     <div className="p-6">
+      {contextHolder}
       {isLoading && <Spin fullscreen />}
       <div className="flex gap-4 items-center">
         {isEdit && <BackIcon style={{ color: "#2379AA" }} onClick={() => setIsEdit(false)} />}
