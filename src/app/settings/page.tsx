@@ -120,10 +120,10 @@ export default function SettingsPage() {
                           {value ? (
                             <ImageNext
                               src={value}
-                              width={180}
-                              height={180}
+                              width={100}
+                              height={100}
                               alt="logo-klikyou"
-                              className="h-auto w-auto"
+                              className="h-[180px] w-[180px] rounded-full"
                             />
                           ) : (
                             uploadButton

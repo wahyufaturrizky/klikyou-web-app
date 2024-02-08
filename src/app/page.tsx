@@ -92,6 +92,7 @@ export default function Home() {
               src="/logo-klikyou.svg"
               width={406}
               height={139}
+              priority
               alt="logo-klikyou"
               className="mx-auto h-auto w-[270px]"
             />

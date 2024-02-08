@@ -290,10 +290,10 @@ export default function ProfilePage() {
                             {value ? (
                               <ImageNext
                                 src={value}
-                                width={180}
-                                height={180}
+                                width={100}
+                                height={100}
                                 alt="logo-klikyou"
-                                className="h-auto w-auto"
+                                className="h-[100px] w-[100px] rounded-full"
                               />
                             ) : (
                               uploadButton
@@ -305,11 +305,11 @@ export default function ProfilePage() {
                   ) : (
                     <ImageNext
                       src={getValues("avatar_path") || "/placeholder-profile.png"}
-                      width={180}
+                      width={100}
                       priority={true}
-                      height={180}
+                      height={100}
                       alt="logo-klikyou"
-                      className="h-auto w-auto"
+                      className="h-[100px] w-[100px] rounded-full"
                     />
                   )}
                 </div>

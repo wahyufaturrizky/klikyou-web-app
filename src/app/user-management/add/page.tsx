@@ -195,10 +195,10 @@ export default function AddProfilePage() {
                           {value ? (
                             <ImageNext
                               src={value}
-                              width={180}
-                              height={180}
+                              width={100}
+                              height={100}
                               alt="logo-klikyou"
-                              className="h-auto w-auto"
+                              className="h-[100px] w-[100px] rounded-full"
                             />
                           ) : (
                             uploadButton

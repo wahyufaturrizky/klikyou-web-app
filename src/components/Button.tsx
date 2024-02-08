@@ -1,9 +1,9 @@
 import { ButtonInterface } from "../interface/Button";
 
-const Button = ({ ...props }: ButtonInterface) => {
+const Button = ({ loading = false, ...props }: ButtonInterface) => {
   return (
     <button {...props}>
-      {props.loading && (
+      {loading && (
         <svg
           aria-hidden="true"
           role="status"
