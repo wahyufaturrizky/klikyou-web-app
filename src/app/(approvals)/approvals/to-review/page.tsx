@@ -272,7 +272,6 @@ export default function ToReviewPage() {
   } = useToReview({
     query: {
       search: debounceSearch,
-      date: getValuesFilter("date"),
       status: getValuesFilter("status").join(","),
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
