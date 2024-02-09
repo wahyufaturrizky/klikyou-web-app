@@ -2,7 +2,7 @@
 import Text from "@/components/Text";
 import { useDashboard } from "@/services/dashboard/useDashboard";
 import { CheckIcon, FileIcon, RejectIcon, StopwatchIcon } from "@/style/icon";
-import { ConfigProvider, DatePicker, Spin, Table, TableProps } from "antd";
+import { ConfigProvider, DatePicker, Grid, Spin, Table, TableProps } from "antd";
 import { createElement, useEffect } from "react";
 
 export interface OptionInterface {
@@ -23,34 +23,9 @@ interface DataLowestType {
   rejected: string;
 }
 
-export default function DashboardPage() {
-  const summaryCard = [
-    {
-      className: "w-1/4 p-6 rounded-md bg-gradient-to-r from-white to-primary-blue/50",
-      icon: createElement(FileIcon),
-      label: "Total documents",
-      value: "100",
-    },
-    {
-      className: "w-1/4 p-6 rounded-md bg-gradient-to-r from-white to-primary-blue/50",
-      icon: createElement(StopwatchIcon),
-      label: "Pending",
-      value: "20",
-    },
-    {
-      className: "w-1/4 p-6 rounded-md bg-gradient-to-r from-white to-primary-blue/50",
-      icon: createElement(CheckIcon),
-      label: "Approved",
-      value: "65",
-    },
-    {
-      className: "w-1/4 p-6 rounded-md bg-gradient-to-r from-white to-primary-blue/50",
-      icon: createElement(RejectIcon),
-      label: "Rejected",
-      value: "15",
-    },
-  ];
+const { useBreakpoint } = Grid;
 
+export default function DashboardPage() {
   const columnsShortest: TableProps<DataShortestType>["columns"] = [
     {
       title: "ID",
@@ -176,6 +151,63 @@ export default function DashboardPage() {
     }
   }, [dataDashboard]);
 
+  const screens = useBreakpoint();
+
+  const { lg, xl, xxl } = screens;
+
+  const summaryCard = [
+    {
+      icon: (
+        <FileIcon
+          style={{
+            height: xxl || xl || lg ? undefined : 24,
+            width: xxl || xl || lg ? undefined : 24,
+          }}
+        />
+      ),
+      label: "Total documents",
+      value: "100",
+    },
+    {
+      icon: (
+        <StopwatchIcon
+          style={{
+            height: xxl || xl || lg ? undefined : 24,
+            width: xxl || xl || lg ? undefined : 24,
+          }}
+        />
+      ),
+      label: "Pending",
+      value: "20",
+    },
+    {
+      icon: (
+        <CheckIcon
+          style={{
+            color: "#23C464",
+            height: xxl || xl || lg ? undefined : 24,
+            width: xxl || xl || lg ? undefined : 24,
+          }}
+        />
+      ),
+      label: "Approved",
+      value: "65",
+    },
+    {
+      icon: (
+        <RejectIcon
+          style={{
+            color: "#F44550",
+            height: xxl || xl || lg ? undefined : 24,
+            width: xxl || xl || lg ? undefined : 24,
+          }}
+        />
+      ),
+      label: "Rejected",
+      value: "15",
+    },
+  ];
+
   return (
     <div>
       {isPendingDashboard && <Spin fullscreen />}
@@ -185,18 +217,33 @@ export default function DashboardPage() {
           className="text-center text-xl font-normal text-white"
         />
       </div>
-      <div className="flex gap-4 px-6 -mt-16">
+      <div className={`${xxl || xl || lg ? "gap-4 px-6" : "gap-1 px-1"} flex -mt-16`}>
         {summaryCard.map((data) => {
-          const { className, icon, label, value } = data;
+          const { icon, label, value } = data;
           return (
-            <div key={label} className={className}>
+            <div
+              key={label}
+              className={`${
+                xxl || xl || lg ? "p-6" : "p-1"
+              } w-1/4 rounded-md bg-gradient-to-r from-white to-primary-blue/50`}
+            >
               <div className="gap-4 flex">
                 {icon}
 
                 <div>
-                  <Text label={label} className="text-base font-bold text-gray-dark" />
+                  <Text
+                    label={label}
+                    className={`${
+                      xxl || xl || lg ? "text-base" : "text-xs"
+                    } font-bold text-gray-dark`}
+                  />
 
-                  <Text label={value} className="text-3xl font-semibold text-black" />
+                  <Text
+                    label={value}
+                    className={`${
+                      xxl || xl || lg ? "text-3xl" : "text-sm"
+                    } font-semibold text-black`}
+                  />
                 </div>
               </div>
             </div>
@@ -225,6 +272,7 @@ export default function DashboardPage() {
                     className="text-base border-b border-[#f0f0f0] font-normal text-black pb-4"
                   />
                 )}
+                scroll={lg || xl || xxl ? undefined : { x: 500 }}
                 columns={columnsShortest}
                 dataSource={data}
                 pagination={false}
@@ -256,6 +304,7 @@ export default function DashboardPage() {
                     className="text-base border-b border-[#f0f0f0] font-normal text-black pb-4"
                   />
                 )}
+                scroll={lg || xl || xxl ? undefined : { x: 500 }}
                 columns={columnsLongest}
                 dataSource={data}
                 pagination={false}
@@ -285,6 +334,7 @@ export default function DashboardPage() {
                     className="text-base border-b border-[#f0f0f0] font-normal text-black pb-4"
                   />
                 )}
+                scroll={lg || xl || xxl ? undefined : { x: 500 }}
                 columns={columnsLowest}
                 dataSource={dataRejected}
                 pagination={false}
@@ -312,6 +362,7 @@ export default function DashboardPage() {
                     className="text-base border-b border-[#f0f0f0] font-normal text-black pb-4"
                   />
                 )}
+                scroll={lg || xl || xxl ? undefined : { x: 500 }}
                 columns={columnsLowest}
                 dataSource={dataRejected}
                 pagination={false}

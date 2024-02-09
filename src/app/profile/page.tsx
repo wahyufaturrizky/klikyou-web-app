@@ -110,7 +110,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (dataProfile) {
-      const { [0]: dataRaw } = dataProfile.data.data;
+      const { data: dataRaw } = dataProfile.data;
 
       setValue("avatar_path", dataRaw?.avatarPath);
       setValue("first_name", dataRaw?.firstName);
