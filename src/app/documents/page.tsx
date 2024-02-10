@@ -11,28 +11,91 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { DataDocumentTags } from "../(master)/master/documents-tags/page";
 
 export interface OptionInterface {
   label: string;
   value: string;
 }
 
+interface MakersType {
+  id: number;
+  roleId: number;
+  avatarPath: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  tags: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: null;
+}
+
+interface DocumentCollaboratorsType {
+  id: number;
+  roleId: number;
+  avatarPath: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  tags: null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: null;
+}
+
+interface DocumentAuthorizersType {
+  id: number;
+  roleId: number;
+  avatarPath: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  tags: null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: null;
+}
+
+interface DocumentRecipientsType {
+  id: number;
+  roleId: number;
+  avatarPath: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  tags: null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: null;
+}
+
 export interface DataDocumentsType {
+  document_name: string;
   id: string;
-  docName: string;
-  tags: string[];
-  file: string;
+  document_number: string;
+  text_remakrs: string;
+  numeric_remarks: number;
+  documentPath: string;
+  currentUserRole: string;
   status: string;
-  latestAction: string;
-  role: string[];
-  updateAt: Date;
+  action: string;
+  makers: MakersType;
+  document_tags: DataDocumentTags[];
+  document_collaborators: DocumentCollaboratorsType[];
+  document_authorizers: DocumentAuthorizersType[];
+  document_recipients: DocumentRecipientsType[];
 }
 
 type FormFilterValues = {
   search: string;
   date: string;
   status: string[];
-  role: string[];
+  currentUserRole: string[];
 };
 
 export interface DeleteModal {
@@ -74,7 +137,7 @@ export default function DocumentsPage() {
       search: "",
       date: "",
       status: [],
-      role: [],
+      currentUserRole: [],
     },
   });
 
@@ -90,9 +153,9 @@ export default function DocumentsPage() {
     },
     {
       title: "Document name",
-      dataIndex: "docName",
+      dataIndex: "document_name",
       sorter: true,
-      key: "docName",
+      key: "document_name",
       render: (text: string, record: DataDocumentsType) => {
         const { id } = record;
         return (
@@ -104,8 +167,8 @@ export default function DocumentsPage() {
     },
     {
       title: "Tags",
-      dataIndex: "tags",
-      key: "tags",
+      dataIndex: "document_tags",
+      key: "document_tags",
       sorter: true,
       render: (text: string[]) => (
         <div className="flex gap-2 flex-wrap">
@@ -123,8 +186,8 @@ export default function DocumentsPage() {
     },
     {
       title: "File",
-      dataIndex: "file",
-      key: "file",
+      dataIndex: "documentPath",
+      key: "documentPath",
       render: (text: string) => {
         return (
           <div className="flex justify-center items-center">
@@ -155,8 +218,8 @@ export default function DocumentsPage() {
     {
       title: "Latest Action",
       sorter: true,
-      dataIndex: "latestAction",
-      key: "latestAction",
+      dataIndex: "action",
+      key: "action",
       render: (text: string) => {
         return (
           <Text
@@ -169,8 +232,8 @@ export default function DocumentsPage() {
     {
       title: "Role",
       sorter: true,
-      dataIndex: "role",
-      key: "role",
+      dataIndex: "currentUserRole",
+      key: "currentUserRole",
       render: (text: string[]) => (
         <div className="flex gap-2 flex-wrap">
           {text?.map((item: string) => {
@@ -217,7 +280,7 @@ export default function DocumentsPage() {
     query: {
       search: debounceSearch,
       status: getValuesFilter("status").join(","),
-      role: getValuesFilter("role").join(","),
+      currentUserRole: getValuesFilter("currentUserRole").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: tableParams?.field
@@ -524,7 +587,7 @@ export default function DocumentsPage() {
           <div className="p-2 border border-black rounded-md mb-4">
             <Controller
               control={controlFilter}
-              name="role"
+              name="currentUserRole"
               render={({ field: { onChange, value } }) => (
                 <ConfigProvider
                   theme={{

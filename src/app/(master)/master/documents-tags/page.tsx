@@ -20,7 +20,7 @@ export interface OptionInterface {
   value: string;
 }
 
-interface DataDocumentTags {
+export interface DataDocumentTags {
   id: string;
   code: string;
   name: string;

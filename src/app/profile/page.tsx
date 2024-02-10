@@ -44,7 +44,7 @@ interface RoleType {
   updatedAt: string;
 }
 
-interface TagType {
+export interface TagType {
   id: number;
   code: string;
   name: string;

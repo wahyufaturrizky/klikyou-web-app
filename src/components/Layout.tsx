@@ -18,7 +18,7 @@ import {
   UserIcon,
 } from "@/style/icon";
 import type { MenuProps } from "antd";
-import { Badge, ConfigProvider, Dropdown, Layout as LayoutAntd, Menu, theme } from "antd";
+import { Badge, ConfigProvider, Dropdown, Layout as LayoutAntd, Menu, theme, Grid } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createElement, useEffect, useRef, useState } from "react";
@@ -29,13 +29,13 @@ type MenuItem = Required<MenuProps>["items"][number];
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
-interface UserProfile {
+export interface UserProfile {
   username: string;
   email: string;
   avatar_path: string;
 }
 
-interface CompanyProfile {
+export interface CompanyProfile {
   companyAddress: string;
   companyImagePath: string;
   companyName: string;
@@ -48,10 +48,17 @@ interface CompanyProfile {
   updatedAt: string;
 }
 
+const { useBreakpoint } = Grid;
+
 const Layout = ({ ...props }: LayoutInterface) => {
+  const screens = useBreakpoint();
+
+  const { lg, xl, xxl, xs } = screens;
+
   const router = useRouter();
   const [userProfile, setUserProfile] = useState<UserProfile>();
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile>();
+  const [collapsed, setCollapsed] = useState(false);
 
   const pathname = usePathname();
   const [currentMenu, setCurrentMenu] = useState<string | null>(null);
@@ -79,8 +86,14 @@ const Layout = ({ ...props }: LayoutInterface) => {
       setOpenKeys(parseOpenKeys);
     };
 
+    const handleGetCollapsed = () => {
+      const parseCollapsed = JSON.parse(localStorage.getItem("collapsed") as string);
+      setCollapsed(parseCollapsed);
+    };
+
     handleGetCurrentMenu();
     handleGetOpenKeysMenu();
+    handleGetCollapsed();
   }, []);
 
   const pathNameList: any = {
@@ -257,6 +270,18 @@ const Layout = ({ ...props }: LayoutInterface) => {
     }
   };
 
+  useEffect(() => {
+    const handleSetCollapsedWhenMobileSize = (isMobileSize: boolean) => {
+      localStorage.setItem("collapsed", JSON.stringify(isMobileSize));
+      setCollapsed(isMobileSize);
+    };
+
+    // When on mobile size
+    const isMobileSize = !(lg ?? xl ?? xxl);
+
+    handleSetCollapsedWhenMobileSize(isMobileSize);
+  }, [screens]);
+
   return (
     <div>
       <ConfigProvider
@@ -274,6 +299,13 @@ const Layout = ({ ...props }: LayoutInterface) => {
       >
         <LayoutAntd hasSider>
           <Sider
+            trigger={!(lg || xl || xxl) && null}
+            collapsible
+            collapsed={collapsed}
+            onCollapse={(value) => {
+              localStorage.setItem("collapsed", JSON.stringify(value));
+              setCollapsed(value);
+            }}
             theme="light"
             width={220}
             className="scrollbar"
@@ -305,11 +337,11 @@ const Layout = ({ ...props }: LayoutInterface) => {
               items={items}
             />
           </Sider>
-          <LayoutAntd style={{ marginLeft: 220 }}>
+          <LayoutAntd style={{ marginLeft: collapsed ? 80 : 220 }}>
             <Header
               className="drop-shadow-xl"
               style={{
-                padding: 24,
+                padding: xxl || xl || lg ? 24 : 8,
                 background: colorBgContainer,
                 position: "sticky",
                 top: 0,
@@ -325,12 +357,18 @@ const Layout = ({ ...props }: LayoutInterface) => {
                   <BackIcon style={{ color: "#2379AA" }} onClick={() => router.back()} />
                 )}
                 <Text
-                  className="text-secondary-blue font-bold text-2xl"
-                  label={pathNameList[pathname]}
+                  className={`${
+                    xxl || xl || lg ? "text-2xl" : "text-xs"
+                  } text-secondary-blue font-bold`}
+                  label={
+                    xs ? pathNameList[pathname].substring(0, 2) + "..." : pathNameList[pathname]
+                  }
                 />
 
                 <Text
-                  className="text-black font-bold text-xl border-l-2 border-primary-gray pl-4"
+                  className={`${
+                    xxl || xl || lg ? "text-xl" : "text-xs"
+                  } text-black font-bold border-l-2 border-primary-gray pl-4`}
                   label={companyProfile?.companyName || ""}
                 />
               </div>

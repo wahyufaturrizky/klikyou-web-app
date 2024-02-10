@@ -31,6 +31,9 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { DataDocumentsType } from "../page";
 import Select from "@/components/Select";
+import { DefaultOptionType } from "antd/es/cascader";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
+import { TagType } from "@/app/profile/page";
 
 type FormDocumentValues = {
   docName: string;
@@ -75,6 +78,8 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
   const router = useRouter();
   const { id } = params;
 
+  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+
   const [isEdit, setIsEdit] = useState<boolean>(id[0] === "view" ? false : true);
 
   const [stateEditDocumentInfoModal, setStateEditDocumentInfoModal] = useState<EditModal>({
@@ -112,6 +117,23 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       recipients: [],
     },
   });
+
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+
+  useEffect(() => {
+    const fetchDataTag = () => {
+      setDataTag(
+        dataListTag.data.data.data.map((itemTag: TagType) => ({
+          label: itemTag.name,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    if (dataListTag) {
+      fetchDataTag();
+    }
+  }, [dataListTag]);
 
   const { mutate: createDocument, isPending: isPendingCreateDocument } = useCreateDocument({
     options: {

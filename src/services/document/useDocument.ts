@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { client } from "../client";
+import { client, clientFormData } from "../client";
 
 const fetchDocument = async ({ query = {} }) => {
   return client("/documents", {
@@ -32,7 +32,7 @@ const useDocumentById = ({ id, options }: any) => {
 function useCreateDocument({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
-      client("/documents", {
+      clientFormData("/documents", {
         method: "POST",
         data: reqBody,
       }),

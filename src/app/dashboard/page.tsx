@@ -3,7 +3,8 @@ import Text from "@/components/Text";
 import { useDashboard } from "@/services/dashboard/useDashboard";
 import { CheckIcon, FileIcon, RejectIcon, StopwatchIcon } from "@/style/icon";
 import { ConfigProvider, DatePicker, Grid, Spin, Table, TableProps } from "antd";
-import { createElement, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { CompanyProfile } from "@/components/Layout";
 
 export interface OptionInterface {
   label: string;
@@ -26,6 +27,22 @@ interface DataLowestType {
 const { useBreakpoint } = Grid;
 
 export default function DashboardPage() {
+  const screens = useBreakpoint();
+
+  const { lg, xl, xxl, xs } = screens;
+
+  const [companyProfile, setCompanyProfile] = useState<CompanyProfile>();
+
+  useEffect(() => {
+    const handleFetchCompanyProfile = () => {
+      const rawCompanyProfile = localStorage.getItem("company_profile");
+
+      setCompanyProfile(JSON.parse(rawCompanyProfile ?? "{}"));
+    };
+
+    handleFetchCompanyProfile();
+  }, []);
+
   const columnsShortest: TableProps<DataShortestType>["columns"] = [
     {
       title: "ID",
@@ -151,10 +168,6 @@ export default function DashboardPage() {
     }
   }, [dataDashboard]);
 
-  const screens = useBreakpoint();
-
-  const { lg, xl, xxl } = screens;
-
   const summaryCard = [
     {
       icon: (
@@ -211,23 +224,35 @@ export default function DashboardPage() {
   return (
     <div>
       {isPendingDashboard && <Spin fullscreen />}
-      <div className="bg-img-login h-[343px] bg-bottom flex flex-col items-start justify-center p-6">
+      <div
+        className={`bg-img-login h-[${
+          xxl || xl || lg ? "343px justify-center" : "100px"
+        }] bg-bottom flex flex-col items-start p-6`}
+      >
         <Text
-          label="👋 Hello, PT Sempurna Tech"
+          label={`👋 Hello, ${companyProfile?.companyName || ""}`}
           className="text-center text-xl font-normal text-white"
         />
       </div>
-      <div className={`${xxl || xl || lg ? "gap-4 px-6" : "gap-1 px-1"} flex -mt-16`}>
+      <div
+        className={`${
+          xs
+            ? "flex-col gap-1 px-1 -mt-6"
+            : xxl || xl || lg
+            ? "gap-4 px-6 -mt-16"
+            : "gap-1 px-1 -mt-6"
+        } flex`}
+      >
         {summaryCard.map((data) => {
           const { icon, label, value } = data;
           return (
             <div
               key={label}
               className={`${
-                xxl || xl || lg ? "p-6" : "p-1"
-              } w-1/4 rounded-md bg-gradient-to-r from-white to-primary-blue/50`}
+                xs ? "p-1" : xxl || xl || lg ? "p-6 w-1/4" : "p-1 w-1/4"
+              } rounded-md bg-gradient-to-r from-white to-primary-blue/50`}
             >
-              <div className="gap-4 flex">
+              <div className={`${xs ? "justify-center" : ""} gap-4 flex`}>
                 {icon}
 
                 <div>
@@ -251,8 +276,8 @@ export default function DashboardPage() {
         })}
       </div>
 
-      <div className="gap-6 flex px-6 mt-6">
-        <div className="w-1/2">
+      <div className={`${xs ? "flex-col" : ""} gap-6 flex px-6 mt-6`}>
+        <div className={`${xs ? "" : "w-1/2"}`}>
           <Text label="Process time" className="text-xl font-bold text-black" />
 
           <div className="p-2 bg-white rounded-md mt-6">
@@ -282,7 +307,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="w-1/2">
+        <div className={`${xs ? "" : "w-1/2"}`}>
           <div className="flex justify-end">
             <DatePicker.RangePicker />
           </div>
@@ -315,8 +340,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="gap-6 flex px-6 mt-6">
-        <div className="w-1/2">
+      <div className={`${xs ? "flex-col" : ""} gap-6 flex px-6 mt-6`}>
+        <div className={`${xs ? "" : "w-1/2"}`}>
           <div className="p-2 bg-white rounded-md mt-6">
             <ConfigProvider
               theme={{
@@ -344,7 +369,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="w-1/2">
+        <div className={`${xs ? "" : "w-1/2"}`}>
           <div className="p-2 bg-white rounded-md mt-6">
             <ConfigProvider
               theme={{
