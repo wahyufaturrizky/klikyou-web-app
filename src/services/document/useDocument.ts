@@ -40,15 +40,15 @@ function useCreateDocument({ options }: any) {
   }) as any;
 }
 
-function useUpdateDocument({ options }: any) {
+function useUpdateDocument({ options, id }: any) {
   return useMutation({
     mutationFn: (updates) =>
-      client("/documents", {
+      clientFormData(`/documents/${id}`, {
         method: "PUT",
         data: updates,
       }),
     ...options,
-  });
+  }) as any;
 }
 
 function useDeleteDocument({ options }: any) {

@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-type FormDocumentValues = {
+export type FormDocumentValues = {
   document_name: string;
   document_number: string;
   text_remarks: string;
@@ -29,7 +29,7 @@ type FormDocumentValues = {
   document_note: string;
 };
 
-interface UserListType {
+export interface UserListType {
   id: string;
   label: string;
 }
@@ -137,7 +137,7 @@ export default function AddDocumentPage() {
     formdata.append("text_remarks", text_remarks);
     formdata.append("document_note", document_note);
     formdata.append("numeric_remarks", numeric_remarks);
-    formdata.append("document_path", document_path?.file.originFileObj as any);
+    formdata.append("document_path", document_path.file.originFileObj);
     formdata.append("document_tag_id", document_tag_id.join(","));
     formdata.append("document_collaborator_id", document_collaborator_id.join(","));
     formdata.append("document_authorizer_id", document_authorizer_id.join(","));
@@ -148,7 +148,6 @@ export default function AddDocumentPage() {
 
   const props: UploadProps = {
     name: "document_path",
-    action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188",
     headers: {
       authorization: "authorization-text",
     },
@@ -254,6 +253,7 @@ export default function AddDocumentPage() {
                           value={value}
                           styleSelect={{ width: "100%" }}
                           required
+                          error={error}
                           label="Tags"
                           classNameLabel="block text-lg font-semibold text-black"
                         />
@@ -295,6 +295,10 @@ export default function AddDocumentPage() {
                       control={control}
                       rules={{
                         required: "Numeric remarks is required",
+                        pattern: {
+                          value: /^[0-9]+$/,
+                          message: "Please enter a number",
+                        },
                       }}
                       name="numeric_remarks"
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
@@ -332,6 +336,7 @@ export default function AddDocumentPage() {
                           value={value}
                           styleSelect={{ width: "100%" }}
                           required
+                          error={error}
                           label="Collaborators"
                           classNameLabel="block text-lg font-semibold text-black"
                         />
@@ -412,6 +417,7 @@ export default function AddDocumentPage() {
                           value={value}
                           styleSelect={{ width: "100%" }}
                           required
+                          error={error}
                           label="Authorizers"
                           classNameLabel="block text-lg font-semibold text-black"
                         />
@@ -445,6 +451,7 @@ export default function AddDocumentPage() {
                         value={value}
                         styleSelect={{ width: "100%" }}
                         required
+                        error={error}
                         label="Recipients"
                         classNameLabel="block text-lg font-semibold text-black"
                       />

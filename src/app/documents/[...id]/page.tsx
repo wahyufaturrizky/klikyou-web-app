@@ -1,10 +1,15 @@
 "use client";
+import { TagType } from "@/app/profile/page";
 import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
+import InputTextArea from "@/components/InputTextArea";
+import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
-import { useCreateDocument, useDocumentById } from "@/services/document/useDocument";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
+import { useDocumentById, useUpdateDocument } from "@/services/document/useDocument";
+import { useUserList } from "@/services/user-list/useUserList";
 import {
   BackIcon,
   DownloadIcon,
@@ -25,31 +30,13 @@ import {
   UploadProps,
   message,
 } from "antd";
+import { DefaultOptionType } from "antd/es/cascader";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { FormDocumentValues, UserListType } from "../add/page";
 import { DataDocumentsType } from "../page";
-import Select from "@/components/Select";
-import { DefaultOptionType } from "antd/es/cascader";
-import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
-import { TagType } from "@/app/profile/page";
-
-type FormDocumentValues = {
-  docName: string;
-  id: string;
-  status: string;
-  latestApproval: string;
-  memoId: string;
-  docNumber: string;
-  textRemarks: string;
-  numericRemarks: string;
-  tags: string[];
-  collaborators: string[];
-  file: string;
-  authorizers: string[];
-  recipients: string[];
-};
 
 interface DataTypeActionHistory {
   id: string;
@@ -80,6 +67,11 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
+  const [dataCollaborator, setDataCollaborator] = useState<DefaultOptionType[]>([]);
+  const [dataAuthorizer, setDataAuthorizer] = useState<DefaultOptionType[]>([]);
+  const [dataRecipient, setDataRecipient] = useState<DefaultOptionType[]>([]);
+  const [messageApi, contextHolder] = message.useMessage();
+
   const [isEdit, setIsEdit] = useState<boolean>(id[0] === "view" ? false : true);
 
   const [stateEditDocumentInfoModal, setStateEditDocumentInfoModal] = useState<EditModal>({
@@ -102,23 +94,21 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
   const { control, handleSubmit, setValue, watch } = useForm<FormDocumentValues>({
     defaultValues: {
-      docName: "",
-      docNumber: "",
-      id: "",
-      status: "",
-      memoId: "",
-      textRemarks: "",
-      numericRemarks: "",
-      latestApproval: "",
-      tags: [],
-      collaborators: [],
-      file: "",
-      authorizers: [],
-      recipients: [],
+      document_name: "",
+      document_number: "",
+      text_remarks: "",
+      numeric_remarks: "",
+      document_tag_id: [],
+      document_collaborator_id: [],
+      document_path: "",
+      document_authorizer_id: [],
+      document_recipient_id: [],
+      document_note: "",
     },
   });
 
   const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListUserList, isPending: isPendingUserList } = useUserList();
 
   useEffect(() => {
     const fetchDataTag = () => {
@@ -130,25 +120,84 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       );
     };
 
+    const FetchDataUserList = () => {
+      setDataAuthorizer(
+        dataListUserList?.data?.data.map((itemTag: UserListType) => ({
+          label: itemTag.label,
+          value: itemTag.id,
+        }))
+      );
+
+      setDataCollaborator(
+        dataListUserList?.data?.data.map((itemTag: UserListType) => ({
+          label: itemTag.label,
+          value: itemTag.id,
+        }))
+      );
+
+      setDataRecipient(
+        dataListUserList?.data?.data.map((itemTag: UserListType) => ({
+          label: itemTag.label,
+          value: itemTag.id,
+        }))
+      );
+    };
+
     if (dataListTag) {
       fetchDataTag();
     }
-  }, [dataListTag]);
 
-  const { mutate: createDocument, isPending: isPendingCreateDocument } = useCreateDocument({
+    if (dataListTag) {
+      FetchDataUserList();
+    }
+  }, [dataListTag, dataListUserList]);
+
+  const { mutate: updateDocument, isPending: isPendingUpdateDocument } = useUpdateDocument({
+    id: id[1],
     options: {
       onSuccess: () => {
-        router.back();
+        messageApi.open({
+          type: "success",
+          content: "Update document success",
+        });
+
+        // router.back();
       },
     },
   });
 
   const onSubmit = (data: FormDocumentValues) => {
-    createDocument(data);
+    const {
+      document_name,
+      document_number,
+      text_remarks,
+      numeric_remarks,
+      document_tag_id,
+      document_collaborator_id,
+      document_authorizer_id,
+      document_recipient_id,
+      document_path,
+      document_note,
+    } = data;
+
+    let formdata = new FormData();
+
+    formdata.append("document_name", document_name || "");
+    formdata.append("document_number", document_number || "");
+    formdata.append("text_remarks", text_remarks || "");
+    formdata.append("document_note", document_note || "");
+    formdata.append("numeric_remarks", numeric_remarks || "");
+    formdata.append("document_path", document_path.file.originFileObj);
+    formdata.append("document_tag_id", document_tag_id.join(","));
+    formdata.append("document_collaborator_id", document_collaborator_id.join(","));
+    formdata.append("document_authorizer_id", document_authorizer_id.join(","));
+    formdata.append("document_recipient_id", document_recipient_id.join(","));
+
+    updateDocument(formdata);
   };
 
   const props: UploadProps = {
-    name: "file",
+    name: "document_path",
     action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188",
     headers: {
       authorization: "authorization-text",
@@ -159,7 +208,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       }
       if (info.file.status === "done") {
         message.success(`${info.file.name} file uploaded successfully`);
-        setValue("file", JSON.stringify(info));
+        setValue("document_path", info);
       } else if (info.file.status === "error") {
         message.error(`${info.file.name} file upload failed.`);
       }
@@ -167,7 +216,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
   };
 
   const { data: dataDocument, isPending: isPendingDocument } = useDocumentById({
-    id,
+    id: id[1],
   });
 
   useEffect(() => {
@@ -235,8 +284,8 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     },
     {
       title: "Supporting File",
-      dataIndex: "file",
-      key: "file",
+      dataIndex: "document_path",
+      key: "document_path",
       render: (text: string) => {
         return (
           <Link className="flex items-center gap-2" href={`/${text}`}>
@@ -279,17 +328,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     },
   ];
 
-  const data: DataTypeActionHistory[] = [
-    {
-      id: "1",
-      user: "User Authorizer 3",
-      act: "Uploaded",
-      note: "Uploaded",
-      file: "Uploaded",
-      fileVerHistory: "Uploaded",
-      updatedAt: new Date(),
-    },
-  ];
+  const data: DataTypeActionHistory[] = [];
 
   const columnsInfo: TableProps<DataTypeInfo>["columns"] = [
     {
@@ -345,8 +384,8 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     },
     {
       title: "Supporting File",
-      dataIndex: "file",
-      key: "file",
+      dataIndex: "document_path",
+      key: "document_path",
       render: (text: string) => {
         return (
           <Link className="flex items-center gap-2" href={`/${text}`}>
@@ -399,9 +438,12 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     },
   ];
 
+  const isLoading = isPendingDocument || isPendingTag || isPendingUserList;
+
   return (
     <div className="p-6">
-      {isPendingDocument && <Spin fullscreen />}
+      {isLoading && <Spin fullscreen />}
+      {contextHolder}
 
       <div className="flex gap-4 items-center">
         <BackIcon
@@ -434,22 +476,23 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   .filter(
                     (filtering) =>
                       ![
-                        "docNumber",
+                        "document_number",
                         "id",
-                        "numericRemarks",
-                        "collaborators",
-                        "authorizers",
-                        "recipients",
-                        "file",
+                        "numeric_remarks",
+                        "document_collaborator_id",
+                        "document_authorizer_id",
+                        "document_recipient_id",
+                        "document_path",
+                        "document_note",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
                     const labelMap: any = {
-                      docName: "Document name",
+                      document_name: "Document name",
                       memoId: "Memo ID",
-                      textRemarks: "Text remarks",
+                      text_remarks: "Text remarks",
                       status: "Status",
-                      tags: "Tags",
+                      document_tag_id: "Tags",
                     };
 
                     const valueMap: any = watch();
@@ -460,7 +503,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           label={labelMap[mapping]}
                           className="text-xl font-semibold text-black"
                         />
-                        {mapping === "tags" ? (
+                        {mapping === "document_tag_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
                             {valueMap[mapping].map((item: string) => (
                               <Text
@@ -492,23 +535,24 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   .filter(
                     (filtering) =>
                       ![
-                        "authorizers",
-                        "recipients",
-                        "file",
-                        "docName",
+                        "document_authorizer_id",
+                        "document_recipient_id",
+                        "document_path",
+                        "document_name",
                         "memoId",
-                        "textRemarks",
+                        "text_remarks",
                         "status",
-                        "tags",
+                        "document_tag_id",
+                        "document_note",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
                     const labelMap: any = {
-                      docNumber: "Document number",
+                      document_number: "Document number",
                       id: "Data ID",
-                      numericRemarks: "Numeric remarks",
+                      numeric_remarks: "Numeric remarks",
                       latestApproval: "Latest approval",
-                      collaborators: "Collaborators",
+                      document_collaborator_id: "Collaborators",
                     };
 
                     const valueMap: any = watch();
@@ -519,7 +563,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           label={labelMap[mapping]}
                           className="text-xl font-semibold text-black"
                         />
-                        {mapping === "collaborators" ? (
+                        {mapping === "document_collaborator_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
                             {valueMap[mapping].map((item: string) => (
                               <Text
@@ -567,23 +611,58 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex gap-4">
               <div className="w-1/2">
-                <div>
+                <div className="mb-6">
                   <Text
                     label="Latest document file"
                     className="mb-2 text-lg font-semibold text-black"
                   />
-                  <ConfigProvider
-                    theme={{
-                      token: {
-                        colorPrimary: "#0AADE0",
-                      },
-                    }}
-                  >
-                    <Upload {...props}>
-                      <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
-                    </Upload>
-                  </ConfigProvider>
+                  <Controller
+                    control={control}
+                    name="document_path"
+                    render={() => (
+                      <ConfigProvider
+                        theme={{
+                          token: {
+                            colorPrimary: "#0AADE0",
+                          },
+                        }}
+                      >
+                        <Upload {...props}>
+                          <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
+                        </Upload>
+                      </ConfigProvider>
+                    )}
+                  />
                 </div>
+
+                <div className="mb-6">
+                  <Controller
+                    control={control}
+                    name="document_note"
+                    render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                      <InputTextArea
+                        onChange={onChange}
+                        error={error}
+                        onBlur={onBlur}
+                        value={value}
+                        name="document_note"
+                        placeholder="Enter note"
+                        classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                        classNameLabel="block text-xl font-semibold text-black"
+                        label="Note"
+                      />
+                    )}
+                  />
+                </div>
+
+                <Button
+                  type="button"
+                  loading={isPendingUpdateDocument}
+                  disabled={isPendingUpdateDocument}
+                  onClick={handleSubmit(onSubmit)}
+                  label="Save"
+                  className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                />
               </div>
 
               <div className="w-1/2">
@@ -591,23 +670,24 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   .filter(
                     (filtering) =>
                       ![
-                        "recipients",
-                        "file",
-                        "docName",
+                        "document_recipient_id",
+                        "document_path",
+                        "document_name",
                         "memoId",
-                        "textRemarks",
+                        "text_remarks",
                         "status",
-                        "tags",
-                        "docNumber",
+                        "document_tag_id",
+                        "document_number",
                         "id",
-                        "numericRemarks",
-                        "collaborators",
+                        "numeric_remarks",
+                        "document_collaborator_id",
                         "latestApproval",
+                        "document_note",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
                     const labelMap: any = {
-                      authorizers: "Authorizers",
+                      document_authorizer_id: "Authorizers",
                     };
 
                     const valueMap: any = watch();
@@ -618,7 +698,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           label={labelMap[mapping]}
                           className="text-xl font-semibold text-black"
                         />
-                        {mapping === "collaborators" ? (
+                        {mapping === "document_collaborator_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
                             {valueMap[mapping].map((item: string) => (
                               <Text
@@ -668,22 +748,22 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   .filter(
                     (filtering) =>
                       ![
-                        "file",
-                        "docName",
+                        "document_path",
+                        "document_name",
                         "memoId",
-                        "textRemarks",
+                        "text_remarks",
                         "status",
-                        "tags",
-                        "docNumber",
+                        "document_tag_id",
+                        "document_number",
                         "id",
-                        "numericRemarks",
-                        "collaborators",
+                        "numeric_remarks",
+                        "document_collaborator_id",
                         "latestApproval",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
                     const labelMap: any = {
-                      recipients: "Recipients",
+                      document_recipient_id: "Recipients",
                     };
 
                     const valueMap: any = watch();
@@ -694,7 +774,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           label={labelMap[mapping]}
                           className="text-xl font-semibold text-black"
                         />
-                        {mapping === "collaborators" ? (
+                        {mapping === "document_collaborator_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
                             {valueMap[mapping].map((item: string) => (
                               <Text
@@ -838,14 +918,14 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               rules={{
                 required: "Document name is required",
               }}
-              name="docName"
+              name="document_name"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <Input
                   onChange={onChange}
                   error={error}
                   onBlur={onBlur}
                   value={value}
-                  name="docName"
+                  name="document_name"
                   type="text"
                   required
                   placeholder="Enter document name"
@@ -863,14 +943,14 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               rules={{
                 required: "Tag name is required",
               }}
-              name="docNumber"
+              name="document_number"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <Input
                   onChange={onChange}
                   error={error}
                   onBlur={onBlur}
                   value={value}
-                  name="docNumber"
+                  name="document_number"
                   type="text"
                   required
                   placeholder="Enter document number"
@@ -888,14 +968,14 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               rules={{
                 required: "Text remarks is required",
               }}
-              name="textRemarks"
+              name="text_remarks"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <Input
                   onChange={onChange}
                   error={error}
                   onBlur={onBlur}
                   value={value}
-                  name="textRemarks"
+                  name="text_remarks"
                   type="text"
                   placeholder="Enter text remarks"
                   classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
@@ -911,15 +991,19 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               control={control}
               rules={{
                 required: "numeric remarks is required",
+                pattern: {
+                  value: /^[0-9]+$/,
+                  message: "Please enter a number",
+                },
               }}
-              name="numericRemarks"
+              name="numeric_remarks"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <Input
                   onChange={onChange}
                   error={error}
                   onBlur={onBlur}
                   value={value}
-                  name="numericRemarks"
+                  name="numeric_remarks"
                   type="number"
                   placeholder="Enter numeric remarks"
                   classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
@@ -936,16 +1020,17 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               rules={{
                 required: "tags is required",
               }}
-              name="tags"
+              name="document_tag_id"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Select
                   mode="multiple"
-                  name="tags"
+                  name="document_tag_id"
                   onChange={onChange}
                   tokenSeparators={[","]}
                   value={value}
                   styleSelect={{ width: "100%" }}
                   required
+                  error={error}
                   label="Tags"
                   classNameLabel="block text-xl font-semibold text-black"
                 />
@@ -959,16 +1044,17 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               rules={{
                 required: "Collaborators is required",
               }}
-              name="collaborators"
+              name="document_collaborator_id"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Select
-                  mode="tags"
-                  name="collaborators"
+                  mode="multiple"
+                  name="document_collaborator_id"
                   onChange={onChange}
                   tokenSeparators={[","]}
                   value={value}
                   styleSelect={{ width: "100%" }}
                   required
+                  error={error}
                   label="Collaborators"
                   classNameLabel="block text-xl font-semibold text-black"
                 />
@@ -1026,7 +1112,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               rules={{
                 required: "Document name is required",
               }}
-              name="docName"
+              name="document_path"
               render={({ field: { onChange } }) => (
                 <ConfigProvider
                   theme={{
@@ -1036,8 +1122,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   }}
                 >
                   <Upload
-                    name="docName"
-                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                    name="document_path"
                     headers={{
                       authorization: "authorization-text",
                     }}
@@ -1047,7 +1132,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                       }
                       if (info.file.status === "done") {
                         message.success(`${info.file.name} file uploaded successfully`);
-                        onChange(JSON.stringify(info));
+                        onChange(info);
                       } else if (info.file.status === "error") {
                         message.error(`${info.file.name} file upload failed.`);
                       }
@@ -1066,16 +1151,17 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               rules={{
                 required: "Authorizers is required",
               }}
-              name="authorizers"
+              name="document_authorizer_id"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Select
-                  mode="tags"
-                  name="authorizers"
+                  mode="multiple"
+                  name="document_authorizer_id"
                   onChange={onChange}
                   tokenSeparators={[","]}
                   value={value}
                   styleSelect={{ width: "100%" }}
                   required
+                  error={error}
                   label="Authorizers"
                   classNameLabel="block text-xl font-semibold text-black"
                 />
@@ -1133,16 +1219,17 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               rules={{
                 required: "Recipients is required",
               }}
-              name="recipients"
+              name="document_recipient_id"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Select
-                  mode="tags"
-                  name="recipients"
+                  mode="multiple"
+                  name="document_recipient_id"
                   onChange={onChange}
                   tokenSeparators={[","]}
                   value={value}
                   styleSelect={{ width: "100%" }}
                   required
+                  error={error}
                   label="Recipients"
                   classNameLabel="block text-xl font-semibold text-black"
                 />

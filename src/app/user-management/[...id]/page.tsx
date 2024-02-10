@@ -340,7 +340,6 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                             name="avatar_path"
                             listType="picture-circle"
                             showUploadList={false}
-                            action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
                             beforeUpload={beforeUpload}
                             onChange={(info) => {
                               setAvatarPathRaw(info);
@@ -445,7 +444,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                           required: "tags is required",
                         }}
                         name="tags"
-                        render={({ field: { onChange, value } }) => (
+                        render={({ field: { onChange, value }, fieldState: { error } }) => (
                           <Select
                             mode="multiple"
                             name="tags"
@@ -455,6 +454,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                             options={dataTag}
                             styleSelect={{ width: "100%" }}
                             required
+                            error={error}
                             label="Tags"
                             classNameLabel="block text-lg font-semibold text-black"
                           />
