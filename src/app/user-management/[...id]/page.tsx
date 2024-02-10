@@ -1,5 +1,4 @@
 "use client";
-import { DeleteModal } from "@/app/documents/page";
 import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
