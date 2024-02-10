@@ -1,5 +1,5 @@
-import { OptionInterface } from "@/app/dashboard/page";
 import { ChangeEventHandler, FocusEventHandler } from "react";
+import { OptionInterface } from "./common";
 
 export interface InputSelectInterface {
   className: string;

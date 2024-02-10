@@ -1,5 +1,5 @@
 "use client";
-import { LayoutInterface } from "@/interface/Layout";
+import { LayoutInterface, MenuItem } from "@/interface/Layout";
 
 import { useLogOut } from "@/services/auth/useAuth";
 import {
@@ -24,29 +24,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
-
-type MenuItem = Required<MenuProps>["items"][number];
+import { DataAuthType } from "@/interface/login.interface";
+import { CompanyProfileType } from "@/interface/settings.interface";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
-
-export interface UserProfile {
-  username: string;
-  email: string;
-  avatar_path: string;
-}
-
-export interface CompanyProfile {
-  companyAddress: string;
-  companyImagePath: string;
-  companyName: string;
-  createdAt: string;
-  deletedAt: null;
-  email: string;
-  id: number;
-  npwp: string;
-  tel: string;
-  updatedAt: string;
-}
 
 const { useBreakpoint } = Grid;
 
@@ -56,8 +37,8 @@ const Layout = ({ ...props }: LayoutInterface) => {
   const { lg, xl, xxl, xs } = screens;
 
   const router = useRouter();
-  const [userProfile, setUserProfile] = useState<UserProfile>();
-  const [companyProfile, setCompanyProfile] = useState<CompanyProfile>();
+  const [userProfile, setUserProfile] = useState<DataAuthType>();
+  const [companyProfile, setCompanyProfile] = useState<CompanyProfileType>();
   const [collapsed, setCollapsed] = useState(false);
 
   const pathname = usePathname();

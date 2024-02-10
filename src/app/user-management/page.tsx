@@ -18,11 +18,6 @@ import { Controller, useForm } from "react-hook-form";
 
 type ColumnsType<T> = TableProps<T>["columns"];
 
-export interface OptionInterface {
-  label: string;
-  value: string;
-}
-
 interface ModuleRoleType {
   id: number;
   roleId: number;

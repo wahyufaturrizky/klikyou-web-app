@@ -4,6 +4,13 @@ import Input from "@/components/Input";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
+import { FormFilterValues } from "@/interface/common";
+import {
+  AddAndEditDocumentTagsModal,
+  DataDocumentTags,
+  DeleteDocumentTagsModal,
+  FormDocumentTagsValues,
+} from "@/interface/documents-tag.interface";
 import {
   useCreateDocumentTags,
   useDeleteDocumentTags,
@@ -15,47 +22,11 @@ import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps, message
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-export interface OptionInterface {
-  label: string;
-  value: string;
-}
-
-export interface DataDocumentTags {
-  id: string;
-  code: string;
-  name: string;
-  updatedAt: Date;
-}
-
-type FormFilterValues = {
-  search: string;
-  date: string;
-  status: string[];
-  role: string[];
-};
-
-type FormAddAndEditValues = {
-  code: string;
-  name: string;
-};
-
-interface DeleteModal {
-  open: boolean;
-  type: string;
-  data: { data?: DataDocumentTags[] | null; selectedRowKeys: Key[] } | null;
-}
-
-interface AddAndEditModal {
-  open: boolean;
-  data: DataDocumentTags | null;
-  type: "add" | "edit" | "";
-}
-
 export default function DocumentTagsPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
-  const [isShowDelete, setShowDelete] = useState<DeleteModal>({
+  const [isShowDelete, setShowDelete] = useState<DeleteDocumentTagsModal>({
     open: false,
     type: "selection",
     data: {
@@ -63,7 +34,7 @@ export default function DocumentTagsPage() {
       selectedRowKeys: [],
     },
   });
-  const [stateAddAndEditModal, setStateAddAndEditModal] = useState<AddAndEditModal>({
+  const [stateAddAndEditModal, setStateAddAndEditModal] = useState<AddAndEditDocumentTagsModal>({
     open: false,
     data: null,
     type: "add",
@@ -98,7 +69,7 @@ export default function DocumentTagsPage() {
     handleSubmit: handleSubmitAddAndEdit,
     reset: resetAddAndEdit,
     setValue: setValueAddAndEdit,
-  } = useForm<FormAddAndEditValues>({
+  } = useForm<FormDocumentTagsValues>({
     defaultValues: {
       code: "",
       name: "",
@@ -365,7 +336,7 @@ export default function DocumentTagsPage() {
       },
     });
 
-  const onSubmitAddAndEdit = (data: FormAddAndEditValues) => {
+  const onSubmitAddAndEdit = (data: FormDocumentTagsValues) => {
     if (stateAddAndEditModal.type === "add") {
       createDocumentTags(data);
     } else {

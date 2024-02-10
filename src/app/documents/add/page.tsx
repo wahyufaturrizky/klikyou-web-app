@@ -1,10 +1,10 @@
 "use client";
-import { TagType } from "@/app/profile/page";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
+import { TagType } from "@/interface/common";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import { useCreateDocument } from "@/services/document/useDocument";
 import { useUserList } from "@/services/user-list/useUserList";

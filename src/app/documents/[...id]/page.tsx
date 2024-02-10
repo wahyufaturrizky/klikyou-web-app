@@ -1,5 +1,4 @@
 "use client";
-import { TagType } from "@/app/profile/page";
 import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
@@ -37,6 +36,7 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormDocumentValues, UserListType } from "../add/page";
 import { DataDocumentsType } from "../page";
+import { TagType } from "@/interface/common";
 
 interface DataTypeActionHistory {
   id: string;

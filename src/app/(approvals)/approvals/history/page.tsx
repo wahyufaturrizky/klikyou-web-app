@@ -24,11 +24,6 @@ import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-export interface OptionInterface {
-  label: string;
-  value: string;
-}
-
 export interface DataHistoryType {
   id: string;
   docName: string;

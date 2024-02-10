@@ -5,6 +5,7 @@ import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
+import { FormFilterValues } from "@/interface/common";
 import { useToReview, useUpdateToReview } from "@/services/to-view/useToReview";
 import { DownloadIcon, FilterIcon, PeopleCheckIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
@@ -23,11 +24,6 @@ import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-export interface OptionInterface {
-  label: string;
-  value: string;
-}
-
 export interface DataToDoType {
   id: string;
   docName: string;
@@ -36,13 +32,6 @@ export interface DataToDoType {
   status: string;
   updatedAt: string;
 }
-
-type FormFilterValues = {
-  search: string;
-  date: string;
-  status: string[];
-  role: string[];
-};
 
 interface ApproveAndRejectModal {
   open: boolean;

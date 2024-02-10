@@ -16,41 +16,8 @@ import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
-
-type FormProfileValues = {
-  avatar_path: string;
-  first_name: string;
-  last_name: string;
-  tags: string[];
-  role_id: string;
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword?: string;
-};
-
-interface DataType {
-  key: string;
-  createdBy: string;
-  createdAt: Date;
-  updatedBy: string;
-  updatedAt: Date;
-}
-
-interface RoleType {
-  createdAt: string;
-  id: number;
-  levelName: string;
-  updatedAt: string;
-}
-
-export interface TagType {
-  id: number;
-  code: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { DataMyProfileType, FormProfileValues } from "@/interface/my-profile.interface";
+import { RoleType, TagType } from "@/interface/common";
 
 export default function ProfilePage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -137,7 +104,7 @@ export default function ProfilePage() {
       },
     });
 
-  const columns: TableProps<DataType>["columns"] = [
+  const columns: TableProps<DataMyProfileType>["columns"] = [
     {
       title: "Created By",
       dataIndex: "createdBy",
@@ -190,15 +157,7 @@ export default function ProfilePage() {
     },
   ];
 
-  const data: DataType[] = [
-    {
-      key: "1",
-      createdBy: "Zayn Malik",
-      createdAt: new Date(),
-      updatedBy: "Edward Timothy",
-      updatedAt: new Date(),
-    },
-  ];
+  const data: DataMyProfileType[] = [];
 
   const onSubmit = (data: FormProfileValues) => {
     delete data.confirmPassword;

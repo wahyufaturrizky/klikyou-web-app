@@ -3,20 +3,12 @@ import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import Text from "@/components/Text";
+import { FormLoginValues, ResLogin } from "@/interface/login.interface";
 import { useSignIn } from "@/services/auth/useAuth";
 import { message } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-
-type FormLoginValues = {
-  email: string;
-  password: string;
-};
-
-interface ResLogin {
-  data: any;
-}
 
 export default function Home() {
   const [messageApi, contextHolder] = message.useMessage();

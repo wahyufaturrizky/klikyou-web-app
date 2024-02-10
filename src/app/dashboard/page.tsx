@@ -4,25 +4,8 @@ import { useDashboard } from "@/services/dashboard/useDashboard";
 import { CheckIcon, FileIcon, RejectIcon, StopwatchIcon } from "@/style/icon";
 import { ConfigProvider, DatePicker, Grid, Spin, Table, TableProps } from "antd";
 import { useEffect, useState } from "react";
-import { CompanyProfile } from "@/components/Layout";
-
-export interface OptionInterface {
-  label: string;
-  value: string;
-}
-
-interface DataShortestType {
-  id: string;
-  docName: string;
-  status: string;
-  elapsedTime: string;
-}
-
-interface DataLowestType {
-  id: string;
-  docName: string;
-  rejected: string;
-}
+import { DataLowestType, DataShortestType } from "@/interface/dashboard.interface";
+import { CompanyProfileType } from "@/interface/settings.interface";
 
 const { useBreakpoint } = Grid;
 
@@ -31,7 +14,7 @@ export default function DashboardPage() {
 
   const { lg, xl, xxl, xs } = screens;
 
-  const [companyProfile, setCompanyProfile] = useState<CompanyProfile>();
+  const [companyProfile, setCompanyProfile] = useState<CompanyProfileType>();
 
   useEffect(() => {
     const handleFetchCompanyProfile = () => {

@@ -11,15 +11,7 @@ import { Spin, Upload, message } from "antd";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
-
-type FormSettingsValues = {
-  company_image_path: string;
-  company_name: string;
-  company_address: string;
-  npwp: string;
-  tel: string;
-  email: string;
-};
+import { FormSettingsValues } from "@/interface/settings.interface";
 
 export default function SettingsPage() {
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);

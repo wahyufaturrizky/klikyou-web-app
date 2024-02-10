@@ -4,6 +4,12 @@ import Input from "@/components/Input";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
+import { FormFilterValues } from "@/interface/common";
+import {
+  DataDocumentsType,
+  FormFilterValuesDocuments,
+  DeleteDocumentModal,
+} from "@/interface/documents.interface";
 import { useDeleteBulkDocument, useDocument } from "@/services/document/useDocument";
 import { FileIcon, FilterIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
@@ -11,104 +17,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { DataDocumentTags } from "../(master)/master/documents-tags/page";
-
-export interface OptionInterface {
-  label: string;
-  value: string;
-}
-
-interface MakersType {
-  id: number;
-  roleId: number;
-  avatarPath: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  tags: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: null;
-}
-
-interface DocumentCollaboratorsType {
-  id: number;
-  roleId: number;
-  avatarPath: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  tags: null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: null;
-}
-
-interface DocumentAuthorizersType {
-  id: number;
-  roleId: number;
-  avatarPath: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  tags: null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: null;
-}
-
-interface DocumentRecipientsType {
-  id: number;
-  roleId: number;
-  avatarPath: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  tags: null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: null;
-}
-
-export interface DataDocumentsType {
-  document_name: string;
-  id: string;
-  document_number: string;
-  text_remakrs: string;
-  numeric_remarks: number;
-  documentPath: string;
-  currentUserRole: string;
-  status: string;
-  action: string;
-  makers: MakersType;
-  document_tags: DataDocumentTags[];
-  document_collaborators: DocumentCollaboratorsType[];
-  document_authorizers: DocumentAuthorizersType[];
-  document_recipients: DocumentRecipientsType[];
-}
-
-type FormFilterValues = {
-  search: string;
-  date: string;
-  status: string[];
-  currentUserRole: string[];
-};
-
-export interface DeleteModal {
-  open: boolean;
-  type: string;
-  data?: { data: DataDocumentsType[] | null; selectedRowKeys: Key[] } | null;
-}
 
 export default function DocumentsPage() {
   const router = useRouter();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [isShowDelete, setShowDelete] = useState<DeleteModal>({
+  const [isShowDelete, setShowDelete] = useState<DeleteDocumentModal>({
     open: false,
     type: "selection",
     data: {
@@ -132,7 +46,7 @@ export default function DocumentsPage() {
     handleSubmit: handleSubmitFilter,
     getValues: getValuesFilter,
     reset: resetFilter,
-  } = useForm<FormFilterValues>({
+  } = useForm<FormFilterValuesDocuments>({
     defaultValues: {
       search: "",
       date: "",

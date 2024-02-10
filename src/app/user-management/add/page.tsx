@@ -16,6 +16,7 @@ import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useRole } from "@/services/role/useRole";
 import { DefaultOptionType } from "antd/es/cascader";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
+import { RoleType } from "@/interface/common";
 
 type FormProfileValues = {
   avatar_path: string;
@@ -28,13 +29,6 @@ type FormProfileValues = {
   password: string;
   confirmPassword?: string;
 };
-
-interface RoleType {
-  createdAt: string;
-  id: number;
-  levelName: string;
-  updatedAt: string;
-}
 
 interface TagType {
   id: number;

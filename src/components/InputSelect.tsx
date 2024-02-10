@@ -1,6 +1,6 @@
-import { OptionInterface } from "@/app/dashboard/page";
 import { InputSelectInterface } from "@/interface/InputSelect";
 import Text from "./Text";
+import { OptionInterface } from "@/interface/common";
 
 const InputSelect = ({
   name,
