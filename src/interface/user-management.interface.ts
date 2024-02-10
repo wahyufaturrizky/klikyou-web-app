@@ -1,5 +1,6 @@
 import { TableProps } from "antd";
 import { Key } from "react";
+import { DataHistoryType } from "@/interface/history.interface";
 
 export type ColumnsType<T> = TableProps<T>["columns"];
 
@@ -38,4 +39,25 @@ export interface DeleteUserManagementModal {
   open: boolean;
   type: string;
   data: { data: DataUserManagementType[] | null; selectedRowKeys: Key[] } | null;
+}
+
+export interface DeleteUserManagementModal {
+  open: boolean;
+  type: string;
+  data: { data: DataUserManagementType[] | null; selectedRowKeys: Key[] } | null;
+}
+
+export interface DataType {
+  key: string;
+  createdBy: string;
+  createdAt: Date;
+  updatedBy: string;
+  updatedAt: Date;
+}
+
+export interface RoleIdType {
+  createdAt: string;
+  id: number;
+  levelName: string;
+  updatedAt: string;
 }

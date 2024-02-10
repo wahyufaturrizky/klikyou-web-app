@@ -21,41 +21,13 @@ import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-
-type FormProfileValues = {
-  avatar_path: string;
-  first_name: string;
-  last_name: string;
-  tags: string[];
-  role_id: string;
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword?: string;
-};
-
-interface role_idType {
-  createdAt: string;
-  id: number;
-  levelName: string;
-  updatedAt: string;
-}
-
-interface TagType {
-  id: number;
-  code: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface DataType {
-  key: string;
-  createdBy: string;
-  createdAt: Date;
-  updatedBy: string;
-  updatedAt: Date;
-}
+import {
+  DataType,
+  DeleteUserManagementModal,
+  RoleIdType,
+} from "@/interface/user-management.interface";
+import { FormProfileValues } from "@/interface/my-profile.interface";
+import { TagType } from "@/interface/common";
 
 export default function ViewEditProfile({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -70,7 +42,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
   const [isEdit, setIsEdit] = useState<boolean>(id[0] === "view" ? false : true);
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
-  const [isShowDelete, setShowDelete] = useState<DeleteModal>({
+  const [isShowDelete, setShowDelete] = useState<DeleteUserManagementModal>({
     open: false,
     type: "selection",
     data: {
@@ -99,7 +71,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
   useEffect(() => {
     const fetchDatarole = () => {
       setDatarole(
-        dataListrole_id.data.data.map((itemrole_id: role_idType) => ({
+        dataListrole_id.data.data.map((itemrole_id: RoleIdType) => ({
           label: itemrole_id.levelName,
           value: itemrole_id.id,
         }))

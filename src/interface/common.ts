@@ -30,3 +30,11 @@ export type FormApproveRejectValues = {
   note: string;
   file: string;
 };
+
+export interface TagType {
+  id: number;
+  code: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
