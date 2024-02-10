@@ -5,6 +5,12 @@ import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
+import { FormApproveRejectValues, FormFilterValues } from "@/interface/common";
+import {
+  ApproveAndRejectHistoryModal,
+  DataHistoryType,
+  DeleteHistoryModal,
+} from "@/interface/history.interface";
 import { useDeleteHistory, useHistory } from "@/services/history/useHistory";
 import { useUpdateToReview } from "@/services/to-view/useToReview";
 import { FileIcon, FilterIcon, SearchIcon, TrashIcon } from "@/style/icon";
@@ -24,46 +30,12 @@ import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-export interface DataHistoryType {
-  id: string;
-  docName: string;
-  tags: string[];
-  file: string;
-  status: string;
-  updatedAt: string;
-  approval: string;
-}
-
-type FormFilterValues = {
-  search: string;
-  date: string;
-  status: string[];
-  role: string[];
-};
-
-interface ApproveAndRejectModal {
-  open: boolean;
-  data: DataHistoryType | null;
-  type: "approve" | "reject" | "";
-}
-
-type FormApproveRejectValues = {
-  note: string;
-  file: string;
-};
-
-interface DeleteModal {
-  open: boolean;
-  type: string;
-  data: { data: DataHistoryType[] | null; selectedRowKeys: Key[] } | null;
-}
-
 export default function HistoryPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<DataHistoryType[]>([]);
 
-  const [isShowDelete, setShowDelete] = useState<DeleteModal>({
+  const [isShowDelete, setShowDelete] = useState<DeleteHistoryModal>({
     open: false,
     type: "selection",
     data: {
@@ -75,7 +47,7 @@ export default function HistoryPage() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
-    useState<ApproveAndRejectModal>({
+    useState<ApproveAndRejectHistoryModal>({
       open: false,
       data: null,
       type: "approve",

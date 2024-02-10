@@ -34,32 +34,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { FormDocumentValues, UserListType } from "../add/page";
-import { DataDocumentsType } from "../page";
 import { TagType } from "@/interface/common";
-
-interface DataTypeActionHistory {
-  id: string;
-  user: string;
-  act: string;
-  note: string;
-  file: string;
-  fileVerHistory: string;
-  updatedAt: Date;
-}
-
-interface DataTypeInfo {
-  id: string;
-  createBy: string;
-  createAt: Date;
-  updateBy: string;
-  updatedAt: Date;
-}
-
-interface EditModal {
-  open: boolean;
-  data?: DataTypeInfo | null;
-}
+import {
+  DataDocumentsType,
+  DataTypeActionHistory,
+  DataTypeInfo,
+  EditDocumentsModal,
+  FormDocumentValues,
+  UserListType,
+} from "@/interface/documents.interface";
 
 export default function ViewEditDocumentPage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -74,18 +57,18 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
   const [isEdit, setIsEdit] = useState<boolean>(id[0] === "view" ? false : true);
 
-  const [stateEditDocumentInfoModal, setStateEditDocumentInfoModal] = useState<EditModal>({
+  const [stateEditDocumentInfoModal, setStateEditDocumentInfoModal] = useState<EditDocumentsModal>({
     open: false,
     data: null,
   });
 
-  const [stateEditFileAndAuthModal, setStateEditFileAndAuthModal] = useState<EditModal>({
+  const [stateEditFileAndAuthModal, setStateEditFileAndAuthModal] = useState<EditDocumentsModal>({
     open: false,
     data: null,
   });
 
   const [stateEditRecipientAndProcessModal, setStateEditRecipientAndProcessModal] =
-    useState<EditModal>({
+    useState<EditDocumentsModal>({
       open: false,
       data: null,
     });
@@ -1030,6 +1013,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   value={value}
                   styleSelect={{ width: "100%" }}
                   required
+                  options={dataTag}
                   error={error}
                   label="Tags"
                   classNameLabel="block text-xl font-semibold text-black"
@@ -1050,6 +1034,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   mode="multiple"
                   name="document_collaborator_id"
                   onChange={onChange}
+                  options={dataCollaborator}
                   tokenSeparators={[","]}
                   value={value}
                   styleSelect={{ width: "100%" }}
@@ -1157,6 +1142,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   mode="multiple"
                   name="document_authorizer_id"
                   onChange={onChange}
+                  options={dataAuthorizer}
                   tokenSeparators={[","]}
                   value={value}
                   styleSelect={{ width: "100%" }}
@@ -1225,6 +1211,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   mode="multiple"
                   name="document_recipient_id"
                   onChange={onChange}
+                  options={dataRecipient}
                   tokenSeparators={[","]}
                   value={value}
                   styleSelect={{ width: "100%" }}

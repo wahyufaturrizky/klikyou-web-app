@@ -5,7 +5,8 @@ import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormFilterValues } from "@/interface/common";
+import { FormApproveRejectValues, FormFilterValues } from "@/interface/common";
+import { ApproveAndRejectToDoModal, DataToDoType } from "@/interface/to-do.interface";
 import { useToReview, useUpdateToReview } from "@/services/to-view/useToReview";
 import { DownloadIcon, FilterIcon, PeopleCheckIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
@@ -24,26 +25,6 @@ import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-export interface DataToDoType {
-  id: string;
-  docName: string;
-  tags: string[];
-  file: string;
-  status: string;
-  updatedAt: string;
-}
-
-interface ApproveAndRejectModal {
-  open: boolean;
-  data: DataToDoType | null;
-  type: "approve" | "reject" | "";
-}
-
-type FormApproveRejectValues = {
-  note: string;
-  file: string;
-};
-
 export default function ToDoPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
@@ -52,22 +33,13 @@ export default function ToDoPage() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
-    useState<ApproveAndRejectModal>({
+    useState<ApproveAndRejectToDoModal>({
       open: false,
       data: null,
       type: "approve",
     });
 
-  const [dataToReview, setDataToReview] = useState<DataToDoType[]>([
-    {
-      id: "101",
-      docName: "Project Antasari - Quotation",
-      tags: ["Quotation", "Project"],
-      file: "file.pdf",
-      status: "(3/3) Fully approved",
-      updatedAt: "30/06/2023 17:00",
-    },
-  ]);
+  const [dataToReview, setDataToReview] = useState<DataToDoType[]>([]);
 
   const [tableParams, setTableParams] = useState<any>({
     pagination: {

@@ -1,5 +1,4 @@
-import { DataDocumentsType } from "@/interface/documents.interface";
-import { Key } from "react";
+import { DataHistoryType } from "@/interface/history.interface";
 export interface OptionInterface {
   label: string;
   value: string;
@@ -25,4 +24,9 @@ export type FormFilterValues = {
   date: string;
   status: string[];
   role: string[];
+};
+
+export type FormApproveRejectValues = {
+  note: string;
+  file: string;
 };

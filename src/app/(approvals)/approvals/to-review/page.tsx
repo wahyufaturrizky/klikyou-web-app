@@ -5,7 +5,8 @@ import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormFilterValues } from "@/interface/common";
+import { FormApproveRejectValues, FormFilterValues } from "@/interface/common";
+import { ApproveAndRejectToReviewModal, DataToReviewType } from "@/interface/to-review.interface";
 import { useToReview, useUpdateToReview } from "@/services/to-view/useToReview";
 import { CheckIcon, FileIcon, FilterIcon, RejectIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
@@ -24,26 +25,6 @@ import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-export interface DataToReviewType {
-  id: string;
-  docName: string;
-  tags: string[];
-  file: string;
-  status: string;
-  updatedAt: string;
-}
-
-interface ApproveAndRejectModal {
-  open: boolean;
-  data: DataToReviewType | null;
-  type: "approve" | "reject" | "";
-}
-
-type FormApproveRejectValues = {
-  note: string;
-  file: string;
-};
-
 export default function ToReviewPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
@@ -52,7 +33,7 @@ export default function ToReviewPage() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
-    useState<ApproveAndRejectModal>({
+    useState<ApproveAndRejectToReviewModal>({
       open: false,
       data: null,
       type: "approve",

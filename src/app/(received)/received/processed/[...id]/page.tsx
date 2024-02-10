@@ -1,12 +1,12 @@
 "use client";
-import { DataDocumentsType } from "@/app/documents/page";
 import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
-import { useDocumentById } from "@/services/document/useDocument";
+import { DataTypeActionHistory, DataTypeInfo } from "@/interface/history.interface";
+import { FormProcessedValues, DataProcessedType } from "@/interface/processed.interface";
 import { useToReviewById } from "@/services/to-view/useToReview";
-import { BackIcon, CheckIcon, DownloadIcon, OpenIcon, ProtectIcon, RejectIcon } from "@/style/icon";
+import { BackIcon, DownloadIcon, OpenIcon, ProtectIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
   Button as ButtonAntd,
@@ -23,54 +23,15 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-type FormDocumentValues = {
-  docName: string;
-  id: string;
-  status: string;
-  latestApproval: string;
-  memoId: string;
-  docNumber: string;
-  textRemarks: string;
-  numericRemarks: string;
-  tags: string[];
-  collaborators: string[];
-  file: string;
-  authorizers: string[];
-  recipients: string[];
-};
-
-interface DataTypeActionHistory {
-  id: string;
-  user: string;
-  act: string;
-  note: string;
-  file: string;
-  fileVerHistory: string;
-  updatedAt: Date;
-}
-
-interface DataTypeInfo {
-  id: string;
-  createBy: string;
-  createAt: Date;
-  updateBy: string;
-  updatedAt: Date;
-}
-
-interface EditModal {
-  open: boolean;
-  data?: DataTypeInfo | null;
-}
-
 export default function ViewEditDocumentPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { id } = params;
 
   const [isEdit, setIsEdit] = useState<boolean>(id[0] === "view" ? false : true);
 
-  const [dataById, setDataById] = useState<DataDocumentsType>();
+  const [dataById, setDataById] = useState<DataProcessedType>();
 
-  const { setValue, watch } = useForm<FormDocumentValues>({
+  const { setValue, watch } = useForm<FormProcessedValues>({
     defaultValues: {
       docName: "",
       docNumber: "",
@@ -114,7 +75,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
   useEffect(() => {
     if (dataToReviewById) {
       setDataById(
-        dataToReviewById.data.data.map((item: DataDocumentsType) => ({
+        dataToReviewById.data.data.map((item: DataProcessedType) => ({
           ...item,
           key: item.id,
         }))

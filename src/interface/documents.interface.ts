@@ -84,3 +84,44 @@ export interface DeleteDocumentModal {
   type: string;
   data?: { data: DataDocumentsType[] | null; selectedRowKeys: Key[] } | null;
 }
+
+export type FormDocumentValues = {
+  document_name: string;
+  document_number: string;
+  text_remarks: string;
+  numeric_remarks: string;
+  document_tag_id: string[];
+  document_collaborator_id: string[];
+  document_path: any;
+  document_authorizer_id: string[];
+  document_recipient_id: string[];
+  document_note: string;
+};
+
+export interface UserListType {
+  id: string;
+  label: string;
+}
+
+export interface DataTypeActionHistory {
+  id: string;
+  user: string;
+  act: string;
+  note: string;
+  file: string;
+  fileVerHistory: string;
+  updatedAt: Date;
+}
+
+export interface DataTypeInfo {
+  id: string;
+  createBy: string;
+  createAt: Date;
+  updateBy: string;
+  updatedAt: Date;
+}
+
+export interface EditDocumentsModal {
+  open: boolean;
+  data?: DataTypeInfo | null;
+}

@@ -5,6 +5,7 @@ import InputTextArea from "@/components/InputTextArea";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import { TagType } from "@/interface/common";
+import { FormDocumentValues, UserListType } from "@/interface/documents.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import { useCreateDocument } from "@/services/document/useDocument";
 import { useUserList } from "@/services/user-list/useUserList";
@@ -15,24 +16,6 @@ import { DefaultOptionType } from "antd/es/cascader";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-
-export type FormDocumentValues = {
-  document_name: string;
-  document_number: string;
-  text_remarks: string;
-  numeric_remarks: string;
-  document_tag_id: string[];
-  document_collaborator_id: string[];
-  document_path: any;
-  document_authorizer_id: string[];
-  document_recipient_id: string[];
-  document_note: string;
-};
-
-export interface UserListType {
-  id: string;
-  label: string;
-}
 
 export default function AddDocumentPage() {
   const router = useRouter();

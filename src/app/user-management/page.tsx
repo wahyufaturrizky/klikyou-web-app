@@ -5,6 +5,13 @@ import Input from "@/components/Input";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
+import { FormFilterValues } from "@/interface/common";
+import {
+  ColumnsType,
+  DataUserManagementType,
+  DeleteUserManagementModal,
+  RoleResType,
+} from "@/interface/user-management.interface";
 import {
   useDeleteBulkUserManagement,
   useUserManagement,
@@ -16,57 +23,11 @@ import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-type ColumnsType<T> = TableProps<T>["columns"];
-
-interface ModuleRoleType {
-  id: number;
-  roleId: number;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface RoleResType {
-  id: number;
-  levelName: string;
-  createdAt: string;
-  updatedAt: string;
-  modules: ModuleRoleType[];
-}
-
-export interface DataUserManagementType {
-  id: string;
-  name: string;
-  email: string;
-  level: string;
-  firstName: string;
-  username: string;
-  roleId: number;
-  lastName: string;
-  role: RoleResType;
-  tags: string;
-  avatarPath: string;
-  updateAt: Date;
-}
-
-type FormFilterValues = {
-  search: string;
-  date: string;
-  status: string[];
-  role: string[];
-};
-
-interface DeleteModal {
-  open: boolean;
-  type: string;
-  data: { data: DataUserManagementType[] | null; selectedRowKeys: Key[] } | null;
-}
-
 export default function UserManagementPage() {
   const router = useRouter();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [isShowDelete, setShowDelete] = useState<DeleteModal>({
+  const [isShowDelete, setShowDelete] = useState<DeleteUserManagementModal>({
     open: false,
     type: "selection",
     data: {
