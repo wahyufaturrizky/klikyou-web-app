@@ -270,7 +270,7 @@ export default function ToReviewPage() {
         ...tableParams,
         pagination: {
           ...tableParams.pagination,
-          total: meta.total,
+          total: meta?.total,
         },
       });
     }

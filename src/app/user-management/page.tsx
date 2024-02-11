@@ -193,7 +193,7 @@ export default function UserManagementPage() {
         ...tableParams,
         pagination: {
           ...tableParams.pagination,
-          total: meta.total,
+          total: meta?.total,
         },
       });
     }

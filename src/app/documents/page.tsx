@@ -9,6 +9,7 @@ import {
   DataDocumentsType,
   FormFilterValuesDocuments,
   DeleteDocumentModal,
+  DocumentTagsType,
 } from "@/interface/documents.interface";
 import { useDeleteBulkDocument, useDocument } from "@/services/document/useDocument";
 import { FileIcon, FilterIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
@@ -67,9 +68,9 @@ export default function DocumentsPage() {
     },
     {
       title: "Document name",
-      dataIndex: "document_name",
+      dataIndex: "documentName",
       sorter: true,
-      key: "document_name",
+      key: "documentName",
       render: (text: string, record: DataDocumentsType) => {
         const { id } = record;
         return (
@@ -81,16 +82,17 @@ export default function DocumentsPage() {
     },
     {
       title: "Tags",
-      dataIndex: "document_tags",
-      key: "document_tags",
+      dataIndex: "documentTags",
+      key: "documentTags",
       sorter: true,
-      render: (text: string[]) => (
+      render: (text: DocumentTagsType[]) => (
         <div className="flex gap-2 flex-wrap">
-          {text?.map((item: string) => {
+          {text?.map((item: DocumentTagsType) => {
+            const { id } = item;
             return (
               <Text
-                key={item}
-                label={item}
+                key={id}
+                label={String(id)}
                 className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
               />
             );
@@ -163,10 +165,10 @@ export default function DocumentsPage() {
       ),
     },
     {
-      title: "Update At",
-      dataIndex: "updateAt",
+      title: "Updated At",
+      dataIndex: "updatedAt",
       sorter: true,
-      key: "updateAt",
+      key: "updatedAt",
       render: (text: Date) => UseDateTimeFormat(text),
     },
   ];
@@ -221,7 +223,7 @@ export default function DocumentsPage() {
         ...tableParams,
         pagination: {
           ...tableParams.pagination,
-          total: meta.total,
+          total: meta?.total,
         },
       });
     }

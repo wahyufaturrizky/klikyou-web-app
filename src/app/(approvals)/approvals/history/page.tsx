@@ -245,7 +245,7 @@ export default function HistoryPage() {
         ...tableParams,
         pagination: {
           ...tableParams.pagination,
-          total: meta.total,
+          total: meta?.total,
         },
       });
     }

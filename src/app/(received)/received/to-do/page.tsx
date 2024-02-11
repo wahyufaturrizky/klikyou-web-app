@@ -222,7 +222,7 @@ export default function ToDoPage() {
         ...tableParams,
         pagination: {
           ...tableParams.pagination,
-          total: meta.total,
+          total: meta?.total,
         },
       });
     }

@@ -1,5 +1,4 @@
 import { FormFilterValues } from "@/interface/common";
-import { DataDocumentTags } from "@/interface/documents-tag.interface";
 import { Key } from "react";
 
 export interface FormFilterValuesDocuments extends FormFilterValues {
@@ -21,6 +20,28 @@ interface MakersType {
 }
 
 interface DocumentCollaboratorsType {
+  id: 1;
+  documentId: 1;
+  userId: 1;
+  createdAt: "2024-02-10T07:55:14.000+00:00";
+  updatedAt: "2024-02-10T07:55:14.000+00:00";
+  user: UserDocumentType;
+}
+
+interface DocumentLogType {
+  id: number;
+  documentId: number;
+  userId: number;
+  supportingDocumentPath: null;
+  supportingDocumentNote: null;
+  versionHistoryDocumentPath: string;
+  action: string;
+  createdAt: string;
+  updatedAt: string;
+  user: UserDocumentType;
+}
+
+interface UserDocumentType {
   id: number;
   roleId: number;
   avatarPath: string;
@@ -36,47 +57,51 @@ interface DocumentCollaboratorsType {
 
 interface DocumentAuthorizersType {
   id: number;
-  roleId: number;
-  avatarPath: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  tags: null;
+  documentId: number;
+  userId: number;
+  status: string;
   createdAt: string;
   updatedAt: string;
-  deletedAt: null;
+  user: UserDocumentType;
 }
 
 interface DocumentRecipientsType {
   id: number;
-  roleId: number;
-  avatarPath: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  tags: null;
+  documentId: number;
+  userId: number;
   createdAt: string;
   updatedAt: string;
-  deletedAt: null;
+  user: UserDocumentType;
+}
+
+export interface DocumentTagsType {
+  id: number;
+  masterDocumentTagId: number;
+  documentId: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface DataDocumentsType {
-  document_name: string;
-  id: string;
-  document_number: string;
-  text_remakrs: string;
-  numeric_remarks: number;
+  id: number;
+  userId: number;
+  documentName: string;
+  documentNumber: string;
+  textRemarks: string;
+  numericRemarks: number;
   documentPath: string;
+  documentNote: string;
+  action: string;
+  createdAt: string;
+  updatedAt: string;
   currentUserRole: string;
   status: string;
-  action: string;
   makers: MakersType;
-  document_tags: DataDocumentTags[];
-  document_collaborators: DocumentCollaboratorsType[];
-  document_authorizers: DocumentAuthorizersType[];
-  document_recipients: DocumentRecipientsType[];
+  documentTags: DocumentTagsType[];
+  documentAuthorizers: DocumentAuthorizersType[];
+  documentRecipients: DocumentRecipientsType[];
+  documentCollaborators: DocumentCollaboratorsType[];
+  documentLogs: DocumentLogType[];
 }
 
 export interface DeleteDocumentModal {
