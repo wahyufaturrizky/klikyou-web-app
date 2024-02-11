@@ -185,6 +185,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
   useEffect(() => {
     if (dataDocument) {
+      console.log("🚀 ~ useEffect ~ dataDocument:", dataDocument);
       const { data: mainData } = dataDocument;
       const { data: rawData } = mainData;
 
@@ -209,21 +210,21 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       setValue("document_note", documentNote);
       setValue(
         "document_tag_id",
-        documentTags.map((itemTag: DocumentTagsType) => itemTag.id)
+        documentTags.map((itemTag: DocumentTagsType) => itemTag.masterDocumentTagId)
       );
       setValue(
         "document_collaborator_id",
         documentCollaborators.map(
-          (itemCollaborator: DocumentCollaboratorsType) => itemCollaborator.id
+          (itemCollaborator: DocumentCollaboratorsType) => itemCollaborator.userId
         )
       );
       setValue(
         "document_authorizer_id",
-        documentAuthorizers.map((itemAuthorizer: DocumentAuthorizersType) => itemAuthorizer.id)
+        documentAuthorizers.map((itemAuthorizer: DocumentAuthorizersType) => itemAuthorizer.userId)
       );
       setValue(
         "document_recipient_id",
-        documentRecipients.map((itemRecipient: DocumentRecipientsType) => itemRecipient.id)
+        documentRecipients.map((itemRecipient: DocumentRecipientsType) => itemRecipient.userId)
       );
     }
   }, [dataDocument]);
@@ -503,13 +504,17 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                         />
                         {mapping === "document_tag_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
-                            {valueMap[mapping].map((item: string) => (
-                              <Text
-                                key={item}
-                                label={item}
-                                className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
-                              />
-                            ))}
+                            {dataTag
+                              .filter((filteringTag: DefaultOptionType) =>
+                                valueMap.document_tag_id.includes(filteringTag.value)
+                              )
+                              .map((item: DefaultOptionType) => (
+                                <Text
+                                  key={String(item.label)}
+                                  label={String(item.label)}
+                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                />
+                              ))}
                           </div>
                         ) : mapping === "status" ? (
                           <Text
@@ -563,13 +568,17 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                         />
                         {mapping === "document_collaborator_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
-                            {valueMap[mapping].map((item: string) => (
-                              <Text
-                                key={item}
-                                label={item}
-                                className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
-                              />
-                            ))}
+                            {dataCollaborator
+                              .filter((filteringTag: DefaultOptionType) =>
+                                valueMap.document_collaborator_id.includes(filteringTag.value)
+                              )
+                              .map((item: DefaultOptionType) => (
+                                <Text
+                                  key={String(item.label)}
+                                  label={String(item.label)}
+                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                />
+                              ))}
                           </div>
                         ) : mapping === "status" ? (
                           <Text
@@ -631,22 +640,14 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                         >
                           <Upload
                             name="document_path"
-                            fileList={[
-                              {
-                                uid: "123",
-                                name: value,
-                                status: "done",
-                                url: value,
-                              },
-                            ]}
                             headers={{ authorization: "authorization-text" }}
                             onChange={(info) => {
                               if (info.file.status !== "uploading") {
                                 console.log(info.file, info.fileList);
                               }
                               if (info.file.status === "done") {
-                                message.success(`${info.file.name} file uploaded successfully`);
                                 onChange(info);
+                                message.success(`${info.file.name} file uploaded successfully`);
                               } else if (info.file.status === "error") {
                                 message.error(`${info.file.name} file upload failed.`);
                               }
@@ -733,15 +734,19 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           label={labelMap[mapping]}
                           className="text-xl font-semibold text-black"
                         />
-                        {mapping === "document_collaborator_id" ? (
+                        {mapping === "document_authorizer_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
-                            {valueMap[mapping].map((item: string) => (
-                              <Text
-                                key={item}
-                                label={item}
-                                className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
-                              />
-                            ))}
+                            {dataAuthorizer
+                              .filter((filteringTag: DefaultOptionType) =>
+                                valueMap.document_authorizer_id.includes(filteringTag.value)
+                              )
+                              .map((item: DefaultOptionType) => (
+                                <Text
+                                  key={String(item.label)}
+                                  label={String(item.label)}
+                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                />
+                              ))}
                           </div>
                         ) : mapping === "status" ? (
                           <Text
@@ -811,15 +816,19 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           label={labelMap[mapping]}
                           className="text-xl font-semibold text-black"
                         />
-                        {mapping === "document_collaborator_id" ? (
+                        {mapping === "document_recipient_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
-                            {valueMap[mapping].map((item: string) => (
-                              <Text
-                                key={item}
-                                label={item}
-                                className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
-                              />
-                            ))}
+                            {dataRecipient
+                              .filter((filteringTag: DefaultOptionType) =>
+                                valueMap.document_recipient_id.includes(filteringTag.value)
+                              )
+                              .map((item: DefaultOptionType) => (
+                                <Text
+                                  key={String(item.label)}
+                                  label={String(item.label)}
+                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                />
+                              ))}
                           </div>
                         ) : mapping === "status" ? (
                           <Text
@@ -1153,6 +1162,8 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               }}
               name="document_path"
               render={({ field: { onChange, value } }) => {
+                console.log("@value", value);
+
                 return (
                   <ConfigProvider
                     theme={{
@@ -1163,14 +1174,6 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   >
                     <Upload
                       name="document_path"
-                      fileList={[
-                        {
-                          uid: value,
-                          name: value,
-                          status: "done",
-                          url: value,
-                        },
-                      ]}
                       headers={{
                         authorization: "authorization-text",
                       }}
@@ -1179,8 +1182,8 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           console.log(info.file, info.fileList);
                         }
                         if (info.file.status === "done") {
-                          message.success(`${info.file.name} file uploaded successfully`);
                           onChange(info);
+                          message.success(`${info.file.name} file uploaded successfully`);
                         } else if (info.file.status === "error") {
                           message.error(`${info.file.name} file upload failed.`);
                         }

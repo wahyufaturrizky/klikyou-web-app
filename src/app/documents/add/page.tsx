@@ -21,6 +21,7 @@ export default function AddDocumentPage() {
   const router = useRouter();
 
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+
   const [dataCollaborator, setDataCollaborator] = useState<DefaultOptionType[]>([]);
   const [dataAuthorizer, setDataAuthorizer] = useState<DefaultOptionType[]>([]);
   const [dataRecipient, setDataRecipient] = useState<DefaultOptionType[]>([]);
