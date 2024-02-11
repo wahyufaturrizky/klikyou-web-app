@@ -75,7 +75,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       data: null,
     });
 
-  const { control, handleSubmit, setValue, watch } = useForm<FormDocumentValues>({
+  const { control, handleSubmit, setValue, watch, getValues } = useForm<FormDocumentValues>({
     defaultValues: {
       document_name: "",
       document_number: "",
@@ -660,25 +660,35 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   />
                 </div>
 
-                <div className="mb-6">
-                  <Controller
-                    control={control}
-                    name="document_note"
-                    render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                      <InputTextArea
-                        onChange={onChange}
-                        error={error}
-                        onBlur={onBlur}
-                        value={value}
-                        name="document_note"
-                        placeholder="Enter note"
-                        classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                        classNameLabel="block text-xl font-semibold text-black"
-                        label="Note"
-                      />
-                    )}
-                  />
-                </div>
+                {isEdit ? (
+                  <div className="mb-6">
+                    <Controller
+                      control={control}
+                      name="document_note"
+                      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                        <InputTextArea
+                          onChange={onChange}
+                          error={error}
+                          onBlur={onBlur}
+                          value={value}
+                          name="document_note"
+                          placeholder="Enter note"
+                          classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                          classNameLabel="block text-xl font-semibold text-black"
+                          label="Note"
+                        />
+                      )}
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-6">
+                    <Text label="Note" className="text-xl font-semibold text-black" />
+                    <Text
+                      label={getValues("document_note")}
+                      className="text-base font-normal text-black"
+                    />
+                  </div>
+                )}
 
                 <Button
                   type="button"
