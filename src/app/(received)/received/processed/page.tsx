@@ -214,7 +214,7 @@ export default function ProcessedPage() {
       const { data: dataListTable, meta } = mainData;
 
       setDataProcessed(
-        dataListTable.map((item: DataProcessedType) => ({
+        dataListTable?.map((item: DataProcessedType) => ({
           ...item,
           key: item.id,
         }))

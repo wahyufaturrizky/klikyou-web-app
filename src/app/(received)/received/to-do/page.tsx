@@ -212,7 +212,7 @@ export default function ToDoPage() {
       const { data: dataListTable, meta } = mainData;
 
       setDataToReview(
-        dataListTable.map((item: DataToDoType) => ({
+        dataListTable?.map((item: DataToDoType) => ({
           ...item,
           key: item.id,
         }))

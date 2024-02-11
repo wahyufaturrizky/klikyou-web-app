@@ -260,7 +260,7 @@ export default function ToReviewPage() {
       const { data: dataListTable, meta } = mainData;
 
       setDataToReview(
-        dataListTable.map((item: DataToReviewType) => ({
+        dataListTable?.map((item: DataToReviewType) => ({
           ...item,
           key: item.id,
         }))

@@ -180,7 +180,7 @@ export default function DocumentTagsPage() {
       const { data: dataListTable, meta } = mainData;
 
       setDataDocTag(
-        dataListTable.map((item: DataDocumentTags) => ({
+        dataListTable?.map((item: DataDocumentTags) => ({
           ...item,
           key: item.id,
         }))

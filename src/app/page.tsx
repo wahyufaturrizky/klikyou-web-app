@@ -67,7 +67,7 @@ export default function Home() {
 
   return (
     <section>
-      <div className="flex min-h-full flex-1 flex-col justify-start px-6 py-12 lg:px-8 bg-img-login bg-center h-lvh">
+      <div className="flex min-h-full flex-1 flex-col justify-start px-6 py-12 lg:px-8 bg-img-login bg-center h-lvh overflow-auto">
         {contextHolder}
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <ImageNext

@@ -211,7 +211,7 @@ export default function DocumentsPage() {
       const { data: dataListTable, meta } = mainData;
 
       setDataListDocument(
-        dataListTable.map((item: DataDocumentsType) => ({
+        dataListTable?.map((item: DataDocumentsType) => ({
           ...item,
           key: item.id,
         }))

@@ -183,7 +183,7 @@ export default function UserManagementPage() {
       const { data: dataListTable, meta } = mainData;
 
       setDataListUser(
-        dataListTable.map((item: DataUserManagementType) => ({
+        dataListTable?.map((item: DataUserManagementType) => ({
           ...item,
           key: item.id,
         }))

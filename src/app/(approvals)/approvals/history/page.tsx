@@ -235,7 +235,7 @@ export default function HistoryPage() {
       const { data: dataListTable, meta } = mainData;
 
       setDataHistory(
-        dataListTable.map((item: DataHistoryType) => ({
+        dataListTable?.map((item: DataHistoryType) => ({
           ...item,
           key: item.id,
         }))
