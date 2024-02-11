@@ -42,6 +42,10 @@ import {
   EditDocumentsModal,
   FormDocumentValues,
   UserListType,
+  DocumentTagsType,
+  DocumentCollaboratorsType,
+  DocumentAuthorizersType,
+  DocumentRecipientsType,
 } from "@/interface/documents.interface";
 
 export default function ViewEditDocumentPage({ params }: { params: { id: string } }) {
@@ -204,8 +208,51 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
   useEffect(() => {
     if (dataDocument) {
+      const { data: mainData } = dataDocument;
+      const { data: rawData } = mainData;
+
+      const {
+        documentName,
+        documentNumber,
+        textRemarks,
+        numericRemarks,
+        documentTags,
+        documentCollaborators,
+        documentAuthorizers,
+        documentRecipients,
+        documentPath,
+        documentNote,
+      } = rawData;
+
+      setValue("document_name", documentName);
+      setValue("document_number", documentNumber);
+      setValue("text_remarks", textRemarks);
+      setValue("numeric_remarks", numericRemarks);
+      setValue("document_path", documentPath);
+      setValue("document_note", documentNote);
+      setValue(
+        "document_tag_id",
+        documentTags.map((itemTag: DocumentTagsType) => itemTag.id)
+      );
+      setValue(
+        "document_collaborator_id",
+        documentCollaborators.map(
+          (itemCollaborator: DocumentCollaboratorsType) => itemCollaborator.id
+        )
+      );
+      setValue(
+        "document_authorizer_id",
+        documentAuthorizers.map((itemAuthorizer: DocumentAuthorizersType) => itemAuthorizer.id)
+      );
+      setValue(
+        "document_recipient_id",
+        documentRecipients.map((itemRecipient: DocumentRecipientsType) => itemRecipient.id)
+      );
+
+      console.log("🚀 ~ useEffect ~ dataDocument:", dataDocument);
+
       setDataById(
-        dataDocument.data.data.map((item: DataDocumentsType) => ({
+        dataDocument?.data?.data?.map((item: DataDocumentsType) => ({
           ...item,
           key: item.id,
         }))

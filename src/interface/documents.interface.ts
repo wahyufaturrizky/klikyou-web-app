@@ -19,7 +19,7 @@ interface MakersType {
   deletedAt: null;
 }
 
-interface DocumentCollaboratorsType {
+export interface DocumentCollaboratorsType {
   id: 1;
   documentId: 1;
   userId: 1;
@@ -55,7 +55,7 @@ interface UserDocumentType {
   deletedAt: null;
 }
 
-interface DocumentAuthorizersType {
+export interface DocumentAuthorizersType {
   id: number;
   documentId: number;
   userId: number;
@@ -65,7 +65,7 @@ interface DocumentAuthorizersType {
   user: UserDocumentType;
 }
 
-interface DocumentRecipientsType {
+export interface DocumentRecipientsType {
   id: number;
   documentId: number;
   userId: number;
