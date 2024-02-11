@@ -129,24 +129,6 @@ export default function AddDocumentPage() {
     createDocument(formdata);
   };
 
-  const props: UploadProps = {
-    name: "document_path",
-    headers: {
-      authorization: "authorization-text",
-    },
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === "done") {
-        setValue("document_path", info);
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-  };
-
   const isLoading = isPendingTag || isPendingUserList;
 
   return (
@@ -344,7 +326,7 @@ export default function AddDocumentPage() {
                   <Controller
                     control={control}
                     name="document_path"
-                    render={() => (
+                    render={({ field: { onChange } }) => (
                       <ConfigProvider
                         theme={{
                           token: {
@@ -352,7 +334,21 @@ export default function AddDocumentPage() {
                           },
                         }}
                       >
-                        <Upload {...props}>
+                        <Upload
+                          name="document_path"
+                          headers={{ authorization: "authorization-text" }}
+                          onChange={(info) => {
+                            if (info.file.status !== "uploading") {
+                              console.log(info.file, info.fileList);
+                            }
+                            if (info.file.status === "done") {
+                              message.success(`${info.file.name} file uploaded successfully`);
+                              onChange(info);
+                            } else if (info.file.status === "error") {
+                              message.error(`${info.file.name} file upload failed.`);
+                            }
+                          }}
+                        >
                           <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
                         </Upload>
                       </ConfigProvider>

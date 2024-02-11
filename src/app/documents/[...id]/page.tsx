@@ -6,6 +6,18 @@ import InputTextArea from "@/components/InputTextArea";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
+import { TagType } from "@/interface/common";
+import {
+  DataTypeActionHistory,
+  DataTypeInfo,
+  DocumentAuthorizersType,
+  DocumentCollaboratorsType,
+  DocumentRecipientsType,
+  DocumentTagsType,
+  EditDocumentsModal,
+  FormDocumentValues,
+  UserListType,
+} from "@/interface/documents.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import { useDocumentById, useUpdateDocument } from "@/services/document/useDocument";
 import { useUserList } from "@/services/user-list/useUserList";
@@ -26,7 +38,6 @@ import {
   Table,
   TableProps,
   Upload,
-  UploadProps,
   message,
 } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
@@ -34,19 +45,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { TagType } from "@/interface/common";
-import {
-  DataDocumentsType,
-  DataTypeActionHistory,
-  DataTypeInfo,
-  EditDocumentsModal,
-  FormDocumentValues,
-  UserListType,
-  DocumentTagsType,
-  DocumentCollaboratorsType,
-  DocumentAuthorizersType,
-  DocumentRecipientsType,
-} from "@/interface/documents.interface";
 
 export default function ViewEditDocumentPage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -76,8 +74,6 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       open: false,
       data: null,
     });
-
-  const [dataById, setDataById] = useState<DataDocumentsType>();
 
   const { control, handleSubmit, setValue, watch } = useForm<FormDocumentValues>({
     defaultValues: {
@@ -183,25 +179,6 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     updateDocument(formdata);
   };
 
-  const props: UploadProps = {
-    name: "document_path",
-    action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188",
-    headers: {
-      authorization: "authorization-text",
-    },
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} file uploaded successfully`);
-        setValue("document_path", info);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-  };
-
   const { data: dataDocument, isPending: isPendingDocument } = useDocumentById({
     id: id[1],
   });
@@ -247,15 +224,6 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       setValue(
         "document_recipient_id",
         documentRecipients.map((itemRecipient: DocumentRecipientsType) => itemRecipient.id)
-      );
-
-      console.log("🚀 ~ useEffect ~ dataDocument:", dataDocument);
-
-      setDataById(
-        dataDocument?.data?.data?.map((item: DataDocumentsType) => ({
-          ...item,
-          key: item.id,
-        }))
       );
     }
   }, [dataDocument]);
@@ -649,19 +617,46 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   <Controller
                     control={control}
                     name="document_path"
-                    render={() => (
-                      <ConfigProvider
-                        theme={{
-                          token: {
-                            colorPrimary: "#0AADE0",
-                          },
-                        }}
-                      >
-                        <Upload {...props}>
-                          <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
-                        </Upload>
-                      </ConfigProvider>
-                    )}
+                    rules={{
+                      required: "Document name is required",
+                    }}
+                    render={({ field: { onChange, value } }) => {
+                      return (
+                        <ConfigProvider
+                          theme={{
+                            token: {
+                              colorPrimary: "#0AADE0",
+                            },
+                          }}
+                        >
+                          <Upload
+                            name="document_path"
+                            fileList={[
+                              {
+                                uid: "123",
+                                name: value,
+                                status: "done",
+                                url: value,
+                              },
+                            ]}
+                            headers={{ authorization: "authorization-text" }}
+                            onChange={(info) => {
+                              if (info.file.status !== "uploading") {
+                                console.log(info.file, info.fileList);
+                              }
+                              if (info.file.status === "done") {
+                                message.success(`${info.file.name} file uploaded successfully`);
+                                onChange(info);
+                              } else if (info.file.status === "error") {
+                                message.error(`${info.file.name} file upload failed.`);
+                              }
+                            }}
+                          >
+                            <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
+                          </Upload>
+                        </ConfigProvider>
+                      );
+                    }}
                   />
                 </div>
 
@@ -789,6 +784,8 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                         "numeric_remarks",
                         "document_collaborator_id",
                         "latestApproval",
+                        "document_note",
+                        "document_authorizer_id",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -1145,35 +1142,45 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                 required: "Document name is required",
               }}
               name="document_path"
-              render={({ field: { onChange } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                    },
-                  }}
-                >
-                  <Upload
-                    name="document_path"
-                    headers={{
-                      authorization: "authorization-text",
-                    }}
-                    onChange={(info) => {
-                      if (info.file.status !== "uploading") {
-                        console.log(info.file, info.fileList);
-                      }
-                      if (info.file.status === "done") {
-                        message.success(`${info.file.name} file uploaded successfully`);
-                        onChange(info);
-                      } else if (info.file.status === "error") {
-                        message.error(`${info.file.name} file upload failed.`);
-                      }
+              render={({ field: { onChange, value } }) => {
+                return (
+                  <ConfigProvider
+                    theme={{
+                      token: {
+                        colorPrimary: "#0AADE0",
+                      },
                     }}
                   >
-                    <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
-                  </Upload>
-                </ConfigProvider>
-              )}
+                    <Upload
+                      name="document_path"
+                      fileList={[
+                        {
+                          uid: value,
+                          name: value,
+                          status: "done",
+                          url: value,
+                        },
+                      ]}
+                      headers={{
+                        authorization: "authorization-text",
+                      }}
+                      onChange={(info) => {
+                        if (info.file.status !== "uploading") {
+                          console.log(info.file, info.fileList);
+                        }
+                        if (info.file.status === "done") {
+                          message.success(`${info.file.name} file uploaded successfully`);
+                          onChange(info);
+                        } else if (info.file.status === "error") {
+                          message.error(`${info.file.name} file upload failed.`);
+                        }
+                      }}
+                    >
+                      <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
+                    </Upload>
+                  </ConfigProvider>
+                );
+              }}
             />
           </div>
 
