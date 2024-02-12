@@ -476,7 +476,6 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                         };
 
                         const valueMap: any = watch();
-                        console.log("@valueMap", valueMap);
 
                         return (
                           <div className="mb-6" key={mapping}>

@@ -11,7 +11,7 @@ import { useCreateDocument } from "@/services/document/useDocument";
 import { useUserList } from "@/services/user-list/useUserList";
 import { BackIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
-import { Button as ButtonAntd, ConfigProvider, Spin, Upload, UploadProps, message } from "antd";
+import { Button as ButtonAntd, ConfigProvider, Spin, Upload, message } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -274,7 +274,7 @@ export default function AddDocumentPage() {
                           onBlur={onBlur}
                           value={value}
                           name="numeric_remarks"
-                          type="text"
+                          type="number"
                           required
                           placeholder="Enter numeric remarks"
                           classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
