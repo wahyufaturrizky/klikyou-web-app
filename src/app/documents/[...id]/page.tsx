@@ -139,12 +139,27 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     id: id[1],
     options: {
       onSuccess: () => {
+        refetchDocumentId();
+
         messageApi.open({
           type: "success",
           content: "Update document success",
         });
 
-        // router.back();
+        setStateEditDocumentInfoModal({
+          open: false,
+          data: null,
+        });
+
+        setStateEditFileAndAuthModal({
+          open: false,
+          data: null,
+        });
+
+        setStateEditRecipientAndProcessModal({
+          open: false,
+          data: null,
+        });
       },
     },
   });
@@ -170,7 +185,10 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     formdata.append("text_remarks", text_remarks || "");
     formdata.append("document_note", document_note || "");
     formdata.append("numeric_remarks", numeric_remarks || "");
-    formdata.append("document_path", document_path.file.originFileObj);
+    formdata.append(
+      "document_path",
+      document_path?.file?.originFileObj ? document_path.file.originFileObj : document_path
+    );
     formdata.append("document_tag_id", document_tag_id.join(","));
     formdata.append("document_collaborator_id", document_collaborator_id.join(","));
     formdata.append("document_authorizer_id", document_authorizer_id.join(","));
@@ -179,13 +197,16 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     updateDocument(formdata);
   };
 
-  const { data: dataDocument, isPending: isPendingDocument } = useDocumentById({
+  const {
+    data: dataDocument,
+    isPending: isPendingDocument,
+    refetch: refetchDocumentId,
+  } = useDocumentById({
     id: id[1],
   });
 
   useEffect(() => {
     if (dataDocument) {
-      console.log("🚀 ~ useEffect ~ dataDocument:", dataDocument);
       const { data: mainData } = dataDocument;
       const { data: rawData } = mainData;
 
@@ -505,7 +526,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                         {mapping === "document_tag_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
                             {dataTag
-                              .filter((filteringTag: DefaultOptionType) =>
+                              ?.filter((filteringTag: DefaultOptionType) =>
                                 valueMap.document_tag_id.includes(filteringTag.value)
                               )
                               .map((item: DefaultOptionType) => (
@@ -623,42 +644,9 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                     label="Latest document file"
                     className="mb-2 text-lg font-semibold text-black"
                   />
-                  <Controller
-                    control={control}
-                    name="document_path"
-                    rules={{
-                      required: "Document name is required",
-                    }}
-                    render={({ field: { onChange, value } }) => {
-                      return (
-                        <ConfigProvider
-                          theme={{
-                            token: {
-                              colorPrimary: "#0AADE0",
-                            },
-                          }}
-                        >
-                          <Upload
-                            name="document_path"
-                            headers={{ authorization: "authorization-text" }}
-                            onChange={(info) => {
-                              if (info.file.status !== "uploading") {
-                                console.log(info.file, info.fileList);
-                              }
-                              if (info.file.status === "done") {
-                                onChange(info);
-                                message.success(`${info.file.name} file uploaded successfully`);
-                              } else if (info.file.status === "error") {
-                                message.error(`${info.file.name} file upload failed.`);
-                              }
-                            }}
-                          >
-                            <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
-                          </Upload>
-                        </ConfigProvider>
-                      );
-                    }}
-                  />
+                  <Link rel="noopener noreferrer" target="_blank" href={getValues("document_path")}>
+                    {getValues("document_path")}
+                  </Link>
                 </div>
 
                 {isEdit ? (
@@ -690,15 +678,6 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                     />
                   </div>
                 )}
-
-                <Button
-                  type="button"
-                  loading={isPendingUpdateDocument}
-                  disabled={isPendingUpdateDocument}
-                  onClick={handleSubmit(onSubmit)}
-                  label="Save"
-                  className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                />
               </div>
 
               <div className="w-1/2">
@@ -944,13 +923,10 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
               <Button
                 type="button"
-                onClick={() =>
-                  setStateEditDocumentInfoModal({
-                    open: false,
-                    data: null,
-                  })
-                }
+                onClick={handleSubmit(onSubmit)}
                 label="Yes"
+                loading={isPendingUpdateDocument}
+                disabled={isPendingUpdateDocument}
                 className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               />
             </div>
@@ -1112,7 +1088,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
         </div>
       </Modal>
 
-      {/* Edit file and authorizers */}
+      {/* Update file and authorizers */}
 
       <Modal
         title="Update file and authorizers"
@@ -1140,13 +1116,10 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
               <Button
                 type="button"
-                onClick={() =>
-                  setStateEditFileAndAuthModal({
-                    open: false,
-                    data: null,
-                  })
-                }
+                onClick={handleSubmit(onSubmit)}
                 label="Yes"
+                loading={isPendingUpdateDocument}
+                disabled={isPendingUpdateDocument}
                 className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               />
             </div>
@@ -1162,8 +1135,6 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               }}
               name="document_path"
               render={({ field: { onChange, value } }) => {
-                console.log("@value", value);
-
                 return (
                   <ConfigProvider
                     theme={{
@@ -1224,7 +1195,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
         </div>
       </Modal>
 
-      {/* Edit recipients and process */}
+      {/* Update recipients and process */}
 
       <Modal
         title="Update recipients and process"
@@ -1251,13 +1222,10 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               />
 
               <Button
+                loading={isPendingUpdateDocument}
+                disabled={isPendingUpdateDocument}
                 type="button"
-                onClick={() =>
-                  setStateEditRecipientAndProcessModal({
-                    open: false,
-                    data: null,
-                  })
-                }
+                onClick={handleSubmit(onSubmit)}
                 label="Yes"
                 className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               />
