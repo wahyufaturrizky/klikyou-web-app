@@ -5,12 +5,9 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
+import { RoleType } from "@/interface/common";
 import { FormProfileValues } from "@/interface/my-profile.interface";
-import {
-  DataType,
-  DeleteUserManagementModal,
-  RoleIdType,
-} from "@/interface/user-management.interface";
+import { DataType, DeleteUserManagementModal } from "@/interface/user-management.interface";
 import { DataUserTags } from "@/interface/user-tag.interface";
 import { useRole } from "@/services/role/useRole";
 import {
@@ -28,7 +25,6 @@ import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { RoleType } from "@/interface/common";
 
 export default function ViewEditProfile({ params }: { params: { id: string } }) {
   const { id } = params;
