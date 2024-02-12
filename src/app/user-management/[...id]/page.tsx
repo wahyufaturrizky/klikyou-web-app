@@ -218,6 +218,8 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
           updatedBy: updatedBy?.user?.username,
           updatedAt: updatedBy?.user?.updatedAt,
           id: id,
+          createdByAvatarPath: createBy?.user?.avatarPath,
+          updatedByAvatarPath: updatedBy?.user?.avatarPath,
         },
       ]);
 

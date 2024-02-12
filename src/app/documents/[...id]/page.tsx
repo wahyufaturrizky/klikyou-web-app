@@ -250,6 +250,8 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
           createdAt: makers.createdAt,
           updatedBy: makers.username,
           updatedAt: makers.updatedAt,
+          createdByAvatarPath: "",
+          updatedByAvatarPath: "",
           id: makers.id,
         },
       ]);

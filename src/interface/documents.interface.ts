@@ -21,6 +21,8 @@ export interface MakersType {
 
 export interface DataInfoDocumentType {
   createdBy: string;
+  createdByAvatarPath: string;
+  updatedByAvatarPath: string;
   createdAt: string;
   updatedBy: string;
   updatedAt: string;

@@ -68,4 +68,6 @@ export interface DataInfoUserManagementType {
   updatedBy: string;
   updatedAt: string;
   id: number;
+  createdByAvatarPath: string;
+  updatedByAvatarPath: string;
 }
