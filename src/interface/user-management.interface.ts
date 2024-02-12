@@ -61,3 +61,11 @@ export interface RoleIdType {
   levelName: string;
   updatedAt: string;
 }
+
+export interface DataInfoUserManagementType {
+  createdBy: string;
+  createdAt: string;
+  updatedBy: string;
+  updatedAt: string;
+  id: number;
+}

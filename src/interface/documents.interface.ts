@@ -132,24 +132,30 @@ export interface UserListType {
 }
 
 export interface DataTypeActionHistory {
-  id: string;
-  user: string;
-  act: string;
-  note: string;
-  file: string;
-  fileVerHistory: string;
-  updatedAt: Date;
+  id: number;
+  documentId: number;
+  userId: number;
+  supportingDocumentPath: null;
+  supportingDocumentNote: null;
+  versionHistoryDocumentPath: string;
+  action: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface DataTypeInfo {
-  id: string;
-  createBy: string;
-  createAt: Date;
-  updateBy: string;
-  updatedAt: Date;
+export interface DataInfoType {
+  id: number;
+  documentId: number;
+  userId: number;
+  supportingDocumentPath: null;
+  supportingDocumentNote: null;
+  versionHistoryDocumentPath: string;
+  action: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface EditDocumentsModal {
   open: boolean;
-  data?: DataTypeInfo | null;
+  data?: null;
 }

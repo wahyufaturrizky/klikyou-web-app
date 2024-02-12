@@ -5,11 +5,11 @@ import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
-import UseDateTimeFormat from "@/hook/useDateFormat";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import { TagType } from "@/interface/common";
 import {
+  DataInfoType,
   DataTypeActionHistory,
-  DataTypeInfo,
   DocumentAuthorizersType,
   DocumentCollaboratorsType,
   DocumentRecipientsType,
@@ -51,6 +51,8 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
   const { id } = params;
 
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataInfo, setDataInfo] = useState<DataInfoType[]>([]);
+  const [dataLogHistory, setDataLogHistory] = useState<DataTypeActionHistory[]>([]);
 
   const [dataCollaborator, setDataCollaborator] = useState<DefaultOptionType[]>([]);
   const [dataAuthorizer, setDataAuthorizer] = useState<DefaultOptionType[]>([]);
@@ -231,7 +233,10 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
         status,
         id,
         action,
+        documentLogs,
       } = rawData;
+
+      setDataLogHistory(documentLogs);
 
       setValue("document_name", documentName);
       setValue("action", action);
@@ -263,7 +268,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     }
   }, [dataDocument]);
 
-  const columns: TableProps<DataTypeActionHistory>["columns"] = [
+  const columnsLogHistory: TableProps<DataTypeActionHistory>["columns"] = [
     {
       title: "User",
       dataIndex: "user",
@@ -357,13 +362,11 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       title: "Updated At",
       dataIndex: "updatedAt",
       key: "updatedAt",
-      render: (text: Date) => UseDateTimeFormat(text),
+      render: (text: Date) => UseConvertDateFormat(text),
     },
   ];
 
-  const data: DataTypeActionHistory[] = [];
-
-  const columnsInfo: TableProps<DataTypeInfo>["columns"] = [
+  const columnsInfo: TableProps<DataInfoType>["columns"] = [
     {
       title: "User",
       dataIndex: "user",
@@ -457,17 +460,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       title: "Updated At",
       dataIndex: "updatedAt",
       key: "updatedAt",
-      render: (text: Date) => UseDateTimeFormat(text),
-    },
-  ];
-
-  const dataInfo: DataTypeInfo[] = [
-    {
-      id: "1",
-      createBy: "asdasd",
-      createAt: new Date(),
-      updateBy: "asdasd",
-      updatedAt: new Date(),
+      render: (text: Date) => UseConvertDateFormat(text),
     },
   ];
 
@@ -876,8 +869,8 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   />
                 </div>
               )}
-              columns={columns}
-              dataSource={data}
+              columns={columnsLogHistory}
+              dataSource={dataLogHistory}
               pagination={false}
               rowKey={(record) => record.id}
             />

@@ -4,10 +4,15 @@ import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
-import UseDateTimeFormat from "@/hook/useDateFormat";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import { RoleType } from "@/interface/common";
 import { FormProfileValues } from "@/interface/my-profile.interface";
-import { DataType, DeleteUserManagementModal } from "@/interface/user-management.interface";
+import {
+  DataInfoUserManagementType,
+  DataType,
+  DeleteUserManagementModal,
+  ColumnsType,
+} from "@/interface/user-management.interface";
 import { DataUserTags } from "@/interface/user-tag.interface";
 import { useRole } from "@/services/role/useRole";
 import {
@@ -32,6 +37,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
   const [messageApi, contextHolder] = message.useMessage();
 
   const [dataRole, setDatarole] = useState<DefaultOptionType[]>([]);
+  const [dataInfo, setDataInfo] = useState<DataInfoUserManagementType[]>([]);
   const [dataUserTag, setDataUserTag] = useState<DefaultOptionType[]>([]);
 
   const router = useRouter();
@@ -95,7 +101,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
     }
   }, [dataListRole, dataListUserTag]);
 
-  const columns: TableProps<DataType>["columns"] = [
+  const columnsDataInfo: ColumnsType<DataInfoUserManagementType> = [
     {
       title: "Created By",
       dataIndex: "createdBy",
@@ -119,7 +125,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
       title: "Created At",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (text: Date) => UseDateTimeFormat(text),
+      render: (text: Date) => UseConvertDateFormat(text),
     },
     {
       title: "Updated By",
@@ -144,17 +150,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
       title: "Updated At",
       dataIndex: "updatedAt",
       key: "updatedAt",
-      render: (text: Date) => UseDateTimeFormat(text),
-    },
-  ];
-
-  const data: DataType[] = [
-    {
-      key: "1",
-      createdBy: "Zayn Malik",
-      createdAt: new Date(),
-      updatedBy: "Edward Timothy",
-      updatedAt: new Date(),
+      render: (text: Date) => UseConvertDateFormat(text),
     },
   ];
 
@@ -200,13 +196,36 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
       const { data: mainData } = dataUserManagement;
       const { data: rawData } = mainData;
 
-      setValue("avatar_path", rawData?.avatarPath);
-      setValue("first_name", rawData?.firstName);
-      setValue("last_name", rawData?.lastName);
-      setValue("tags", JSON.parse(rawData?.tags));
-      setValue("role_id", rawData?.role.id);
-      setValue("username", rawData?.username);
-      setValue("email", rawData?.email);
+      const {
+        avatarPath,
+        firstName,
+        lastName,
+        tags,
+        role,
+        username,
+        email,
+        createBy,
+        updatedBy,
+        id,
+      } = rawData;
+
+      setDataInfo([
+        {
+          createdBy: createBy?.user?.username,
+          createdAt: updatedBy?.user?.createdAt,
+          updatedBy: updatedBy?.user?.username,
+          updatedAt: updatedBy?.user?.updatedAt,
+          id: id,
+        },
+      ]);
+
+      setValue("avatar_path", avatarPath);
+      setValue("first_name", firstName);
+      setValue("last_name", lastName);
+      setValue("tags", JSON.parse(tags));
+      setValue("role_id", role.id);
+      setValue("username", username);
+      setValue("email", email);
     }
   }, [dataUserManagement]);
 
@@ -691,10 +710,10 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
               }}
             >
               <Table
-                columns={columns}
-                dataSource={data}
+                columns={columnsDataInfo}
+                dataSource={dataInfo}
                 pagination={false}
-                rowKey={(record) => record.key}
+                rowKey={(record) => record.id}
               />
             </ConfigProvider>
           </div>
