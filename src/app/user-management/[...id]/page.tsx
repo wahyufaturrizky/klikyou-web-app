@@ -476,6 +476,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                         };
 
                         const valueMap: any = watch();
+                        console.log("@valueMap", valueMap);
 
                         return (
                           <div className="mb-6" key={mapping}>
@@ -487,7 +488,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                               <div className="flex gap-2 flex-wrap mt-2">
                                 {dataUserTag
                                   ?.filter((filteringTag: DefaultOptionType) =>
-                                    valueMap[mapping].includes(filteringTag.value)
+                                    valueMap[mapping]?.includes(filteringTag.value)
                                   )
                                   .map((item: DefaultOptionType) => (
                                     <Text
