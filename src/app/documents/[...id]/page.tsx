@@ -79,15 +79,17 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     defaultValues: {
       document_name: "",
       document_number: "",
+      id: "",
       text_remarks: "",
       numeric_remarks: "",
+      status: "",
       document_tag_id: [],
+      action: "",
       document_collaborator_id: [],
       document_path: "",
       document_authorizer_id: [],
       document_recipient_id: [],
       document_note: "",
-      status: "",
     },
   });
 
@@ -167,6 +169,8 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
   const onSubmit = (data: FormDocumentValues) => {
     delete data.status;
+    delete data.id;
+    delete data.action;
 
     const {
       document_name,
@@ -225,9 +229,13 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
         documentPath,
         documentNote,
         status,
+        id,
+        action,
       } = rawData;
 
       setValue("document_name", documentName);
+      setValue("action", action);
+      setValue("id", id);
       setValue("document_number", documentNumber);
       setValue("text_remarks", textRemarks);
       setValue("numeric_remarks", numericRemarks);
@@ -593,9 +601,22 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                       numeric_remarks: "Numeric remarks",
                       latestApproval: "Latest approval",
                       document_collaborator_id: "Collaborators",
+                      action: "Latest action",
                     };
 
                     const valueMap: any = watch();
+
+                    let bgColorAction = "";
+
+                    if (valueMap[mapping]?.includes("Rejected")) {
+                      bgColorAction = "bg-red";
+                    } else if (valueMap[mapping]?.includes("Approved")) {
+                      bgColorAction = "bg-green";
+                    } else if (valueMap[mapping]?.includes("Updated")) {
+                      bgColorAction = "bg-warn";
+                    } else if (valueMap[mapping]?.includes("Uploaded")) {
+                      bgColorAction = "bg-link";
+                    }
 
                     return (
                       <div className="mb-6" key={mapping}>
@@ -617,11 +638,10 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                                 />
                               ))}
                           </div>
-                        ) : mapping === "status" ? (
+                        ) : mapping === "action" ? (
                           <Text
-                            key={valueMap[mapping]}
                             label={valueMap[mapping]}
-                            className="inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                            className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${bgColorAction}`}
                           />
                         ) : (
                           <Text

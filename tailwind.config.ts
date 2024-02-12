@@ -21,6 +21,7 @@ const config: Config = {
         "primary-purple": "#B0039E",
         "gray-dark": "#455C72",
         link: "#2166E9",
+        warn: "#FFB800",
       },
     },
   },

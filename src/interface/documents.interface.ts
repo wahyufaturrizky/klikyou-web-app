@@ -122,6 +122,8 @@ export type FormDocumentValues = {
   document_recipient_id: string[];
   document_note: string;
   status?: string;
+  id?: string;
+  action?: string;
 };
 
 export interface UserListType {
