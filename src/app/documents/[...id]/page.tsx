@@ -607,7 +607,6 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                     const valueMap: any = watch();
 
                     let bgColorAction = "";
-                    console.log("@valueMap[mapping]", valueMap[mapping]);
 
                     if (mapping === "action" && valueMap[mapping]?.includes("Rejected")) {
                       bgColorAction = "bg-red";
