@@ -203,10 +203,24 @@ export default function DocumentsPage() {
       dataIndex: "action",
       key: "action",
       render: (text: string) => {
+        let bgColorAction = "";
+
+        if (text?.includes("Rejected")) {
+          bgColorAction = "bg-red";
+        } else if (text?.includes("Approved")) {
+          bgColorAction = "bg-green";
+        } else if (text?.includes("Updated")) {
+          bgColorAction = "bg-warn";
+        } else if (text?.includes("Uploaded")) {
+          bgColorAction = "bg-link";
+        } else if (text?.includes("pending")) {
+          bgColorAction = "bg-link";
+        }
+
         return (
           <Text
             label={text}
-            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
+            className={`text-base inline-block font-normal text-white py-1 px-2 rounded-full ${bgColorAction}`}
           />
         );
       },
