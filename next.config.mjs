@@ -14,6 +14,12 @@ const nextConfig = {
         port: "",
         pathname: "/uploads/settings/**",
       },
+      {
+        protocol: "https",
+        hostname: "wiki.uc.ac.id",
+        port: "",
+        pathname: "/images/**",
+      },
     ],
   },
 };

@@ -243,6 +243,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
   };
 
   const onOpenChange: MenuProps["onOpenChange"] = (keys) => {
+    console.log("🚀 ~ Layout ~ keys:", keys);
     const latestOpenKey = keys.find((key) => openKeys?.indexOf(key) === -1);
     if (
       latestOpenKey &&
