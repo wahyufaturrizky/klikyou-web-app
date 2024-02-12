@@ -379,7 +379,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     },
   ];
 
-  const columnsInfo: ColumnsType<MakersType> = [
+  const columnsInfo: ColumnsType<DataInfoDocumentType> = [
     {
       title: "User",
       dataIndex: "user",
