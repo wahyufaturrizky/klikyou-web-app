@@ -649,35 +649,11 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   </Link>
                 </div>
 
-                {isEdit ? (
-                  <div className="mb-6">
-                    <Controller
-                      control={control}
-                      name="document_note"
-                      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                        <InputTextArea
-                          onChange={onChange}
-                          error={error}
-                          onBlur={onBlur}
-                          value={value}
-                          name="document_note"
-                          placeholder="Enter note"
-                          classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                          classNameLabel="block text-xl font-semibold text-black"
-                          label="Note"
-                        />
-                      )}
-                    />
-                  </div>
-                ) : (
-                  <div className="mb-6">
-                    <Text label="Note" className="text-xl font-semibold text-black" />
-                    <Text
-                      label={getValues("document_note")}
-                      className="text-base font-normal text-black"
-                    />
-                  </div>
-                )}
+                <Text label="Note" className="text-xl font-semibold text-black" />
+                <Text
+                  label={getValues("document_note")}
+                  className="text-base font-normal text-black"
+                />
               </div>
 
               <div className="w-1/2">
@@ -1168,7 +1144,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
             />
           </div>
 
-          <div>
+          <div className="mb-6">
             <Controller
               control={control}
               rules={{
@@ -1188,6 +1164,26 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   error={error}
                   label="Authorizers"
                   classNameLabel="block text-xl font-semibold text-black"
+                />
+              )}
+            />
+          </div>
+
+          <div>
+            <Controller
+              control={control}
+              name="document_note"
+              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                <InputTextArea
+                  onChange={onChange}
+                  error={error}
+                  onBlur={onBlur}
+                  value={value}
+                  name="document_note"
+                  placeholder="Enter note"
+                  classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                  classNameLabel="block text-xl font-semibold text-black"
+                  label="Note"
                 />
               )}
             />
