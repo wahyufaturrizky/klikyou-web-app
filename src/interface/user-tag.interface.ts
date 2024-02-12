@@ -9,7 +9,7 @@ export interface DataUserTags {
 
 export type FormUserTagsValues = {
   code: string;
-  documentType: string;
+  document_type: string;
 };
 
 export interface DeleteUserTagsModal {

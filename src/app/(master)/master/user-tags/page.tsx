@@ -72,7 +72,7 @@ export default function UserTagsPage() {
   } = useForm<FormUserTagsValues>({
     defaultValues: {
       code: "",
-      documentType: "",
+      document_type: "",
     },
   });
 
@@ -120,7 +120,7 @@ export default function UserTagsPage() {
             <PencilIcon
               onClick={() => {
                 setValueAddAndEdit("code", record.code);
-                setValueAddAndEdit("documentType", record.documentType);
+                setValueAddAndEdit("document_type", record.documentType);
 
                 setStateAddAndEditModal({
                   open: true,
@@ -280,7 +280,7 @@ export default function UserTagsPage() {
       onSuccess: () => {
         messageApi.open({
           type: "success",
-          content: "Success delete document tag",
+          content: "Success delete user tag",
         });
 
         refetchUserTags();
@@ -299,7 +299,7 @@ export default function UserTagsPage() {
       onSuccess: () => {
         messageApi.open({
           type: "success",
-          content: "Success create document tag",
+          content: "Success create user tag",
         });
 
         resetAddAndEdit();
@@ -319,7 +319,7 @@ export default function UserTagsPage() {
       onSuccess: () => {
         messageApi.open({
           type: "success",
-          content: "Success update document tag",
+          content: "Success update user tag",
         });
 
         resetAddAndEdit();
@@ -601,7 +601,7 @@ export default function UserTagsPage() {
       </Modal>
 
       <Modal
-        title={`${stateAddAndEditModal.type === "edit" ? "Edit" : "Add"} document tag`}
+        title={`${stateAddAndEditModal.type === "edit" ? "Edit" : "Add"} user tag`}
         open={stateAddAndEditModal.open}
         onCancel={() => {
           resetAddAndEdit();
@@ -670,14 +670,14 @@ export default function UserTagsPage() {
               rules={{
                 required: "Document type is required",
               }}
-              name="documentType"
+              name="document_type"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <Input
                   onChange={onChange}
                   error={error}
                   onBlur={onBlur}
                   value={value}
-                  name="documentType"
+                  name="document_type"
                   type="text"
                   required
                   placeholder="Enter document type"
