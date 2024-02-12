@@ -13,7 +13,16 @@ import {
 } from "@/interface/documents.interface";
 import { useDeleteBulkDocument, useDocument } from "@/services/document/useDocument";
 import { FileIcon, FilterIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
-import { Checkbox, ConfigProvider, DatePicker, Modal, Spin, Table, TableProps } from "antd";
+import {
+  Checkbox,
+  ConfigProvider,
+  DatePicker,
+  Modal,
+  Spin,
+  Table,
+  TableProps,
+  message,
+} from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
@@ -25,6 +34,7 @@ import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 
 export default function DocumentsPage() {
   const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
@@ -339,10 +349,10 @@ export default function DocumentsPage() {
         return data.selectedRowKeys.length > 1
           ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
           : `Are you sure to delete document ${
-              data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.branchName
+              data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.documentName
             } ?`;
       default:
-        return `Are you sure to delete document ${data?.name} ?`;
+        return `Are you sure to delete document ${data?.documentName} ?`;
     }
   };
 
@@ -350,6 +360,11 @@ export default function DocumentsPage() {
     {
       options: {
         onSuccess: () => {
+          messageApi.open({
+            type: "success",
+            content: "Delete document success",
+          });
+
           refetchDocument();
           resetShowDelete();
           setSelectedRowKeys([]);
@@ -366,6 +381,7 @@ export default function DocumentsPage() {
 
   return (
     <div className="p-6">
+      {contextHolder}
       {isLoading && <Spin fullscreen />}
       <div className="flex justify-between items-center">
         <div className="flex gap-4 items-center">
