@@ -16,6 +16,7 @@ import {
   TagIcon,
   ToReviewIcon,
   UserIcon,
+  UserTagIcon,
 } from "@/style/icon";
 import type { MenuProps } from "antd";
 import { Badge, ConfigProvider, Dropdown, Layout as LayoutAntd, Menu, theme, Grid } from "antd";
@@ -85,6 +86,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
     "/user-management": "User Management",
     "/user-management/add": "User Management",
     "/master/documents-tags": "Document Tags",
+    "/master/user-tags": "User Tags",
     "/settings": "Settings",
     "/approvals/to-review": "To Review",
     "/approvals/history": "History",
@@ -141,6 +143,11 @@ const Layout = ({ ...props }: LayoutInterface) => {
           icon: TagIcon,
           label: <Link href="/master/documents-tags">Document Tags</Link>,
           key: "documents-tags",
+        },
+        {
+          icon: UserTagIcon,
+          label: <Link href="/master/user-tags">User Tags</Link>,
+          key: "user-tags",
         },
       ],
     },

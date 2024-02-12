@@ -241,6 +241,25 @@ const IconPeopleCheck = () => (
   </svg>
 );
 
+const IconUserTag = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M24 15.9993H18.6667V17.9993H24V15.9993Z" fill="currentColor" />
+    <path d="M24 19.9993H18.6667V21.9993H24V19.9993Z" fill="currentColor" />
+    <path
+      d="M26.6667 9.33268H20V5.33268C20 3.86602 18.8 2.66602 17.3333 2.66602H14.6667C13.2 2.66602 12 3.86602 12 5.33268V9.33268H5.33333C3.86666 9.33268 2.66666 10.5327 2.66666 11.9993V26.666C2.66666 28.1327 3.86666 29.3327 5.33333 29.3327H26.6667C28.1333 29.3327 29.3333 28.1327 29.3333 26.666V11.9993C29.3333 10.5327 28.1333 9.33268 26.6667 9.33268ZM14.6667 5.33268H17.3333V11.9993H14.6667V5.33268ZM26.6667 26.666H5.33333V11.9993H12C12 13.466 13.2 14.666 14.6667 14.666H17.3333C18.8 14.666 20 13.466 20 11.9993H26.6667V26.666Z"
+      fill="currentColor"
+    />
+    <path
+      d="M12 19.9993C13.1046 19.9993 14 19.1039 14 17.9993C14 16.8948 13.1046 15.9993 12 15.9993C10.8954 15.9993 10 16.8948 10 17.9993C10 19.1039 10.8954 19.9993 12 19.9993Z"
+      fill="currentColor"
+    />
+    <path
+      d="M14.7733 21.5727C13.92 21.1994 12.9867 20.9993 12 20.9993C11.0133 20.9993 10.08 21.1994 9.22666 21.5727C8.48 21.8927 8 22.6127 8 23.426V23.9993H16V23.426C16 22.6127 15.52 21.8927 14.7733 21.5727Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
 export const DashboardIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={IconDashboard} {...props} />
 );
@@ -343,4 +362,8 @@ export const ProtectIcon = (props: Partial<CustomIconComponentProps>) => (
 
 export const PeopleCheckIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={IconPeopleCheck} {...props} />
+);
+
+export const UserTagIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconUserTag} {...props} />
 );
