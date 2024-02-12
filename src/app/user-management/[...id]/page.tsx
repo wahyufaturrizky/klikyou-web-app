@@ -259,25 +259,27 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
           />
         </div>
 
-        <Button
-          type="button"
-          onClick={() =>
-            setShowDelete({
-              open: true,
-              type: "single",
-              data: dataUserManagement,
-            })
-          }
-          label="Delete"
-          icon={
-            <TrashIcon
-              style={{
-                color: "#F44550",
-              }}
-            />
-          }
-          className="flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 text-red border-red"
-        />
+        {!isEdit && (
+          <Button
+            type="button"
+            onClick={() =>
+              setShowDelete({
+                open: true,
+                type: "single",
+                data: dataUserManagement,
+              })
+            }
+            label="Delete"
+            icon={
+              <TrashIcon
+                style={{
+                  color: "#F44550",
+                }}
+              />
+            }
+            className="flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 text-red border-red"
+          />
+        )}
       </div>
 
       {!isEdit && (

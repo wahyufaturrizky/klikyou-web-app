@@ -121,6 +121,7 @@ export type FormDocumentValues = {
   document_authorizer_id: string[];
   document_recipient_id: string[];
   document_note: string;
+  status?: string;
 };
 
 export interface UserListType {

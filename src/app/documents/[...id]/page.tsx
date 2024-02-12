@@ -87,6 +87,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       document_authorizer_id: [],
       document_recipient_id: [],
       document_note: "",
+      status: "",
     },
   });
 
@@ -165,6 +166,8 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
   });
 
   const onSubmit = (data: FormDocumentValues) => {
+    delete data.status;
+
     const {
       document_name,
       document_number,
@@ -221,6 +224,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
         documentRecipients,
         documentPath,
         documentNote,
+        status,
       } = rawData;
 
       setValue("document_name", documentName);
@@ -229,6 +233,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       setValue("numeric_remarks", numericRemarks);
       setValue("document_path", documentPath);
       setValue("document_note", documentNote);
+      setValue("status", status);
       setValue(
         "document_tag_id",
         documentTags.map((itemTag: DocumentTagsType) => itemTag.masterDocumentTagId)
@@ -517,6 +522,18 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
                     const valueMap: any = watch();
 
+                    let bgColor = "";
+
+                    if (valueMap[mapping]?.includes("Partially Approved")) {
+                      bgColor = "bg-link";
+                    } else if (valueMap[mapping]?.includes("Waiting Approval")) {
+                      bgColor = "bg-gray-dark";
+                    } else if (valueMap[mapping]?.includes("Fully Approved")) {
+                      bgColor = "bg-green";
+                    } else if (valueMap[mapping]?.includes("Fully Processed")) {
+                      bgColor = "bg-primary-purple";
+                    }
+
                     return (
                       <div className="mb-6" key={mapping}>
                         <Text
@@ -539,9 +556,8 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           </div>
                         ) : mapping === "status" ? (
                           <Text
-                            key={valueMap[mapping]}
                             label={valueMap[mapping]}
-                            className="inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                            className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${bgColor}`}
                           />
                         ) : (
                           <Text
