@@ -4,19 +4,20 @@ import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
+import { RoleType } from "@/interface/common";
+import { DataUserTags } from "@/interface/user-tag.interface";
+import { useRole } from "@/services/role/useRole";
 import { useCreateUserManagement } from "@/services/user-management/useUserManagement";
+import { useUserTags } from "@/services/user-tags/useUserTags";
 import { BackIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Spin, Upload, message } from "antd";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { UploadChangeParam, UploadFile } from "antd/es/upload";
-import { useRole } from "@/services/role/useRole";
 import { DefaultOptionType } from "antd/es/cascader";
-import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
-import { RoleType } from "@/interface/common";
+import { UploadChangeParam, UploadFile } from "antd/es/upload";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 type FormProfileValues = {
   avatar_path: string;
@@ -44,7 +45,7 @@ export default function AddProfilePage() {
   const [avatarPathRaw, setAvatarPathRaw] = useState<UploadChangeParam<UploadFile<any>>>();
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataUserTag, setDataUserTag] = useState<DefaultOptionType[]>([]);
 
   const { control, handleSubmit } = useForm<FormProfileValues>({
     defaultValues: {
@@ -61,22 +62,24 @@ export default function AddProfilePage() {
   });
 
   const { data: dataListRole, isPending: isPendingRole } = useRole();
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListUserTag, isPending: isPendingUserTag } = useUserTags();
 
   useEffect(() => {
     const fetchDataRole = () => {
       setDataRole(
-        dataListRole.data.data.map((itemRole: RoleType) => ({
-          label: itemRole.levelName,
-          value: itemRole.id,
-        }))
+        dataListRole.data.data
+          .filter((filterRole: RoleType) => !["Super Admin"].includes(filterRole.levelName))
+          .map((itemRole: RoleType) => ({
+            label: itemRole.levelName,
+            value: itemRole.id,
+          }))
       );
     };
 
-    const fetchDataTag = () => {
-      setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
-          label: itemTag.name,
+    const fetchDataUserTag = () => {
+      setDataUserTag(
+        dataListUserTag.data.data.data.map((itemTag: DataUserTags) => ({
+          label: itemTag.documentType,
           value: itemTag.id,
         }))
       );
@@ -86,10 +89,10 @@ export default function AddProfilePage() {
       fetchDataRole();
     }
 
-    if (dataListTag) {
-      fetchDataTag();
+    if (dataListUserTag) {
+      fetchDataUserTag();
     }
-  }, [dataListRole, dataListTag]);
+  }, [dataListRole, dataListUserTag]);
 
   const { mutate: createUserManagement, isPending: isPendingCreateUserManagement } =
     useCreateUserManagement({
@@ -136,7 +139,7 @@ export default function AddProfilePage() {
     </button>
   );
 
-  const isLoading = isPendingRole || isPendingTag;
+  const isLoading = isPendingRole || isPendingUserTag;
 
   return (
     <div className="p-6">
@@ -267,7 +270,7 @@ export default function AddProfilePage() {
                           mode="multiple"
                           name="tags"
                           onChange={onChange}
-                          options={dataTag}
+                          options={dataUserTag}
                           tokenSeparators={[","]}
                           value={value}
                           styleSelect={{ width: "100%" }}

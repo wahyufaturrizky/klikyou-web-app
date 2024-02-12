@@ -5,13 +5,20 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
-import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
+import { FormProfileValues } from "@/interface/my-profile.interface";
+import {
+  DataType,
+  DeleteUserManagementModal,
+  RoleIdType,
+} from "@/interface/user-management.interface";
+import { DataUserTags } from "@/interface/user-tag.interface";
 import { useRole } from "@/services/role/useRole";
 import {
   useDeleteUserManagement,
   useUpdateUserManagement,
   useUserManagementById,
 } from "@/services/user-management/useUserManagement";
+import { useUserTags } from "@/services/user-tags/useUserTags";
 import { BackIcon, PencilIcon, TrashIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
@@ -21,13 +28,7 @@ import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import {
-  DataType,
-  DeleteUserManagementModal,
-  RoleIdType,
-} from "@/interface/user-management.interface";
-import { FormProfileValues } from "@/interface/my-profile.interface";
-import { TagType } from "@/interface/common";
+import { RoleType } from "@/interface/common";
 
 export default function ViewEditProfile({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -35,7 +36,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
   const [messageApi, contextHolder] = message.useMessage();
 
   const [dataRole, setDatarole] = useState<DefaultOptionType[]>([]);
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataUserTag, setDataUserTag] = useState<DefaultOptionType[]>([]);
 
   const router = useRouter();
   const [avatarPathRaw, setAvatarPathRaw] = useState<UploadChangeParam<UploadFile<any>>>();
@@ -65,36 +66,38 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
     },
   });
 
-  const { data: dataListrole_id, isPending: isPendingrole_id } = useRole();
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListRole, isPending: isPendingrole } = useRole();
+  const { data: dataListUserTag, isPending: isPendingUserTag } = useUserTags();
 
   useEffect(() => {
     const fetchDatarole = () => {
       setDatarole(
-        dataListrole_id.data.data.map((itemrole_id: RoleIdType) => ({
-          label: itemrole_id.levelName,
-          value: itemrole_id.id,
-        }))
+        dataListRole.data.data
+          .filter((filterRole: RoleType) => !["Super Admin"].includes(filterRole.levelName))
+          .map((itemRole: RoleType) => ({
+            label: itemRole.levelName,
+            value: itemRole.id,
+          }))
       );
     };
 
-    const fetchDataTag = () => {
-      setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
-          label: itemTag.name,
+    const fetchDataUserTag = () => {
+      setDataUserTag(
+        dataListUserTag.data.data.data.map((itemTag: DataUserTags) => ({
+          label: itemTag.documentType,
           value: itemTag.id,
         }))
       );
     };
 
-    if (dataListrole_id) {
+    if (dataListRole) {
       fetchDatarole();
     }
 
-    if (dataListTag) {
-      fetchDataTag();
+    if (dataListUserTag) {
+      fetchDataUserTag();
     }
-  }, [dataListrole_id, dataListTag]);
+  }, [dataListRole, dataListUserTag]);
 
   const columns: TableProps<DataType>["columns"] = [
     {
@@ -241,7 +244,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
     }
   };
 
-  const isLoading = isPendingUserManagement || isPendingrole_id || isPendingTag;
+  const isLoading = isPendingUserManagement || isPendingrole || isPendingUserTag;
 
   return (
     <div className="p-6">
@@ -422,7 +425,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                             onChange={onChange}
                             tokenSeparators={[","]}
                             value={value}
-                            options={dataTag}
+                            options={dataUserTag}
                             styleSelect={{ width: "100%" }}
                             required
                             error={error}
@@ -437,7 +440,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                       <Controller
                         control={control}
                         rules={{
-                          required: "role_id is required",
+                          required: "Role is required",
                         }}
                         name="role_id"
                         render={({ field: { onChange, value }, fieldState: { error } }) => (
@@ -448,7 +451,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                             value={value}
                             styleSelect={{ width: "100%" }}
                             required
-                            label="role_id"
+                            label="Role"
                             classNameLabel="block text-lg font-semibold text-black"
                           />
                         )}
@@ -486,13 +489,17 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                             />
                             {mapping === "tags" ? (
                               <div className="flex gap-2 flex-wrap mt-2">
-                                {valueMap[mapping].map((item: string) => (
-                                  <Text
-                                    key={item}
-                                    label={item}
-                                    className="text-sm font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
-                                  />
-                                ))}
+                                {dataUserTag
+                                  ?.filter((filteringTag: DefaultOptionType) =>
+                                    valueMap[mapping].includes(filteringTag.value)
+                                  )
+                                  .map((item: DefaultOptionType) => (
+                                    <Text
+                                      key={String(item.label)}
+                                      label={String(item.label)}
+                                      className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                    />
+                                  ))}
                               </div>
                             ) : mapping === "role_id" ? (
                               <Text

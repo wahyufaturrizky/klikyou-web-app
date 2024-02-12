@@ -351,7 +351,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                         />
                         {mapping === "tags" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
-                            {valueMap[mapping].map((item: string) => (
+                            {valueMap[mapping]?.map((item: string) => (
                               <Text
                                 key={item}
                                 label={item}
