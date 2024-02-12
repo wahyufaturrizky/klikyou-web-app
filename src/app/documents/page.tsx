@@ -177,10 +177,22 @@ export default function DocumentsPage() {
       sorter: true,
       key: "status",
       render: (text: string) => {
+        let bgColor = "";
+
+        if (text.includes("Partially Approved")) {
+          bgColor = "bg-link";
+        } else if (text.includes("Waiting Approval")) {
+          bgColor = "bg-gray-dark";
+        } else if (text.includes("Fully Approved")) {
+          bgColor = "bg-green";
+        } else if (text.includes("Fully Processed")) {
+          bgColor = "bg-primary-purple";
+        }
+
         return (
           <Text
             label={text}
-            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
+            className={`text-base inline-block font-normal text-white py-1 px-2 rounded-full ${bgColor}`}
           />
         );
       },

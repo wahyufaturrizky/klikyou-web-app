@@ -18,6 +18,7 @@ const config: Config = {
         red: "#F44550",
         green: "#23C464",
         "primary-gray": "#9CB1C6",
+        "primary-purple": "#B0039E",
         "gray-dark": "#455C72",
         link: "#2166E9",
       },
