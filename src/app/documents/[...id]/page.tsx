@@ -6,7 +6,7 @@ import InputTextArea from "@/components/InputTextArea";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
-import { TagType } from "@/interface/common";
+import { TagType, UserType } from "@/interface/common";
 import {
   DataInfoDocumentType,
   DataTypeActionHistory,
@@ -16,7 +16,6 @@ import {
   DocumentTagsType,
   EditDocumentsModal,
   FormDocumentValues,
-  MakersType,
   UserListType,
 } from "@/interface/documents.interface";
 import { ColumnsType } from "@/interface/user-management.interface";
@@ -26,6 +25,7 @@ import { useUserList } from "@/services/user-list/useUserList";
 import {
   BackIcon,
   DownloadIcon,
+  FileIcon,
   HistoryIcon,
   OpenIcon,
   PencilIcon,
@@ -239,20 +239,21 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
         id,
         action,
         documentLogs,
-        makers,
+        createdBy,
+        updatedBy,
       } = rawData;
 
       setDataLogHistory(documentLogs);
 
       setDataInfo([
         {
-          createdBy: makers.username,
-          createdAt: makers.createdAt,
-          updatedBy: makers.username,
-          updatedAt: makers.updatedAt,
-          createdByAvatarPath: "",
-          updatedByAvatarPath: "",
-          id: makers.id,
+          createdBy: createdBy?.username,
+          createdAt: createdBy?.createdAt,
+          updatedBy: updatedBy?.username,
+          updatedAt: updatedBy?.updatedAt,
+          id: id,
+          createdByAvatarPath: createdBy?.avatarPath,
+          updatedByAvatarPath: updatedBy?.avatarPath,
         },
       ]);
 
@@ -291,88 +292,112 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       title: "User",
       dataIndex: "user",
       key: "user",
-      render: (text: string) => {
+      render: (text: UserType) => {
         return (
           <div className="gap-2 flex items-center">
             <ImageNext
-              src="/placeholder-profile.png"
+              src={text.avatarPath || "/placeholder-profile.png"}
               width={32}
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px]"
+              priority
+              className="h-[32px] w-[32px] rounded-full"
             />
-            <Text label={text} className="text-base font-normal text-black" />
+            <Text label={text.username} className="text-base font-normal text-black" />
           </div>
         );
       },
     },
     {
       title: "Action",
-      dataIndex: "act",
-      key: "act",
+      dataIndex: "action",
+      key: "action",
       render: (text: string) => {
+        let bgColorAction = "";
+
+        if (text?.includes("Rejected")) {
+          bgColorAction = "bg-red";
+        } else if (text?.includes("Approved")) {
+          bgColorAction = "bg-green";
+        } else if (text?.includes("Updated")) {
+          bgColorAction = "bg-warn";
+        } else if (text?.includes("Uploaded")) {
+          bgColorAction = "bg-link";
+        } else if (text?.includes("pending")) {
+          bgColorAction = "bg-link";
+        }
+
         return (
           <Text
             label={text}
-            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
+            className={`text-base inline-block font-normal text-white py-1 px-2 rounded-full ${bgColorAction}`}
           />
         );
       },
     },
     {
       title: "Note",
-      dataIndex: "note",
-      key: "note",
+      dataIndex: "supportingDocumentNote",
+      key: "supportingDocumentNote",
       render: (text: string) => {
         return (
-          <Link className="flex items-center gap-2" href={`/${text}`}>
+          <div className="flex items-center gap-2 cursor-pointer">
             <OpenIcon
               style={{
                 height: 32,
                 width: 32,
+                color: "#2166E9",
               }}
             />
 
             <Text label={text} className="text-base font-normal text-black" />
-          </Link>
+          </div>
         );
       },
     },
     {
       title: "Supporting File",
-      dataIndex: "document_path",
-      key: "document_path",
+      dataIndex: "supportingDocumentPath",
+      key: "supportingDocumentPath",
       render: (text: string) => {
         return (
-          <Link className="flex items-center gap-2" href={`/${text}`}>
+          <div
+            onClick={() => window.open(text, "_blank")}
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <DownloadIcon
               style={{
                 height: 32,
                 width: 32,
+                color: "#2166E9",
               }}
             />
 
             <Text label="Download" className="text-base font-normal text-link" />
-          </Link>
+          </div>
         );
       },
     },
     {
       title: "File version history",
-      dataIndex: "fileVerHistory",
-      key: "fileVerHistory",
+      dataIndex: "versionHistoryDocumentPath",
+      key: "versionHistoryDocumentPath",
       render: (text: string) => {
         return (
-          <Link className="flex items-center gap-2" href={`/${text}`}>
-            <DownloadIcon
+          <div
+            onClick={() => window.open(text, "_blank")}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <FileIcon
               style={{
                 height: 32,
                 width: 32,
+                color: "#2166E9",
               }}
             />
 
             <Text label={text} className="text-base font-normal text-link" />
-          </Link>
+          </div>
         );
       },
     },
@@ -386,18 +411,19 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
   const columnsInfo: ColumnsType<DataInfoDocumentType> = [
     {
-      title: "User",
-      dataIndex: "user",
-      key: "user",
-      render: (text: string) => {
+      title: "Created by",
+      dataIndex: "createdBy",
+      key: "createdBy",
+      render: (text: string, record: DataInfoDocumentType) => {
         return (
           <div className="gap-2 flex items-center">
             <ImageNext
-              src="/placeholder-profile.png"
+              src={record.createdByAvatarPath || "/placeholder-profile.png"}
               width={32}
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px]"
+              className="h-[32px] w-[32px] rounded-full"
+              priority
             />
             <Text label={text} className="text-base font-normal text-black" />
           </div>
@@ -405,72 +431,28 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       },
     },
     {
-      title: "Action",
-      dataIndex: "act",
-      key: "act",
-      render: (text: string) => {
-        return (
-          <Text
-            label={text}
-            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
-          />
-        );
-      },
+      title: "Created at",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (text: Date) => UseConvertDateFormat(text),
     },
     {
-      title: "Note",
-      dataIndex: "note",
-      key: "note",
-      render: (text: string) => {
+      title: "Updated by",
+      dataIndex: "updatedBy",
+      key: "updatedBy",
+      render: (text: string, record: DataInfoDocumentType) => {
         return (
-          <Link className="flex items-center gap-2" href={`/${text}`}>
-            <OpenIcon
-              style={{
-                height: 32,
-                width: 32,
-              }}
+          <div className="gap-2 flex items-center">
+            <ImageNext
+              src={record.updatedByAvatarPath || "/placeholder-profile.png"}
+              width={32}
+              height={32}
+              alt="logo-klikyou"
+              className="h-[32px] w-[32px] rounded-full"
+              priority
             />
-
             <Text label={text} className="text-base font-normal text-black" />
-          </Link>
-        );
-      },
-    },
-    {
-      title: "Supporting File",
-      dataIndex: "document_path",
-      key: "document_path",
-      render: (text: string) => {
-        return (
-          <Link className="flex items-center gap-2" href={`/${text}`}>
-            <DownloadIcon
-              style={{
-                height: 32,
-                width: 32,
-              }}
-            />
-
-            <Text label="Download" className="text-base font-normal text-link" />
-          </Link>
-        );
-      },
-    },
-    {
-      title: "File version history",
-      dataIndex: "fileVerHistory",
-      key: "fileVerHistory",
-      render: (text: string) => {
-        return (
-          <Link className="flex items-center gap-2" href={`/${text}`}>
-            <DownloadIcon
-              style={{
-                height: 32,
-                width: 32,
-              }}
-            />
-
-            <Text label={text} className="text-base font-normal text-link" />
-          </Link>
+          </div>
         );
       },
     },
@@ -889,6 +871,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
               )}
               columns={columnsLogHistory}
               dataSource={dataLogHistory}
+              scroll={{ x: 1500 }}
               pagination={false}
               rowKey={(record) => record.id}
             />

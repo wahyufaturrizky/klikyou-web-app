@@ -105,15 +105,16 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
       title: "Created By",
       dataIndex: "createdBy",
       key: "createdBy",
-      render: (text: string) => {
+      render: (text: string, record: DataInfoUserManagementType) => {
         return (
           <div className="gap-2 flex items-center">
             <ImageNext
-              src="/placeholder-profile.png"
+              src={record.createdByAvatarPath || "/placeholder-profile.png"}
               width={32}
+              priority
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px]"
+              className="h-[32px] w-[32px] rounded-full"
             />
             <Text label={text} className="text-base font-normal text-black" />
           </div>
@@ -130,15 +131,16 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
       title: "Updated By",
       dataIndex: "updatedBy",
       key: "updatedBy",
-      render: (text: string) => {
+      render: (text: string, record: DataInfoUserManagementType) => {
         return (
           <div className="gap-2 flex items-center">
             <ImageNext
-              src="/placeholder-profile.png"
+              src={record.updatedByAvatarPath || "/placeholder-profile.png"}
               width={32}
+              priority
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px]"
+              className="h-[32px] w-[32px] rounded-full"
             />
             <Text label={text} className="text-base font-normal text-black" />
           </div>
@@ -214,7 +216,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
       setDataInfo([
         {
           createdBy: createBy?.user?.username,
-          createdAt: updatedBy?.user?.createdAt,
+          createdAt: createBy?.user?.createdAt,
           updatedBy: updatedBy?.user?.username,
           updatedAt: updatedBy?.user?.updatedAt,
           id: id,

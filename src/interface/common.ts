@@ -38,3 +38,17 @@ export interface TagType {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface UserType {
+  id: number;
+  roleId: number;
+  avatarPath: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  tags: null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: null;
+}

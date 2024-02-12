@@ -165,6 +165,7 @@ export default function DocumentsPage() {
               style={{
                 height: 32,
                 width: 32,
+                color: "#0AADE0",
               }}
             />
           </div>

@@ -158,6 +158,7 @@ export default function DashboardPage() {
           style={{
             height: xxl || xl || lg ? undefined : 24,
             width: xxl || xl || lg ? undefined : 24,
+            color: "#0AADE0",
           }}
         />
       ),

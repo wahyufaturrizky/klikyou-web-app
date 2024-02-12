@@ -1,4 +1,4 @@
-import { FormFilterValues } from "@/interface/common";
+import { FormFilterValues, UserType } from "@/interface/common";
 import { Key } from "react";
 
 export interface FormFilterValuesDocuments extends FormFilterValues {
@@ -30,12 +30,12 @@ export interface DataInfoDocumentType {
 }
 
 export interface DocumentCollaboratorsType {
-  id: 1;
-  documentId: 1;
-  userId: 1;
-  createdAt: "2024-02-10T07:55:14.000+00:00";
-  updatedAt: "2024-02-10T07:55:14.000+00:00";
-  user: UserDocumentType;
+  id: number;
+  documentId: number;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+  user: UserType;
 }
 
 interface DocumentLogType {
@@ -48,21 +48,7 @@ interface DocumentLogType {
   action: string;
   createdAt: string;
   updatedAt: string;
-  user: UserDocumentType;
-}
-
-interface UserDocumentType {
-  id: number;
-  roleId: number;
-  avatarPath: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  tags: null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: null;
+  user: UserType;
 }
 
 export interface DocumentAuthorizersType {
@@ -72,7 +58,7 @@ export interface DocumentAuthorizersType {
   status: string;
   createdAt: string;
   updatedAt: string;
-  user: UserDocumentType;
+  user: UserType;
 }
 
 export interface DocumentRecipientsType {
@@ -81,7 +67,7 @@ export interface DocumentRecipientsType {
   userId: number;
   createdAt: string;
   updatedAt: string;
-  user: UserDocumentType;
+  user: UserType;
 }
 
 export interface DocumentTagsType {
@@ -151,6 +137,7 @@ export interface DataTypeActionHistory {
   action: string;
   createdAt: string;
   updatedAt: string;
+  user: UserType;
 }
 
 export interface DataInfoType {
