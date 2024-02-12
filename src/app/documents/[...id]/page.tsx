@@ -214,6 +214,9 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     refetch: refetchDocumentId,
   } = useDocumentById({
     id: id[1],
+    options: {
+      refetchOnWindowFocus: false,
+    },
   });
 
   useEffect(() => {

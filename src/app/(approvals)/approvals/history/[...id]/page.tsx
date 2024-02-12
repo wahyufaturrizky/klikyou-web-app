@@ -73,6 +73,9 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
   const { data: dataToReviewById, isPending: isPendingToReviewById } = useToReviewById({
     id: id[1],
+    options: {
+      refetchOnWindowFocus: false,
+    },
   });
 
   useEffect(() => {

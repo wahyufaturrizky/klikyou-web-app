@@ -8,10 +8,9 @@ import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import { RoleType } from "@/interface/common";
 import { FormProfileValues } from "@/interface/my-profile.interface";
 import {
-  DataInfoUserManagementType,
-  DataType,
-  DeleteUserManagementModal,
   ColumnsType,
+  DataInfoUserManagementType,
+  DeleteUserManagementModal,
 } from "@/interface/user-management.interface";
 import { DataUserTags } from "@/interface/user-tag.interface";
 import { useRole } from "@/services/role/useRole";
@@ -24,7 +23,7 @@ import { useUserTags } from "@/services/user-tags/useUserTags";
 import { BackIcon, PencilIcon, TrashIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { ConfigProvider, Modal, Spin, Table, TableProps, Upload, message } from "antd";
+import { ConfigProvider, Modal, Spin, Table, Upload, message } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useRouter } from "next/navigation";
@@ -189,6 +188,9 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
 
   const { data: dataUserManagement, isPending: isPendingUserManagement } = useUserManagementById({
     id: id[1],
+    options: {
+      refetchOnWindowFocus: false,
+    },
   });
 
   useEffect(() => {
