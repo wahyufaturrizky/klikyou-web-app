@@ -5,7 +5,7 @@ export interface FormFilterValuesDocuments extends FormFilterValues {
   currentUserRole: string;
 }
 
-interface MakersType {
+export interface MakersType {
   id: number;
   roleId: number;
   avatarPath: string;
@@ -17,6 +17,14 @@ interface MakersType {
   createdAt: string;
   updatedAt: string;
   deletedAt: null;
+}
+
+export interface DataInfoDocumentType {
+  createdBy: string;
+  createdAt: string;
+  updatedBy: string;
+  updatedAt: string;
+  id: number;
 }
 
 export interface DocumentCollaboratorsType {

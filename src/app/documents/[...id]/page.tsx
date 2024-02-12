@@ -8,7 +8,7 @@ import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import { TagType } from "@/interface/common";
 import {
-  DataInfoType,
+  DataInfoDocumentType,
   DataTypeActionHistory,
   DocumentAuthorizersType,
   DocumentCollaboratorsType,
@@ -16,8 +16,10 @@ import {
   DocumentTagsType,
   EditDocumentsModal,
   FormDocumentValues,
+  MakersType,
   UserListType,
 } from "@/interface/documents.interface";
+import { ColumnsType } from "@/interface/user-management.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import { useDocumentById, useUpdateDocument } from "@/services/document/useDocument";
 import { useUserList } from "@/services/user-list/useUserList";
@@ -51,7 +53,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
   const { id } = params;
 
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
-  const [dataInfo, setDataInfo] = useState<DataInfoType[]>([]);
+  const [dataInfo, setDataInfo] = useState<DataInfoDocumentType[]>([]);
   const [dataLogHistory, setDataLogHistory] = useState<DataTypeActionHistory[]>([]);
 
   const [dataCollaborator, setDataCollaborator] = useState<DefaultOptionType[]>([]);
@@ -234,9 +236,20 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
         id,
         action,
         documentLogs,
+        makers,
       } = rawData;
 
       setDataLogHistory(documentLogs);
+
+      setDataInfo([
+        {
+          createdBy: makers.username,
+          createdAt: makers.createdAt,
+          updatedBy: makers.username,
+          updatedAt: makers.updatedAt,
+          id: makers.id,
+        },
+      ]);
 
       setValue("document_name", documentName);
       setValue("action", action);
@@ -366,7 +379,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
     },
   ];
 
-  const columnsInfo: TableProps<DataInfoType>["columns"] = [
+  const columnsInfo: ColumnsType<MakersType> = [
     {
       title: "User",
       dataIndex: "user",
