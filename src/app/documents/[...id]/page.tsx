@@ -607,14 +607,17 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                     const valueMap: any = watch();
 
                     let bgColorAction = "";
+                    console.log("@valueMap[mapping]", valueMap[mapping]);
 
-                    if (valueMap[mapping]?.includes("Rejected")) {
+                    if (mapping === "action" && valueMap[mapping]?.includes("Rejected")) {
                       bgColorAction = "bg-red";
-                    } else if (valueMap[mapping]?.includes("Approved")) {
+                    } else if (mapping === "action" && valueMap[mapping]?.includes("Approved")) {
                       bgColorAction = "bg-green";
-                    } else if (valueMap[mapping]?.includes("Updated")) {
+                    } else if (mapping === "action" && valueMap[mapping]?.includes("Updated")) {
                       bgColorAction = "bg-warn";
-                    } else if (valueMap[mapping]?.includes("Uploaded")) {
+                    } else if (mapping === "action" && valueMap[mapping]?.includes("Uploaded")) {
+                      bgColorAction = "bg-link";
+                    } else if (mapping === "action" && valueMap[mapping]?.includes("pending")) {
                       bgColorAction = "bg-link";
                     }
 
