@@ -243,19 +243,20 @@ const Layout = ({ ...props }: LayoutInterface) => {
   };
 
   const onOpenChange: MenuProps["onOpenChange"] = (keys) => {
-    console.log("🚀 ~ Layout ~ keys:", keys);
-    const latestOpenKey = keys.find((key) => openKeys?.indexOf(key) === -1);
-    if (
-      latestOpenKey &&
-      items.map((itemSubMenu: MenuItem) => itemSubMenu?.key).indexOf(latestOpenKey!) === -1
-    ) {
-      setOpenKeys(keys);
-      localStorage.setItem("openKeys", JSON.stringify(keys));
-    } else {
-      const resKeys = latestOpenKey ? [latestOpenKey] : [];
-      setOpenKeys(resKeys);
+    if (keys.length) {
+      const latestOpenKey = keys.find((key) => openKeys?.indexOf(key) === -1);
+      if (
+        latestOpenKey &&
+        items.map((itemSubMenu: MenuItem) => itemSubMenu?.key).indexOf(latestOpenKey!) === -1
+      ) {
+        setOpenKeys(keys);
+        localStorage.setItem("openKeys", JSON.stringify(keys));
+      } else {
+        const resKeys = latestOpenKey ? [latestOpenKey] : [];
+        setOpenKeys(resKeys);
 
-      localStorage.setItem("openKeys", JSON.stringify(resKeys));
+        localStorage.setItem("openKeys", JSON.stringify(resKeys));
+      }
     }
   };
 
