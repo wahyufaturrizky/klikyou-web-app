@@ -284,7 +284,7 @@ export default function AddProfilePage() {
                     <Controller
                       control={control}
                       rules={{
-                        required: "role_id is required",
+                        required: "role is required",
                       }}
                       name="role_id"
                       render={({ field: { onChange, value }, fieldState: { error } }) => (
@@ -295,7 +295,7 @@ export default function AddProfilePage() {
                           value={value}
                           styleSelect={{ width: "100%" }}
                           required
-                          label="role_id"
+                          label="Role"
                           classNameLabel="block text-lg font-semibold text-black"
                         />
                       )}

@@ -70,21 +70,21 @@ export default function AddDocumentPage() {
 
     const FetchDataUserList = () => {
       setDataAuthorizer(
-        dataListUserList.data.data.map((itemTag: UserListType) => ({
+        dataListUserList?.data?.data?.map((itemTag: UserListType) => ({
           label: itemTag.label,
           value: itemTag.id,
         }))
       );
 
       setDataCollaborator(
-        dataListUserList.data.data.map((itemTag: UserListType) => ({
+        dataListUserList?.data?.data?.map((itemTag: UserListType) => ({
           label: itemTag.label,
           value: itemTag.id,
         }))
       );
 
       setDataRecipient(
-        dataListUserList.data.data.map((itemTag: UserListType) => ({
+        dataListUserList?.data?.data?.map((itemTag: UserListType) => ({
           label: itemTag.label,
           value: itemTag.id,
         }))

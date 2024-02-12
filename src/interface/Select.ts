@@ -11,7 +11,7 @@ export interface SelectInterface {
   options?: DefaultOptionType[];
   autoComplete?: string;
   placeholder?: string;
-  required: boolean;
+  required?: boolean;
   error?: any;
   onChange: ChangeEventHandler<HTMLInputElement>;
   value: any;

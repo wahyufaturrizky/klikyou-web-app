@@ -2,7 +2,7 @@ import { FormFilterValues } from "@/interface/common";
 import { Key } from "react";
 
 export interface FormFilterValuesDocuments extends FormFilterValues {
-  currentUserRole: string[];
+  currentUserRole: string;
 }
 
 interface MakersType {

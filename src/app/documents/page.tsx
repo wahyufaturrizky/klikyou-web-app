@@ -2,27 +2,33 @@
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Text from "@/components/Text";
-import UseDateTimeFormat from "@/hook/useDateFormat";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormFilterValues } from "@/interface/common";
+import { FormFilterValues, RoleType, TagType } from "@/interface/common";
 import {
   DataDocumentsType,
-  FormFilterValuesDocuments,
   DeleteDocumentModal,
   DocumentTagsType,
+  FormFilterValuesDocuments,
 } from "@/interface/documents.interface";
 import { useDeleteBulkDocument, useDocument } from "@/services/document/useDocument";
 import { FileIcon, FilterIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
-import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
+import { Checkbox, ConfigProvider, DatePicker, Modal, Spin, Table, TableProps } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import Select from "@/components/Select";
+import { DefaultOptionType } from "antd/es/cascader";
+import { useRole } from "@/services/role/useRole";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 
 export default function DocumentsPage() {
   const router = useRouter();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
+  const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
   const [isShowDelete, setShowDelete] = useState<DeleteDocumentModal>({
     open: false,
     type: "selection",
@@ -52,9 +58,41 @@ export default function DocumentsPage() {
       search: "",
       date: "",
       status: [],
-      currentUserRole: [],
+      currentUserRole: "",
     },
   });
+
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+
+  const { data: dataListRole, isPending: isPendingRole } = useRole();
+
+  useEffect(() => {
+    const fetchDataTag = () => {
+      setDataTag(
+        dataListTag.data.data.data.map((itemTag: TagType) => ({
+          label: itemTag.name,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    const fetchDataRole = () => {
+      setDataRole(
+        dataListRole.data.data.map((itemRole: RoleType) => ({
+          label: itemRole.levelName,
+          value: itemRole.id,
+        }))
+      );
+    };
+
+    if (dataListRole) {
+      fetchDataRole();
+    }
+
+    if (dataListTag) {
+      fetchDataTag();
+    }
+  }, [dataListRole, dataListTag]);
 
   const columns: TableProps<DataDocumentsType>["columns"] = [
     {
@@ -87,16 +125,22 @@ export default function DocumentsPage() {
       sorter: true,
       render: (text: DocumentTagsType[]) => (
         <div className="flex gap-2 flex-wrap">
-          {text?.map((item: DocumentTagsType) => {
-            const { id } = item;
-            return (
-              <Text
-                key={id}
-                label={String(id)}
-                className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
-              />
-            );
-          })}
+          {dataTag
+            .filter((filteringTag: DefaultOptionType) =>
+              text
+                .map((itemTag: DocumentTagsType) => itemTag.masterDocumentTagId)
+                .includes(Number(filteringTag.value))
+            )
+            ?.map((item: DefaultOptionType) => {
+              const { label } = item;
+              return (
+                <Text
+                  key={String(label)}
+                  label={String(label)}
+                  className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
+                />
+              );
+            })}
         </div>
       ),
     },
@@ -150,18 +194,12 @@ export default function DocumentsPage() {
       sorter: true,
       dataIndex: "currentUserRole",
       key: "currentUserRole",
-      render: (text: string[]) => (
-        <div className="flex gap-2 flex-wrap">
-          {text?.map((item: string) => {
-            return (
-              <Text
-                key={item}
-                label={item}
-                className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
-              />
-            );
-          })}
-        </div>
+      render: (text: string) => (
+        <Text
+          key={text}
+          label={text}
+          className="text-base font-normal inline-block text-white py-1 px-2 rounded-full bg-gray-dark"
+        />
       ),
     },
     {
@@ -169,7 +207,7 @@ export default function DocumentsPage() {
       dataIndex: "updatedAt",
       sorter: true,
       key: "updatedAt",
-      render: (text: Date) => UseDateTimeFormat(text),
+      render: (text: Date) => UseConvertDateFormat(text),
     },
   ];
 
@@ -196,7 +234,7 @@ export default function DocumentsPage() {
     query: {
       search: debounceSearch,
       status: getValuesFilter("status").join(","),
-      currentUserRole: getValuesFilter("currentUserRole").join(","),
+      currentUserRole: getValuesFilter("currentUserRole"),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: tableParams?.field
@@ -324,8 +362,11 @@ export default function DocumentsPage() {
     refetchDocument();
   }, [JSON.stringify(tableParams)]);
 
+  const isLoading = isPendingTag || isPendingRole;
+
   return (
     <div className="p-6">
+      {isLoading && <Spin fullscreen />}
       <div className="flex justify-between items-center">
         <div className="flex gap-4 items-center">
           <Button
@@ -504,26 +545,16 @@ export default function DocumentsPage() {
             <Controller
               control={controlFilter}
               name="currentUserRole"
-              render={({ field: { onChange, value } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                      colorPrimaryBorder: "#2379AA",
-                      colorPrimaryHover: "#2379AA",
-                    },
-                  }}
-                >
-                  <Checkbox.Group value={value} onChange={onChange}>
-                    <div className="flex flex-col">
-                      {optionsRole.map((item) => (
-                        <Checkbox key={item.value} value={item.label}>
-                          {item.label}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </Checkbox.Group>
-                </ConfigProvider>
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Select
+                  name="currentUserRole"
+                  options={dataRole}
+                  onChange={onChange}
+                  value={value}
+                  styleSelect={{ width: "100%" }}
+                  label="Role"
+                  classNameLabel="block text-lg font-semibold text-black"
+                />
               )}
             />
           </div>
