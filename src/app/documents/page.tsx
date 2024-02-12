@@ -136,7 +136,7 @@ export default function DocumentsPage() {
       render: (text: DocumentTagsType[]) => (
         <div className="flex gap-2 flex-wrap">
           {dataTag
-            .filter((filteringTag: DefaultOptionType) =>
+            ?.filter((filteringTag: DefaultOptionType) =>
               text
                 .map((itemTag: DocumentTagsType) => itemTag.masterDocumentTagId)
                 .includes(Number(filteringTag.value))

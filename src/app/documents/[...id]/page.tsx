@@ -590,7 +590,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                         {mapping === "document_collaborator_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
                             {dataCollaborator
-                              .filter((filteringTag: DefaultOptionType) =>
+                              ?.filter((filteringTag: DefaultOptionType) =>
                                 valueMap.document_collaborator_id.includes(filteringTag.value)
                               )
                               .map((item: DefaultOptionType) => (
@@ -716,7 +716,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                         {mapping === "document_authorizer_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
                             {dataAuthorizer
-                              .filter((filteringTag: DefaultOptionType) =>
+                              ?.filter((filteringTag: DefaultOptionType) =>
                                 valueMap.document_authorizer_id.includes(filteringTag.value)
                               )
                               .map((item: DefaultOptionType) => (
@@ -798,7 +798,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                         {mapping === "document_recipient_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
                             {dataRecipient
-                              .filter((filteringTag: DefaultOptionType) =>
+                              ?.filter((filteringTag: DefaultOptionType) =>
                                 valueMap.document_recipient_id.includes(filteringTag.value)
                               )
                               .map((item: DefaultOptionType) => (
