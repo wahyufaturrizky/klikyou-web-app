@@ -6,7 +6,8 @@ import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { FormApproveRejectValues, FormFilterValues } from "@/interface/common";
-import { ApproveAndRejectToReviewModal, DataToReviewType } from "@/interface/to-review.interface";
+import { DocumentTagsType } from "@/interface/documents.interface";
+import { ApproveAndRejectToReviewModal, DataResToReview } from "@/interface/to-review.interface";
 import { useToReview, useUpdateToReview } from "@/services/to-view/useToReview";
 import { CheckIcon, FileIcon, FilterIcon, RejectIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
@@ -28,7 +29,7 @@ import { Controller, useForm } from "react-hook-form";
 export default function ToReviewPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [selectedRows, setSelectedRows] = useState<DataToReviewType[]>([]);
+  const [selectedRows, setSelectedRows] = useState<DataResToReview[]>([]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -39,16 +40,7 @@ export default function ToReviewPage() {
       type: "approve",
     });
 
-  const [dataToReview, setDataToReview] = useState<DataToReviewType[]>([
-    {
-      id: "101",
-      docName: "Project Antasari - Quotation",
-      tags: ["Quotation", "Project"],
-      file: "file.pdf",
-      status: "(3/3) Fully approved",
-      updatedAt: "30/06/2023 17:00",
-    },
-  ]);
+  const [dataToReview, setDataToReview] = useState<DataResToReview[]>([]);
 
   const [tableParams, setTableParams] = useState<any>({
     pagination: {
@@ -79,12 +71,12 @@ export default function ToReviewPage() {
     reset: resetApproveRejectEdit,
   } = useForm<FormApproveRejectValues>({
     defaultValues: {
-      note: "",
-      file: "",
+      supporting_document_note: "",
+      supporting_document_path: null,
     },
   });
 
-  const columns: TableProps<DataToReviewType>["columns"] = [
+  const columns: TableProps<DataResToReview>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -96,10 +88,10 @@ export default function ToReviewPage() {
     },
     {
       title: "Document name",
-      dataIndex: "docName",
-      key: "docName",
+      dataIndex: "documentName",
+      key: "documentName",
       sorter: true,
-      render: (text: string, record: DataToReviewType) => {
+      render: (text: string, record: DataResToReview) => {
         const { id } = record;
         return (
           <Link href={`/approvals/to-review/view/${id}`}>
@@ -110,16 +102,16 @@ export default function ToReviewPage() {
     },
     {
       title: "Tags",
-      dataIndex: "tags",
+      dataIndex: "documentTags",
       sorter: true,
-      key: "tags",
-      render: (text: string[]) => (
+      key: "documentTags",
+      render: (text: DocumentTagsType[]) => (
         <div className="flex gap-2 flex-wrap">
-          {text?.map((item: string) => {
+          {text?.map((item: DocumentTagsType) => {
             return (
               <Text
-                key={item}
-                label={item}
+                key={item.id}
+                label={item.tag.name}
                 className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
               />
             );
@@ -261,7 +253,7 @@ export default function ToReviewPage() {
       const { data: dataListTable, meta } = mainData;
 
       setDataToReview(
-        dataListTable?.map((item: DataToReviewType) => ({
+        dataListTable?.map((item: DataResToReview) => ({
           ...item,
           key: item.id,
         }))
@@ -330,7 +322,7 @@ export default function ToReviewPage() {
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selectedRowKeys: Key[], selectedRows: DataToReviewType[]) => {
+    onChange: (selectedRowKeys: Key[], selectedRows: DataResToReview[]) => {
       setSelectedRowKeys(selectedRowKeys);
       setSelectedRows(selectedRows);
     },
@@ -342,6 +334,7 @@ export default function ToReviewPage() {
 
   const { mutate: updateApproveReject, isPending: isPendingUpdateApproveReject } =
     useUpdateToReview({
+      id: stateApproveAndRejectModal.data?.id,
       options: {
         onSuccess: () => {
           messageApi.open({
@@ -361,6 +354,13 @@ export default function ToReviewPage() {
     });
 
   const onSubmitApproveRejectEdit = (data: FormApproveRejectValues) => {
+    const { supporting_document_note, supporting_document_path } = data;
+
+    let formdata = new FormData();
+
+    formdata.append("note", supporting_document_note);
+    formdata.append("supporting_document_path", supporting_document_path?.file.originFileObj);
+
     updateApproveReject(data);
   };
 
@@ -640,14 +640,14 @@ export default function ToReviewPage() {
           <div className="mb-6">
             <Controller
               control={controlApproveRejectEdit}
-              name="note"
+              name="supporting_document_note"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <InputTextArea
                   onChange={onChange}
                   error={error}
                   onBlur={onBlur}
                   value={value}
-                  name="note"
+                  name="supporting_document_note"
                   placeholder="Enter note"
                   classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                   classNameLabel="block text-xl font-semibold text-black"
@@ -668,7 +668,7 @@ export default function ToReviewPage() {
               rules={{
                 required: "Document is required",
               }}
-              name="file"
+              name="supporting_document_path"
               render={({ field: { onChange } }) => (
                 <ConfigProvider
                   theme={{
@@ -678,7 +678,7 @@ export default function ToReviewPage() {
                   }}
                 >
                   <Upload
-                    name="file"
+                    name="supporting_document_path"
                     headers={{
                       authorization: "authorization-text",
                     }}
@@ -688,7 +688,7 @@ export default function ToReviewPage() {
                       }
                       if (info.file.status === "done") {
                         message.success(`${info.file.name} file uploaded successfully`);
-                        onChange(JSON.stringify(info));
+                        onChange(info);
                       } else if (info.file.status === "error") {
                         message.error(`${info.file.name} file upload failed.`);
                       }

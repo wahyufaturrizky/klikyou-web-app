@@ -1,29 +1,33 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { client } from "../client";
+import { UseQueryResult, useMutation, useQuery } from "@tanstack/react-query";
+import { client, clientFormData } from "../client";
+import { DataResponseToReviewType } from "@/interface/to-review.interface";
 
 const fetchToReview = async ({ query = {} }) => {
-  return client("/approvals-to-review", {
+  return client("/documents/approval", {
     params: {
       ...query,
     },
   }).then((data) => data);
 };
 
-const useToReview = ({ query = {}, options }: any = {}) => {
+const useToReview = ({ query = {}, options }: any = {}): UseQueryResult<
+  DataResponseToReviewType,
+  Error
+> => {
   return useQuery({
-    queryKey: ["to-review", query],
+    queryKey: ["documents-approval", query],
     queryFn: () => fetchToReview({ query }),
     ...options,
-  }) as any;
+  });
 };
 
 const fetchToReviewById = async ({ id }: { id: string }) => {
-  return client(`/approvals-to-review/${id}`).then((data) => data);
+  return client(`/documents/approval/${id}`).then((data) => data);
 };
 
 const useToReviewById = ({ id, options }: any) => {
   return useQuery({
-    queryKey: ["to-review", id],
+    queryKey: ["documents-approval", id],
     queryFn: () => fetchToReviewById({ id }),
     ...options,
   }) as any;
@@ -32,7 +36,7 @@ const useToReviewById = ({ id, options }: any) => {
 function useCreateToReview({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
-      client("/approvals-to-review", {
+      client("/documents/approval", {
         method: "POST",
         data: reqBody,
       }),
@@ -40,11 +44,11 @@ function useCreateToReview({ options }: any) {
   }) as any;
 }
 
-function useUpdateToReview({ options }: any) {
+function useUpdateToReview({ options, id }: any) {
   return useMutation({
     mutationFn: (updates) =>
-      client("/approvals-to-review", {
-        method: "PUT",
+      clientFormData(`/documents/approve/${id}`, {
+        method: "POST",
         data: updates,
       }),
     ...options,
@@ -54,7 +58,7 @@ function useUpdateToReview({ options }: any) {
 function useDeleteToReview({ options }: any) {
   return useMutation({
     mutationFn: (updates) =>
-      client("/approvals-to-review", {
+      client("/documents/approval", {
         method: "DELETE",
         data: updates,
       }),

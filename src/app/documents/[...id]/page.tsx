@@ -1142,7 +1142,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                 required: "Document name is required",
               }}
               name="document_path"
-              render={({ field: { onChange, value } }) => {
+              render={({ field: { onChange } }) => {
                 return (
                   <ConfigProvider
                     theme={{

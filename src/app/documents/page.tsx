@@ -1,10 +1,11 @@
 "use client";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormFilterValues, RoleType, TagType } from "@/interface/common";
+import { FormFilterValues, RoleType } from "@/interface/common";
 import {
   DataDocumentsType,
   DeleteDocumentModal,
@@ -12,6 +13,7 @@ import {
   FormFilterValuesDocuments,
 } from "@/interface/documents.interface";
 import { useDeleteBulkDocument, useDocument } from "@/services/document/useDocument";
+import { useRole } from "@/services/role/useRole";
 import { FileIcon, FilterIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import {
   Checkbox,
@@ -23,14 +25,11 @@ import {
   TableProps,
   message,
 } from "antd";
+import { DefaultOptionType } from "antd/es/cascader";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import Select from "@/components/Select";
-import { DefaultOptionType } from "antd/es/cascader";
-import { useRole } from "@/services/role/useRole";
-import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 
 export default function DocumentsPage() {
   const router = useRouter();
@@ -38,7 +37,6 @@ export default function DocumentsPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
   const [isShowDelete, setShowDelete] = useState<DeleteDocumentModal>({
     open: false,
     type: "selection",
@@ -72,20 +70,9 @@ export default function DocumentsPage() {
     },
   });
 
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
-
   const { data: dataListRole, isPending: isPendingRole } = useRole();
 
   useEffect(() => {
-    const fetchDataTag = () => {
-      setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
-          label: itemTag.name,
-          value: itemTag.id,
-        }))
-      );
-    };
-
     const fetchDataRole = () => {
       setDataRole(
         dataListRole.data.data.map((itemRole: RoleType) => ({
@@ -98,11 +85,7 @@ export default function DocumentsPage() {
     if (dataListRole) {
       fetchDataRole();
     }
-
-    if (dataListTag) {
-      fetchDataTag();
-    }
-  }, [dataListRole, dataListTag]);
+  }, [dataListRole]);
 
   const columns: TableProps<DataDocumentsType>["columns"] = [
     {
@@ -135,22 +118,15 @@ export default function DocumentsPage() {
       sorter: true,
       render: (text: DocumentTagsType[]) => (
         <div className="flex gap-2 flex-wrap">
-          {dataTag
-            ?.filter((filteringTag: DefaultOptionType) =>
-              text
-                .map((itemTag: DocumentTagsType) => itemTag.masterDocumentTagId)
-                .includes(Number(filteringTag.value))
-            )
-            ?.map((item: DefaultOptionType) => {
-              const { label } = item;
-              return (
-                <Text
-                  key={String(label)}
-                  label={String(label)}
-                  className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
-                />
-              );
-            })}
+          {text?.map((item: DocumentTagsType) => {
+            return (
+              <Text
+                key={item.id}
+                label={item.tag.name}
+                className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
+              />
+            );
+          })}
         </div>
       ),
     },
@@ -213,6 +189,8 @@ export default function DocumentsPage() {
         } else if (text?.includes("Updated")) {
           bgColorAction = "bg-warn";
         } else if (text?.includes("Uploaded")) {
+          bgColorAction = "bg-link";
+        } else if (text?.includes("upload")) {
           bgColorAction = "bg-link";
         } else if (text?.includes("pending")) {
           bgColorAction = "bg-link";
@@ -404,7 +382,7 @@ export default function DocumentsPage() {
     refetchDocument();
   }, [JSON.stringify(tableParams)]);
 
-  const isLoading = isPendingTag || isPendingRole;
+  const isLoading = isPendingRole;
 
   return (
     <div className="p-6">

@@ -1,5 +1,6 @@
 import { FormFilterValues, UserType } from "@/interface/common";
 import { Key } from "react";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export interface FormFilterValuesDocuments extends FormFilterValues {
   currentUserRole: string;
@@ -76,6 +77,7 @@ export interface DocumentTagsType {
   documentId: number;
   createdAt: string;
   updatedAt: string;
+  tag: DataDocumentTags;
 }
 
 export interface DataDocumentsType {
