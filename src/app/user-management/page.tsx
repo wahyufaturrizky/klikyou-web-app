@@ -174,6 +174,7 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     refetchDocumentUserManagement();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(tableParams)]);
 
   useEffect(() => {

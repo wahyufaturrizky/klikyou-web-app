@@ -291,6 +291,7 @@ export default function UserTagsPage() {
 
   useEffect(() => {
     refetchUserTags();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(tableParams)]);
 
   const { mutate: createUserTags, isPending: isPendingCreateUserTags } = useCreateUserTags({

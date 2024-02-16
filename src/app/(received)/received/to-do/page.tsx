@@ -292,6 +292,7 @@ export default function ToDoPage() {
 
   useEffect(() => {
     refetchDocument();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(tableParams)]);
 
   const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =

@@ -4,6 +4,7 @@ import Input from "@/components/Input";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
 import { FormFilterValues } from "@/interface/common";
 import {
   AddAndEditDocumentTagsModal,
@@ -291,6 +292,7 @@ export default function DocumentTagsPage() {
 
   useEffect(() => {
     refetchDocumentTags();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(tableParams)]);
 
   const { mutate: createDocumentTags, isPending: isPendingCreateDocumentTags } =

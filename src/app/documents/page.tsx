@@ -358,6 +358,7 @@ export default function DocumentsPage() {
 
   useEffect(() => {
     refetchDocument();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(tableParams)]);
 
   const isLoading = isPendingRole;

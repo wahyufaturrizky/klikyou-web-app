@@ -270,6 +270,7 @@ export default function ProcessedPage() {
 
   useEffect(() => {
     refetchProcessed();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(tableParams)]);
 
   const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =
