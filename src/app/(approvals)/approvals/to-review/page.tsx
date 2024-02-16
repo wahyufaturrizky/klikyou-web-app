@@ -7,9 +7,12 @@ import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProc
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
-import { FormApproveRejectProcessValues, FormFilterValues } from "@/interface/common";
+import {
+  ApproveAndRejectToReviewModal,
+  FormApproveRejectProcessValues,
+  FormFilterValues,
+} from "@/interface/common";
 import { DataResDocument, DocumentTagsType } from "@/interface/documents.interface";
-import { ApproveAndRejectToReviewModal } from "@/interface/to-review.interface";
 import { useDocument, useDocumentApproveRejectProcess } from "@/services/document/useDocument";
 import { CheckIcon, FileIcon, FilterIcon, RejectIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";

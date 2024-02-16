@@ -1,10 +1,3 @@
-import { DataResDocument } from "@/interface/documents.interface";
-export interface ApproveAndRejectToReviewModal {
-  open: boolean;
-  data: DataResDocument | null;
-  type: "approve" | "reject" | "process" | "";
-}
-
 export type FormToReviewValues = {
   docName: string;
   id: string;

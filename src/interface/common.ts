@@ -1,7 +1,13 @@
-import { useOrderTableParams } from "@/hook/useOrderTableParams";
+import { DataResDocument } from "@/interface/documents.interface";
 export interface OptionInterface {
   label: string;
   value: string;
+}
+
+export interface ApproveAndRejectToReviewModal {
+  open: boolean;
+  data: DataResDocument | null;
+  type: "approve" | "reject" | "process" | "";
 }
 
 export interface QueryType {

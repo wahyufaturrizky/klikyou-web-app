@@ -3,7 +3,12 @@ import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
-import { TagType, UserType, FormApproveRejectProcessValues } from "@/interface/common";
+import {
+  TagType,
+  UserType,
+  FormApproveRejectProcessValues,
+  ApproveAndRejectToReviewModal,
+} from "@/interface/common";
 import {
   DataInfoDocumentType,
   DataTypeActionHistory,
@@ -45,7 +50,7 @@ import { useForm, Controller } from "react-hook-form";
 import InputTextArea from "@/components/InputTextArea";
 import { UploadOutlined } from "@ant-design/icons";
 import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
-import { ApproveAndRejectToReviewModal } from "@/interface/to-review.interface";
+import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 
 export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();
@@ -522,18 +527,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
                     const valueMap: any = watch();
 
-                    let bgColor = "";
-
-                    if (valueMap[mapping]?.includes("Partially Approved")) {
-                      bgColor = "bg-link";
-                    } else if (valueMap[mapping]?.includes("Waiting Approval")) {
-                      bgColor = "bg-gray-dark";
-                    } else if (valueMap[mapping]?.includes("Fully Approved")) {
-                      bgColor = "bg-green";
-                    } else if (valueMap[mapping]?.includes("Fully Processed")) {
-                      bgColor = "bg-primary-purple";
-                    }
-
                     return (
                       <div className="mb-6" key={mapping}>
                         <Text
@@ -557,7 +550,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         ) : mapping === "status" ? (
                           <Text
                             label={valueMap[mapping]}
-                            className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${bgColor}`}
+                            className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${UseBgColorStatus(
+                              valueMap[mapping]
+                            )}`}
                           />
                         ) : (
                           <Text

@@ -3,15 +3,25 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
+import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormApproveRejectProcessValues, FormFilterValues } from "@/interface/common";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
 import {
-  ApproveAndRejectHistoryModal,
-  DataHistoryType,
-  DeleteHistoryModal,
-} from "@/interface/history.interface";
-import { useDeleteHistory, useHistory } from "@/services/history/useHistory";
+  ApproveAndRejectToReviewModal,
+  FormApproveRejectProcessValues,
+  FormFilterValues,
+} from "@/interface/common";
+import {
+  DataResDocument,
+  DeleteDocumentModal,
+  DocumentTagsType,
+} from "@/interface/documents.interface";
+import {
+  useDeleteDocument,
+  useDocument,
+  useDocumentApproveRejectProcess,
+} from "@/services/document/useDocument";
 import { FileIcon, FilterIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -28,16 +38,13 @@ import {
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useOrderTableParams } from "@/hook/useOrderTableParams";
-import { useApproveRejectProcess } from "@/services/to-view/useToReview";
-import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 
 export default function HistoryPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [selectedRows, setSelectedRows] = useState<DataHistoryType[]>([]);
+  const [selectedRows, setSelectedRows] = useState<DataResDocument[]>([]);
 
-  const [isShowDelete, setShowDelete] = useState<DeleteHistoryModal>({
+  const [isShowDelete, setShowDelete] = useState<DeleteDocumentModal>({
     open: false,
     type: "selection",
     data: {
@@ -49,23 +56,13 @@ export default function HistoryPage() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
-    useState<ApproveAndRejectHistoryModal>({
+    useState<ApproveAndRejectToReviewModal>({
       open: false,
       data: null,
       type: "approve",
     });
 
-  const [dataHistory, setDataHistory] = useState<DataHistoryType[]>([
-    {
-      id: "101",
-      docName: "Project Antasari - Quotation",
-      tags: ["Quotation", "Project"],
-      file: "file.pdf",
-      status: "(3/3) Fully approved",
-      updatedAt: "30/06/2023 17:00",
-      approval: "Approved",
-    },
-  ]);
+  const [dataListDocument, setDataListDocument] = useState<DataResDocument[]>([]);
 
   const [tableParams, setTableParams] = useState<any>({
     pagination: {
@@ -101,7 +98,7 @@ export default function HistoryPage() {
     },
   });
 
-  const columns: TableProps<DataHistoryType>["columns"] = [
+  const columns: TableProps<DataResDocument>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -113,10 +110,10 @@ export default function HistoryPage() {
     },
     {
       title: "Document name",
-      dataIndex: "docName",
-      key: "docName",
+      dataIndex: "documentName",
+      key: "documentName",
       sorter: true,
-      render: (text: string, record: DataHistoryType) => {
+      render: (text: string, record: DataResDocument) => {
         const { id } = record;
         return (
           <Link href={`/approvals/history/view/${id}`}>
@@ -127,16 +124,16 @@ export default function HistoryPage() {
     },
     {
       title: "Tags",
-      dataIndex: "tags",
-      key: "tags",
+      dataIndex: "documentTags",
+      key: "documentTags",
       sorter: true,
-      render: (text: string[]) => (
+      render: (text: DocumentTagsType[]) => (
         <div className="flex gap-2 flex-wrap">
-          {text?.map((item: string) => {
+          {text?.map((item: DocumentTagsType) => {
             return (
               <Text
-                key={item}
-                label={item}
+                key={item.id}
+                label={item.tag.name}
                 className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
               />
             );
@@ -146,9 +143,9 @@ export default function HistoryPage() {
     },
     {
       title: "File",
-      dataIndex: "file",
-      key: "file",
-      render: (text: string) => {
+      dataIndex: "documentPath",
+      key: "documentPath",
+      render: () => {
         return (
           <div className="flex justify-center items-center">
             <FileIcon
@@ -207,17 +204,17 @@ export default function HistoryPage() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setDataHistory([]);
+      setDataListDocument([]);
     }
   };
 
   const debounceSearch = useDebounce(watchFilter("search"), 1000);
 
   const {
-    data: dataRawHistory,
-    isPending: isPendingHistory,
-    refetch: refetchHistory,
-  } = useHistory({
+    data: dataDocument,
+    isPending: isPendingDocument,
+    refetch: refetchDocument,
+  } = useDocument({
     query: {
       search: debounceSearch,
       status: getValuesFilter("status").join(","),
@@ -227,16 +224,17 @@ export default function HistoryPage() {
       orderBy: useOrderTableParams(tableParams),
       updated_at_start: getValuesFilter("date")[0],
       updated_at_end: getValuesFilter("date")[1],
+      history: 1,
     },
   });
 
   useEffect(() => {
-    if (dataRawHistory) {
-      const { data: mainData } = dataRawHistory.data;
+    if (dataDocument) {
+      const { data: mainData } = dataDocument.data;
       const { data: dataListTable, meta } = mainData;
 
-      setDataHistory(
-        dataListTable?.map((item: DataHistoryType) => ({
+      setDataListDocument(
+        dataListTable?.map((item: DataResDocument) => ({
           ...item,
           key: item.id,
         }))
@@ -250,7 +248,8 @@ export default function HistoryPage() {
         },
       });
     }
-  }, [dataRawHistory]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataDocument]);
 
   const optionsStatus = [
     {
@@ -299,25 +298,25 @@ export default function HistoryPage() {
   ];
 
   const onSubmitFilter = (data: FormFilterValues) => {
-    refetchHistory();
+    refetchDocument();
     setIsShowModalFilter(false);
   };
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selectedRowKeys: Key[], selectedRows: DataHistoryType[]) => {
+    onChange: (selectedRowKeys: Key[], selectedRows: DataResDocument[]) => {
       setSelectedRowKeys(selectedRowKeys);
       setSelectedRows(selectedRows);
     },
   };
 
   useEffect(() => {
-    refetchHistory();
+    refetchDocument();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(tableParams)]);
 
   const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =
-    useApproveRejectProcess({
+    useDocumentApproveRejectProcess({
       id: stateApproveAndRejectModal.data?.id,
       action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
       options: {
@@ -328,7 +327,7 @@ export default function HistoryPage() {
           });
 
           resetApproveRejectEdit();
-          refetchHistory();
+          refetchDocument();
           setStateApproveAndRejectModal({
             data: null,
             open: false,
@@ -343,10 +342,10 @@ export default function HistoryPage() {
   };
 
   const { mutate: deleteUserManagement, isPending: isPendingDeleteUserManagement }: any =
-    useDeleteHistory({
+    useDeleteDocument({
       options: {
         onSuccess: () => {
-          refetchHistory();
+          refetchDocument();
           setShowDelete({
             open: true,
             type: "",
@@ -358,15 +357,14 @@ export default function HistoryPage() {
     });
 
   const renderConfirmationText = (type: any, data: any) => {
-    switch (type) {
-      case "selection":
-        return data.selectedRowKeys.length > 1
-          ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
-          : `Are you sure to delete document ${
-              data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.branchName
-            } ?`;
-      default:
-        return `Are you sure to delete document ${data?.name} ?`;
+    if (type === "selection") {
+      return data.selectedRowKeys.length > 1
+        ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
+        : `Are you sure to delete document ${
+            data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.branchName
+          } ?`;
+    } else {
+      return `Are you sure to delete document ${data?.name} ?`;
     }
   };
 
@@ -381,7 +379,7 @@ export default function HistoryPage() {
               setShowDelete({
                 open: true,
                 type: "selection",
-                data: { data: dataHistory, selectedRowKeys },
+                data: { data: dataListDocument, selectedRowKeys },
               })
             }
             label="Delete"
@@ -446,9 +444,9 @@ export default function HistoryPage() {
         >
           <Table
             columns={columns}
-            dataSource={dataHistory}
+            dataSource={dataListDocument}
             scroll={{ x: 1500 }}
-            loading={isPendingHistory}
+            loading={isPendingDocument}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
