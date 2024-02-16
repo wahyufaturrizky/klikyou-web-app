@@ -5,9 +5,9 @@ import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormFilterValues } from "@/interface/common";
+import { FormApproveRejectProcessValues, FormFilterValues } from "@/interface/common";
 import { useProcessed } from "@/services/processed/useProcessed";
-import { useUpdateToReview } from "@/services/to-view/useToReview";
+import { useApproveRejectProcess } from "@/services/to-view/useToReview";
 import { DownloadIcon, FilterIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -24,6 +24,7 @@ import {
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 
 export interface DataProcessedType {
   id: string;
@@ -38,11 +39,6 @@ interface ApproveAndRejectModal {
   data: DataProcessedType | null;
   type: "approve" | "reject" | "";
 }
-
-type FormApproveRejectValues = {
-  note: string;
-  file: string;
-};
 
 export default function ProcessedPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
@@ -95,10 +91,10 @@ export default function ProcessedPage() {
     control: controlApproveRejectEdit,
     handleSubmit: handleSubmitApproveRejectEdit,
     reset: resetApproveRejectEdit,
-  } = useForm<FormApproveRejectValues>({
+  } = useForm<FormApproveRejectProcessValues>({
     defaultValues: {
-      note: "",
-      file: "",
+      supporting_document_note: "",
+      supporting_document_path: "",
     },
   });
 
@@ -293,8 +289,10 @@ export default function ProcessedPage() {
     refetchProcessed();
   }, [JSON.stringify(tableParams)]);
 
-  const { mutate: updateApproveReject, isPending: isPendingUpdateApproveReject } =
-    useUpdateToReview({
+  const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =
+    useApproveRejectProcess({
+      id: stateApproveAndRejectModal.data?.id,
+      action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
       options: {
         onSuccess: () => {
           messageApi.open({
@@ -313,8 +311,8 @@ export default function ProcessedPage() {
       },
     });
 
-  const onSubmitApproveRejectEdit = (data: FormApproveRejectValues) => {
-    updateApproveReject(data);
+  const onSubmitApproveRejectEdit = (data: FormApproveRejectProcessValues) => {
+    updateApproveRejectProcess(data);
   };
 
   return (
@@ -506,8 +504,8 @@ export default function ProcessedPage() {
             <div className="flex gap-4 items-center">
               <Button
                 type="button"
-                disabled={isPendingUpdateApproveReject}
-                loading={isPendingUpdateApproveReject}
+                disabled={isPendingApproveRejectProcess}
+                loading={isPendingApproveRejectProcess}
                 onClick={() => {
                   resetApproveRejectEdit();
                   setStateApproveAndRejectModal({
@@ -522,8 +520,8 @@ export default function ProcessedPage() {
 
               <Button
                 type="button"
-                disabled={isPendingUpdateApproveReject}
-                loading={isPendingUpdateApproveReject}
+                disabled={isPendingApproveRejectProcess}
+                loading={isPendingApproveRejectProcess}
                 onClick={handleSubmitApproveRejectEdit(onSubmitApproveRejectEdit)}
                 label="Yes"
                 className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -536,14 +534,14 @@ export default function ProcessedPage() {
           <div className="mb-6">
             <Controller
               control={controlApproveRejectEdit}
-              name="note"
+              name="supporting_document_note"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <InputTextArea
                   onChange={onChange}
                   error={error}
                   onBlur={onBlur}
                   value={value}
-                  name="note"
+                  name="supporting_document_note"
                   placeholder="Enter note"
                   classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                   classNameLabel="block text-xl font-semibold text-black"
@@ -564,7 +562,7 @@ export default function ProcessedPage() {
               rules={{
                 required: "Document is required",
               }}
-              name="file"
+              name="supporting_document_path"
               render={({ field: { onChange } }) => (
                 <ConfigProvider
                   theme={{
@@ -574,7 +572,7 @@ export default function ProcessedPage() {
                   }}
                 >
                   <Upload
-                    name="file"
+                    name="supporting_document_path"
                     headers={{
                       authorization: "authorization-text",
                     }}

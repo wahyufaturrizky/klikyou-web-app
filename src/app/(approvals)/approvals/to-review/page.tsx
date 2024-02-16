@@ -5,10 +5,11 @@ import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormApproveRejectValues, FormFilterValues } from "@/interface/common";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
+import { FormApproveRejectProcessValues, FormFilterValues } from "@/interface/common";
 import { DocumentTagsType } from "@/interface/documents.interface";
 import { ApproveAndRejectToReviewModal, DataResToReview } from "@/interface/to-review.interface";
-import { useToReview, useUpdateToReview } from "@/services/to-view/useToReview";
+import { useApproveRejectProcess, useToReview } from "@/services/to-view/useToReview";
 import { CheckIcon, FileIcon, FilterIcon, RejectIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -25,6 +26,7 @@ import {
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 
 export default function ToReviewPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
@@ -69,7 +71,7 @@ export default function ToReviewPage() {
     control: controlApproveRejectEdit,
     handleSubmit: handleSubmitApproveRejectEdit,
     reset: resetApproveRejectEdit,
-  } = useForm<FormApproveRejectValues>({
+  } = useForm<FormApproveRejectProcessValues>({
     defaultValues: {
       supporting_document_note: "",
       supporting_document_path: null,
@@ -239,9 +241,7 @@ export default function ToReviewPage() {
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
-      orderBy: tableParams?.field
-        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
-        : "",
+      orderBy: useOrderTableParams(tableParams),
       updated_at_start: getValuesFilter("date")[0],
       updated_at_end: getValuesFilter("date")[1],
     },
@@ -330,11 +330,13 @@ export default function ToReviewPage() {
 
   useEffect(() => {
     refetchRawToReview();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(tableParams)]);
 
-  const { mutate: updateApproveReject, isPending: isPendingUpdateApproveReject } =
-    useUpdateToReview({
+  const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =
+    useApproveRejectProcess({
       id: stateApproveAndRejectModal.data?.id,
+      action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
       options: {
         onSuccess: () => {
           messageApi.open({
@@ -353,7 +355,7 @@ export default function ToReviewPage() {
       },
     });
 
-  const onSubmitApproveRejectEdit = (data: FormApproveRejectValues) => {
+  const onSubmitApproveRejectEdit = (data: FormApproveRejectProcessValues) => {
     const { supporting_document_note, supporting_document_path } = data;
 
     let formdata = new FormData();
@@ -361,7 +363,7 @@ export default function ToReviewPage() {
     formdata.append("note", supporting_document_note);
     formdata.append("supporting_document_path", supporting_document_path?.file.originFileObj);
 
-    updateApproveReject(data);
+    updateApproveRejectProcess(data);
   };
 
   return (
@@ -593,9 +595,7 @@ export default function ToReviewPage() {
       </Modal>
 
       <Modal
-        title={`${
-          stateApproveAndRejectModal.type === "approve" ? "Approve" : "Reject"
-        } document tag`}
+        title={`${stateApproveAndRejectModal.type === "approve" ? "Approve" : "Reject"} document`}
         open={stateApproveAndRejectModal.open}
         onCancel={() => {
           resetApproveRejectEdit();
@@ -610,8 +610,8 @@ export default function ToReviewPage() {
             <div className="flex gap-4 items-center">
               <Button
                 type="button"
-                disabled={isPendingUpdateApproveReject}
-                loading={isPendingUpdateApproveReject}
+                disabled={isPendingApproveRejectProcess}
+                loading={isPendingApproveRejectProcess}
                 onClick={() => {
                   resetApproveRejectEdit();
                   setStateApproveAndRejectModal({
@@ -626,11 +626,32 @@ export default function ToReviewPage() {
 
               <Button
                 type="button"
-                disabled={isPendingUpdateApproveReject}
-                loading={isPendingUpdateApproveReject}
+                label="Approve"
+                disabled={isPendingApproveRejectProcess}
+                loading={isPendingApproveRejectProcess}
                 onClick={handleSubmitApproveRejectEdit(onSubmitApproveRejectEdit)}
-                label="Yes"
-                className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                icon={
+                  stateApproveAndRejectModal.type === "approve" ? (
+                    <CheckIcon
+                      style={{
+                        color: "white",
+                        height: 32,
+                        width: 32,
+                      }}
+                    />
+                  ) : (
+                    <RejectIcon
+                      style={{
+                        color: "white",
+                        height: 32,
+                        width: 32,
+                      }}
+                    />
+                  )
+                }
+                className={`${
+                  stateApproveAndRejectModal.type === "approve" ? "bg-green" : "bg-red"
+                } gap-2 text-white flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
               />
             </div>
           </div>

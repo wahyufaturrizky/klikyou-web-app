@@ -21,6 +21,7 @@ import { FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style
 import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps, message } from "antd";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
 
 export default function UserTagsPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
@@ -166,9 +167,7 @@ export default function UserTagsPage() {
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
-      orderBy: tableParams?.field
-        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
-        : "",
+      orderBy: useOrderTableParams(tableParams),
       updated_at_start: getValuesFilter("date")[0],
       updated_at_end: getValuesFilter("date")[1],
     },

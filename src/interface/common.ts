@@ -25,7 +25,7 @@ export type FormFilterValues = {
   role: string[];
 };
 
-export type FormApproveRejectValues = {
+export type FormApproveRejectProcessValues = {
   supporting_document_note: string;
   supporting_document_path: any;
 };

@@ -30,6 +30,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
 
 export default function DocumentsPage() {
   const router = useRouter();
@@ -252,9 +253,7 @@ export default function DocumentsPage() {
       currentUserRole: getValuesFilter("currentUserRole"),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
-      orderBy: tableParams?.field
-        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
-        : "",
+      orderBy: useOrderTableParams(tableParams),
       updated_at_start: getValuesFilter("date")[0],
       updated_at_end: getValuesFilter("date")[1],
     },

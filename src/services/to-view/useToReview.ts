@@ -44,10 +44,18 @@ function useCreateToReview({ options }: any) {
   }) as any;
 }
 
-function useUpdateToReview({ options, id }: any) {
+function useApproveRejectProcess({
+  options,
+  id,
+  action,
+}: {
+  options: any;
+  id?: number | string;
+  action: string;
+}) {
   return useMutation({
     mutationFn: (updates) =>
-      clientFormData(`/documents/approve/${id}`, {
+      clientFormData(`/documents/${action}/${id}`, {
         method: "POST",
         data: updates,
       }),
@@ -66,4 +74,10 @@ function useDeleteToReview({ options }: any) {
   });
 }
 
-export { useCreateToReview, useDeleteToReview, useToReview, useToReviewById, useUpdateToReview };
+export {
+  useCreateToReview,
+  useDeleteToReview,
+  useToReview,
+  useToReviewById,
+  useApproveRejectProcess,
+};
