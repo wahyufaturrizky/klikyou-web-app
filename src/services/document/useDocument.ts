@@ -1,6 +1,6 @@
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { client, clientFormData } from "../client";
-import { QueryType } from "@/interface/common";
+import { QueryType, ModalType } from "@/interface/common";
 import { DataResponseDocumentType } from "@/interface/documents.interface";
 
 const fetchDocument = async ({
@@ -91,14 +91,16 @@ function useDocumentApproveRejectProcess({
   options,
   id,
   action,
+  ids,
 }: {
   options: any;
   id?: number | string;
   action: string;
+  ids?: string;
 }) {
   return useMutation({
     mutationFn: (updates) =>
-      clientFormData(`/documents/${action}/${id}`, {
+      clientFormData(id ? `/documents/${action}/${id}` : `/documents/${action}?ids=${ids}`, {
         method: "POST",
         data: updates,
       }),

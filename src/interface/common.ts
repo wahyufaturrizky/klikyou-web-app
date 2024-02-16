@@ -4,10 +4,12 @@ export interface OptionInterface {
   value: string;
 }
 
+export type ModalType = "approve" | "reject" | "process" | "";
+
 export interface ApproveRejectProcessModal {
   open: boolean;
   data: DataResDocument | null;
-  type: "approve" | "reject" | "process" | "";
+  type: ModalType;
 }
 
 export interface QueryType {

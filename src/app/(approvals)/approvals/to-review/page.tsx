@@ -342,6 +342,7 @@ export default function ToReviewPage() {
   const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =
     useDocumentApproveRejectProcess({
       id: stateApproveAndRejectModal.data?.id,
+      ids: selectedRowKeys.join(","),
       action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
       options: {
         onSuccess: () => {
@@ -656,8 +657,10 @@ export default function ToReviewPage() {
                   )
                 }
                 className={`${
-                  stateApproveAndRejectModal.type === "approve" ? "bg-green" : "bg-red"
-                } gap-2 text-white flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
+                  stateApproveAndRejectModal.type === "approve"
+                    ? "bg-green hover:bg-green/70 active:bg-green/90"
+                    : "bg-red hover:bg-red/70 active:bg-red/90"
+                } gap-2 text-white flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
               />
             </div>
           </div>

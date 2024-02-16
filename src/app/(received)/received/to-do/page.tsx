@@ -33,8 +33,6 @@ import { Controller, useForm } from "react-hook-form";
 
 export default function ToDoPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [selectedRows, setSelectedRows] = useState<DataResDocument[]>([]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -292,14 +290,6 @@ export default function ToDoPage() {
     setIsShowModalFilter(false);
   };
 
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (selectedRowKeys: Key[], selectedRows: DataResDocument[]) => {
-      setSelectedRowKeys(selectedRowKeys);
-      setSelectedRows(selectedRows);
-    },
-  };
-
   useEffect(() => {
     refetchDocument();
   }, [JSON.stringify(tableParams)]);
@@ -390,7 +380,6 @@ export default function ToDoPage() {
             loading={isPendingDocument}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
-            rowSelection={rowSelection}
             rowKey={(record) => record.id}
           />
         </ConfigProvider>
