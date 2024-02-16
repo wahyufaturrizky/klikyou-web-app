@@ -1,5 +1,5 @@
 // from format "2024-02-06T04:58:23.000+00:00" to "30/06/2023 17:00" Date Format
-const UseConvertDateFormat = (inputDate: Date = new Date()) => {
+const UseConvertDateFormat = (inputDate: Date | string = new Date()) => {
   const dateObj = new Date(inputDate);
 
   const year = dateObj.getUTCFullYear();

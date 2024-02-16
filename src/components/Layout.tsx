@@ -1,7 +1,11 @@
 "use client";
 import { LayoutInterface, MenuItem } from "@/interface/Layout";
 
+import { DataAuthType } from "@/interface/login.interface";
+import { NotificationType } from "@/interface/notification.interface";
+import { CompanyProfileType } from "@/interface/settings.interface";
 import { useLogOut } from "@/services/auth/useAuth";
+import { useNotification } from "@/services/notification/useNotification";
 import {
   ApprovalsIcon,
   BackIcon,
@@ -19,14 +23,22 @@ import {
   UserTagIcon,
 } from "@/style/icon";
 import type { MenuProps } from "antd";
-import { Badge, ConfigProvider, Dropdown, Layout as LayoutAntd, Menu, theme, Grid } from "antd";
+import {
+  Badge,
+  ConfigProvider,
+  Dropdown,
+  Grid,
+  Layout as LayoutAntd,
+  Menu,
+  Spin,
+  theme,
+} from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
-import { DataAuthType } from "@/interface/login.interface";
-import { CompanyProfileType } from "@/interface/settings.interface";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
@@ -41,6 +53,8 @@ const Layout = ({ ...props }: LayoutInterface) => {
   const [userProfile, setUserProfile] = useState<DataAuthType>();
   const [companyProfile, setCompanyProfile] = useState<CompanyProfileType>();
   const [collapsed, setCollapsed] = useState(false);
+
+  const [dataListNotif, setDataListNotif] = useState<NotificationType[]>([]);
 
   const pathname = usePathname();
   const [currentMenu, setCurrentMenu] = useState<string | null>(null);
@@ -77,6 +91,19 @@ const Layout = ({ ...props }: LayoutInterface) => {
     handleGetOpenKeysMenu();
     handleGetCollapsed();
   }, []);
+
+  const {
+    data: dataNotification,
+    isPending: isPendingNotification,
+    refetch: refetchNotification,
+  } = useNotification({});
+
+  useEffect(() => {
+    if (dataNotification?.data?.data) {
+      setDataListNotif(dataNotification?.data.data);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataNotification]);
 
   const pathNameList: any = {
     "/dashboard": "Dashboard",
@@ -364,19 +391,28 @@ const Layout = ({ ...props }: LayoutInterface) => {
               </div>
 
               <div className="flex items-center gap-7">
-                <div
-                  onClick={() => setIsShowNotif(!isShowNotif)}
-                  className="flex items-center gap-1 bg-primary-gray p-2 rounded-full cursor-pointer"
-                >
-                  <NotifIcon
-                    style={{
-                      color: "white",
-                      height: 16,
-                      width: 16,
-                    }}
-                  />
-                  <Text className="text-white font-bold text-sm" label="0" />
-                </div>
+                {isPendingNotification ? (
+                  <Spin />
+                ) : (
+                  <div
+                    onClick={() => setIsShowNotif(!isShowNotif)}
+                    className={`${
+                      dataListNotif.length ? "bg-red" : "bg-primary-gray"
+                    } flex items-center gap-1 p-2 rounded-full cursor-pointer`}
+                  >
+                    <NotifIcon
+                      style={{
+                        color: "white",
+                        height: 16,
+                        width: 16,
+                      }}
+                    />
+                    <Text
+                      className="text-white font-bold text-sm"
+                      label={String(dataListNotif.length)}
+                    />
+                  </div>
+                )}
 
                 <Dropdown menu={{ items: itemsProfile }} trigger={["click"]}>
                   <div className="flex items-center gap-2 cursor-pointer">
@@ -416,19 +452,16 @@ const Layout = ({ ...props }: LayoutInterface) => {
             className="z-50 fixed top-0 right-0 bottom-auto left-auto m-0 flex flex-col list-none w-[300px] rounded-md bg-white shadow-lg"
           >
             <div className="overflow-auto h-[200px]">
-              {[1, 2, 3, 4].map((_) => (
-                <div key={_} className="py-2 px-3.5">
+              {dataListNotif.map((itemNotif: NotificationType) => (
+                <div key={itemNotif.id} className="py-2 px-3.5">
                   <div className="flex gap-2">
                     <Badge color="red" />
 
                     <div>
-                      <Text
-                        className="text-black font-normal text-sm"
-                        label="1 new document to approve"
-                      />
+                      <Text className="text-black font-normal text-sm" label={itemNotif.title} />
                       <Text
                         className="text-primary-gray font-normal text-xs"
-                        label="30 Jun 2023 17:00"
+                        label={UseConvertDateFormat(itemNotif.date)}
                       />
                     </div>
                   </div>

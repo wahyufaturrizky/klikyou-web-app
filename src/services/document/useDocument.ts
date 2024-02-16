@@ -30,7 +30,7 @@ const useDocument = ({
     queryKey: ["documents", query],
     queryFn: () => fetchDocument({ query, action }),
     ...options,
-  }) as any;
+  });
 };
 
 const fetchDocumentById = async ({ id }: { id: string }) => {

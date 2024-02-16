@@ -177,7 +177,7 @@ export interface DataResDocument {
   status: string;
 }
 
-interface DataMessageStatusDashboardType extends DataStatusMessageResponseType {
+interface DataMessageStatusType extends DataStatusMessageResponseType {
   data: {
     meta: MetaType;
     data: DataResDocument[];
@@ -185,5 +185,5 @@ interface DataMessageStatusDashboardType extends DataStatusMessageResponseType {
 }
 
 export interface DataResponseDocumentType extends CommonResponseType {
-  data: DataMessageStatusDashboardType;
+  data: DataMessageStatusType;
 }

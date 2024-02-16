@@ -50,10 +50,10 @@ interface DataRawDashboardType {
   approval_time: ApprovalTimeReviewType;
 }
 
-interface DataMessageStatusDashboardType extends DataStatusMessageResponseType {
+interface DataMessageStatusType extends DataStatusMessageResponseType {
   data: DataRawDashboardType;
 }
 
 export interface DataResponseDashboardType extends CommonResponseType {
-  data: DataMessageStatusDashboardType;
+  data: DataMessageStatusType;
 }
