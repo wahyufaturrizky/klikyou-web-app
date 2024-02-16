@@ -2,76 +2,118 @@
 import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Text from "@/components/Text";
-import UseDateTimeFormat from "@/hook/useDateFormat";
-import { DataDocumentsType } from "@/interface/documents.interface";
-import { useToReviewById } from "@/services/to-view/useToReview";
-import { BackIcon, DownloadIcon, OpenIcon, ProtectIcon } from "@/style/icon";
-import { UploadOutlined } from "@ant-design/icons";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
+import { FormApproveRejectProcessValues, TagType, UserType } from "@/interface/common";
 import {
-  Button as ButtonAntd,
-  ConfigProvider,
-  Spin,
-  Table,
-  TableProps,
-  Upload,
-  UploadProps,
-  message,
-} from "antd";
+  DataInfoDocumentType,
+  DataTypeActionHistory,
+  DocumentAuthorizersType,
+  DocumentCollaboratorsType,
+  DocumentRecipientsType,
+  DocumentTagsType,
+  FormDocumentValues,
+  UserListType,
+} from "@/interface/documents.interface";
+import { ColumnsType } from "@/interface/user-management.interface";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
+import { useDocumentById } from "@/services/document/useDocument";
+import { useUserList } from "@/services/user-list/useUserList";
+import { BackIcon, DownloadIcon, FileIcon, OpenIcon, ProtectIcon } from "@/style/icon";
+import { ConfigProvider, Spin, Table, TableProps, message } from "antd";
+import { DefaultOptionType } from "antd/es/cascader";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  DataTypeActionHistory,
-  DataTypeInfo,
-  FormHistoryValues,
-} from "@/interface/history.interface";
 
-export default function ViewEditDocumentPage({ params }: { params: { id: string } }) {
+export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();
   const { id } = params;
 
-  const [isEdit, setIsEdit] = useState<boolean>(id[0] === "view" ? false : true);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataInfo, setDataInfo] = useState<DataInfoDocumentType[]>([]);
+  const [dataLogHistory, setDataLogHistory] = useState<DataTypeActionHistory[]>([]);
 
-  const [dataById, setDataById] = useState<DataDocumentsType>();
+  const [dataCollaborator, setDataCollaborator] = useState<DefaultOptionType[]>([]);
+  const [dataAuthorizer, setDataAuthorizer] = useState<DefaultOptionType[]>([]);
+  const [dataRecipient, setDataRecipient] = useState<DefaultOptionType[]>([]);
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const { setValue, watch } = useForm<FormHistoryValues>({
+  const { setValue, watch, getValues } = useForm<FormDocumentValues>({
     defaultValues: {
-      docName: "",
-      docNumber: "",
+      document_name: "",
+      document_number: "",
       id: "",
+      text_remarks: "",
+      numeric_remarks: "",
       status: "",
-      memoId: "",
-      textRemarks: "",
-      numericRemarks: "",
-      latestApproval: "",
-      tags: [],
-      collaborators: [],
-      file: "",
-      authorizers: [],
-      recipients: [],
+      document_tag_id: [],
+      action: "",
+      document_collaborator_id: [],
+      document_path: "",
+      document_authorizer_id: [],
+      document_recipient_id: [],
+      document_note: "",
     },
   });
 
-  const props: UploadProps = {
-    name: "file",
-    headers: {
-      authorization: "authorization-text",
+  const {
+    control: controlApproveRejectEdit,
+    handleSubmit: handleSubmitApproveRejectEdit,
+    reset: resetApproveRejectEdit,
+  } = useForm<FormApproveRejectProcessValues>({
+    defaultValues: {
+      supporting_document_note: "",
+      supporting_document_path: null,
     },
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} file uploaded successfully`);
-        setValue("file", JSON.stringify(info));
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-  };
+  });
 
-  const { data: dataToReviewById, isPending: isPendingToReviewById } = useToReviewById({
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListUserList, isPending: isPendingUserList } = useUserList();
+
+  useEffect(() => {
+    const fetchDataTag = () => {
+      setDataTag(
+        dataListTag.data.data.data.map((itemTag: TagType) => ({
+          label: itemTag.name,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    const FetchDataUserList = () => {
+      setDataAuthorizer(
+        dataListUserList?.data?.data.map((itemTag: UserListType) => ({
+          label: itemTag.label,
+          value: itemTag.id,
+        }))
+      );
+
+      setDataCollaborator(
+        dataListUserList?.data?.data.map((itemTag: UserListType) => ({
+          label: itemTag.label,
+          value: itemTag.id,
+        }))
+      );
+
+      setDataRecipient(
+        dataListUserList?.data?.data.map((itemTag: UserListType) => ({
+          label: itemTag.label,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    if (dataListTag) {
+      fetchDataTag();
+    }
+
+    if (dataListTag) {
+      FetchDataUserList();
+    }
+  }, [dataListTag, dataListUserList]);
+
+  const { data: dataDocument, isPending: isPendingDocument } = useDocumentById({
     id: id[1],
     options: {
       refetchOnWindowFocus: false,
@@ -79,103 +121,185 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
   });
 
   useEffect(() => {
-    if (dataToReviewById) {
-      setDataById(
-        dataToReviewById.data.data.map((item: DataDocumentsType) => ({
-          ...item,
-          key: item.id,
-        }))
+    if (dataDocument?.data?.data) {
+      const { data: mainData } = dataDocument;
+      const { data: rawData } = mainData;
+
+      const {
+        documentName,
+        documentNumber,
+        textRemarks,
+        numericRemarks,
+        documentTags,
+        documentCollaborators,
+        documentAuthorizers,
+        documentRecipients,
+        documentPath,
+        documentNote,
+        status,
+        id,
+        action,
+        documentLogs,
+        createdBy,
+        updatedBy,
+      } = rawData;
+
+      setDataLogHistory(documentLogs);
+
+      setDataInfo([
+        {
+          createdBy: createdBy?.username,
+          createdAt: createdBy?.createdAt,
+          updatedBy: updatedBy?.username,
+          updatedAt: updatedBy?.updatedAt,
+          id: id,
+          createdByAvatarPath: createdBy?.avatarPath,
+          updatedByAvatarPath: updatedBy?.avatarPath,
+        },
+      ]);
+
+      setValue("document_name", documentName);
+      setValue("action", action);
+      setValue("id", id);
+      setValue("document_number", documentNumber);
+      setValue("text_remarks", textRemarks);
+      setValue("numeric_remarks", numericRemarks);
+      setValue("document_path", documentPath);
+      setValue("document_note", documentNote);
+      setValue("status", status);
+      setValue(
+        "document_tag_id",
+        documentTags.map((itemTag: DocumentTagsType) => itemTag.masterDocumentTagId)
+      );
+      setValue(
+        "document_collaborator_id",
+        documentCollaborators.map(
+          (itemCollaborator: DocumentCollaboratorsType) => itemCollaborator.userId
+        )
+      );
+      setValue(
+        "document_authorizer_id",
+        documentAuthorizers.map((itemAuthorizer: DocumentAuthorizersType) => itemAuthorizer.userId)
+      );
+      setValue(
+        "document_recipient_id",
+        documentRecipients.map((itemRecipient: DocumentRecipientsType) => itemRecipient.userId)
       );
     }
-  }, [dataToReviewById]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataDocument]);
 
-  const columns: TableProps<DataTypeActionHistory>["columns"] = [
+  const columnsLogHistory: TableProps<DataTypeActionHistory>["columns"] = [
     {
       title: "User",
       dataIndex: "user",
       key: "user",
-      render: (text: string) => {
+      render: (text: UserType) => {
         return (
           <div className="gap-2 flex items-center">
             <ImageNext
-              src="/placeholder-profile.png"
+              src={text.avatarPath || "/placeholder-profile.png"}
               width={32}
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px]"
+              priority
+              className="h-[32px] w-[32px] rounded-full"
             />
-            <Text label={text} className="text-base font-normal text-black" />
+            <Text label={text.username} className="text-base font-normal text-black" />
           </div>
         );
       },
     },
     {
       title: "Action",
-      dataIndex: "act",
-      key: "act",
+      dataIndex: "action",
+      key: "action",
       render: (text: string) => {
+        let bgColorAction = "";
+
+        if (text?.includes("Rejected")) {
+          bgColorAction = "bg-red";
+        } else if (text?.includes("Approved")) {
+          bgColorAction = "bg-green";
+        } else if (text?.includes("Updated")) {
+          bgColorAction = "bg-warn";
+        } else if (text?.includes("Uploaded")) {
+          bgColorAction = "bg-link";
+        } else if (text?.includes("pending")) {
+          bgColorAction = "bg-link";
+        }
+
         return (
           <Text
             label={text}
-            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
+            className={`text-base inline-block font-normal text-white py-1 px-2 rounded-full ${bgColorAction}`}
           />
         );
       },
     },
     {
       title: "Note",
-      dataIndex: "note",
-      key: "note",
+      dataIndex: "supportingDocumentNote",
+      key: "supportingDocumentNote",
       render: (text: string) => {
         return (
-          <Link className="flex items-center gap-2" href={`/${text}`}>
+          <div className="flex items-center gap-2 cursor-pointer">
             <OpenIcon
               style={{
                 height: 32,
                 width: 32,
+                color: "#2166E9",
               }}
             />
 
             <Text label={text} className="text-base font-normal text-black" />
-          </Link>
+          </div>
         );
       },
     },
     {
       title: "Supporting File",
-      dataIndex: "file",
-      key: "file",
+      dataIndex: "supportingDocumentPath",
+      key: "supportingDocumentPath",
       render: (text: string) => {
         return (
-          <Link className="flex items-center gap-2" href={`/${text}`}>
+          <div
+            onClick={() => window.open(text, "_blank")}
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <DownloadIcon
               style={{
                 height: 32,
                 width: 32,
+                color: "#2166E9",
               }}
             />
 
             <Text label="Download" className="text-base font-normal text-link" />
-          </Link>
+          </div>
         );
       },
     },
     {
       title: "File version history",
-      dataIndex: "fileVerHistory",
-      key: "fileVerHistory",
+      dataIndex: "versionHistoryDocumentPath",
+      key: "versionHistoryDocumentPath",
       render: (text: string) => {
         return (
-          <Link className="flex items-center gap-2" href={`/${text}`}>
-            <DownloadIcon
+          <div
+            onClick={() => window.open(text, "_blank")}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <FileIcon
               style={{
                 height: 32,
                 width: 32,
+                color: "#2166E9",
               }}
             />
 
             <Text label={text} className="text-base font-normal text-link" />
-          </Link>
+          </div>
         );
       },
     },
@@ -183,36 +307,25 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       title: "Updated At",
       dataIndex: "updatedAt",
       key: "updatedAt",
-      render: (text: Date) => UseDateTimeFormat(text),
+      render: (text: Date) => UseConvertDateFormat(text),
     },
   ];
 
-  const data: DataTypeActionHistory[] = [
+  const columnsInfo: ColumnsType<DataInfoDocumentType> = [
     {
-      id: "1",
-      user: "User Authorizer 3",
-      act: "Uploaded",
-      note: "Uploaded",
-      file: "Uploaded",
-      fileVerHistory: "Uploaded",
-      updatedAt: new Date(),
-    },
-  ];
-
-  const columnsInfo: TableProps<DataTypeInfo>["columns"] = [
-    {
-      title: "User",
-      dataIndex: "user",
-      key: "user",
-      render: (text: string) => {
+      title: "Created by",
+      dataIndex: "createdBy",
+      key: "createdBy",
+      render: (text: string, record: DataInfoDocumentType) => {
         return (
           <div className="gap-2 flex items-center">
             <ImageNext
-              src="/placeholder-profile.png"
+              src={record.createdByAvatarPath || "/placeholder-profile.png"}
               width={32}
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px]"
+              className="h-[32px] w-[32px] rounded-full"
+              priority
             />
             <Text label={text} className="text-base font-normal text-black" />
           </div>
@@ -220,72 +333,28 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       },
     },
     {
-      title: "Action",
-      dataIndex: "act",
-      key: "act",
-      render: (text: string) => {
-        return (
-          <Text
-            label={text}
-            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
-          />
-        );
-      },
+      title: "Created at",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (text: Date) => UseConvertDateFormat(text),
     },
     {
-      title: "Note",
-      dataIndex: "note",
-      key: "note",
-      render: (text: string) => {
+      title: "Updated by",
+      dataIndex: "updatedBy",
+      key: "updatedBy",
+      render: (text: string, record: DataInfoDocumentType) => {
         return (
-          <Link className="flex items-center gap-2" href={`/${text}`}>
-            <OpenIcon
-              style={{
-                height: 32,
-                width: 32,
-              }}
+          <div className="gap-2 flex items-center">
+            <ImageNext
+              src={record.updatedByAvatarPath || "/placeholder-profile.png"}
+              width={32}
+              height={32}
+              alt="logo-klikyou"
+              className="h-[32px] w-[32px] rounded-full"
+              priority
             />
-
             <Text label={text} className="text-base font-normal text-black" />
-          </Link>
-        );
-      },
-    },
-    {
-      title: "Supporting File",
-      dataIndex: "file",
-      key: "file",
-      render: (text: string) => {
-        return (
-          <Link className="flex items-center gap-2" href={`/${text}`}>
-            <DownloadIcon
-              style={{
-                height: 32,
-                width: 32,
-              }}
-            />
-
-            <Text label="Download" className="text-base font-normal text-link" />
-          </Link>
-        );
-      },
-    },
-    {
-      title: "File version history",
-      dataIndex: "fileVerHistory",
-      key: "fileVerHistory",
-      render: (text: string) => {
-        return (
-          <Link className="flex items-center gap-2" href={`/${text}`}>
-            <DownloadIcon
-              style={{
-                height: 32,
-                width: 32,
-              }}
-            />
-
-            <Text label={text} className="text-base font-normal text-link" />
-          </Link>
+          </div>
         );
       },
     },
@@ -293,23 +362,16 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       title: "Updated At",
       dataIndex: "updatedAt",
       key: "updatedAt",
-      render: (text: Date) => UseDateTimeFormat(text),
+      render: (text: Date) => UseConvertDateFormat(text),
     },
   ];
 
-  const dataInfo: DataTypeInfo[] = [
-    {
-      id: "1",
-      createBy: "asdasd",
-      createAt: new Date(),
-      updateBy: "asdasd",
-      updatedAt: new Date(),
-    },
-  ];
+  const isLoading = isPendingDocument || isPendingTag || isPendingUserList;
 
   return (
     <div className="p-6">
-      {isPendingToReviewById && <Spin fullscreen />}
+      {isLoading && <Spin fullscreen />}
+      {contextHolder}
 
       <div className="flex gap-4 items-center">
         <BackIcon
@@ -330,25 +392,38 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   .filter(
                     (filtering) =>
                       ![
-                        "docNumber",
+                        "document_number",
                         "id",
-                        "numericRemarks",
-                        "collaborators",
-                        "authorizers",
-                        "recipients",
-                        "file",
+                        "numeric_remarks",
+                        "document_collaborator_id",
+                        "document_authorizer_id",
+                        "document_recipient_id",
+                        "document_path",
+                        "document_note",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
                     const labelMap: any = {
-                      docName: "Document name",
+                      document_name: "Document name",
                       memoId: "Memo ID",
-                      textRemarks: "Text remarks",
+                      text_remarks: "Text remarks",
                       status: "Status",
-                      tags: "Tags",
+                      document_tag_id: "Tags",
                     };
 
                     const valueMap: any = watch();
+
+                    let bgColor = "";
+
+                    if (valueMap[mapping]?.includes("Partially Approved")) {
+                      bgColor = "bg-link";
+                    } else if (valueMap[mapping]?.includes("Waiting Approval")) {
+                      bgColor = "bg-gray-dark";
+                    } else if (valueMap[mapping]?.includes("Fully Approved")) {
+                      bgColor = "bg-green";
+                    } else if (valueMap[mapping]?.includes("Fully Processed")) {
+                      bgColor = "bg-primary-purple";
+                    }
 
                     return (
                       <div className="mb-6" key={mapping}>
@@ -356,21 +431,24 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           label={labelMap[mapping]}
                           className="text-xl font-semibold text-black"
                         />
-                        {mapping === "tags" ? (
+                        {mapping === "document_tag_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
-                            {valueMap[mapping]?.map((item: string) => (
-                              <Text
-                                key={item}
-                                label={item}
-                                className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
-                              />
-                            ))}
+                            {dataTag
+                              ?.filter((filteringTag: DefaultOptionType) =>
+                                valueMap.document_tag_id.includes(filteringTag.value)
+                              )
+                              .map((item: DefaultOptionType) => (
+                                <Text
+                                  key={String(item.label)}
+                                  label={String(item.label)}
+                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                />
+                              ))}
                           </div>
                         ) : mapping === "status" ? (
                           <Text
-                            key={valueMap[mapping]}
                             label={valueMap[mapping]}
-                            className="inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                            className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${bgColor}`}
                           />
                         ) : (
                           <Text
@@ -388,26 +466,42 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   .filter(
                     (filtering) =>
                       ![
-                        "authorizers",
-                        "recipients",
-                        "file",
-                        "docName",
+                        "document_authorizer_id",
+                        "document_recipient_id",
+                        "document_path",
+                        "document_name",
                         "memoId",
-                        "textRemarks",
+                        "text_remarks",
                         "status",
-                        "tags",
+                        "document_tag_id",
+                        "document_note",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
                     const labelMap: any = {
-                      docNumber: "Document number",
+                      document_number: "Document number",
                       id: "Data ID",
-                      numericRemarks: "Numeric remarks",
+                      numeric_remarks: "Numeric remarks",
                       latestApproval: "Latest approval",
-                      collaborators: "Collaborators",
+                      document_collaborator_id: "Collaborators",
+                      action: "Latest action",
                     };
 
                     const valueMap: any = watch();
+
+                    let bgColorAction = "";
+
+                    if (mapping === "action" && valueMap[mapping]?.includes("Rejected")) {
+                      bgColorAction = "bg-red";
+                    } else if (mapping === "action" && valueMap[mapping]?.includes("Approved")) {
+                      bgColorAction = "bg-green";
+                    } else if (mapping === "action" && valueMap[mapping]?.includes("Updated")) {
+                      bgColorAction = "bg-warn";
+                    } else if (mapping === "action" && valueMap[mapping]?.includes("Uploaded")) {
+                      bgColorAction = "bg-link";
+                    } else if (mapping === "action" && valueMap[mapping]?.includes("pending")) {
+                      bgColorAction = "bg-link";
+                    }
 
                     return (
                       <div className="mb-6" key={mapping}>
@@ -415,21 +509,24 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           label={labelMap[mapping]}
                           className="text-xl font-semibold text-black"
                         />
-                        {mapping === "collaborators" ? (
+                        {mapping === "document_collaborator_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
-                            {valueMap[mapping].map((item: string) => (
-                              <Text
-                                key={item}
-                                label={item}
-                                className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
-                              />
-                            ))}
+                            {dataCollaborator
+                              ?.filter((filteringTag: DefaultOptionType) =>
+                                valueMap.document_collaborator_id.includes(filteringTag.value)
+                              )
+                              .map((item: DefaultOptionType) => (
+                                <Text
+                                  key={String(item.label)}
+                                  label={String(item.label)}
+                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                />
+                              ))}
                           </div>
-                        ) : mapping === "status" ? (
+                        ) : mapping === "action" ? (
                           <Text
-                            key={valueMap[mapping]}
                             label={valueMap[mapping]}
-                            className="inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                            className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${bgColorAction}`}
                           />
                         ) : (
                           <Text
@@ -451,23 +548,21 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex gap-4">
               <div className="w-1/2">
-                <div>
+                <div className="mb-6">
                   <Text
                     label="Latest document file"
                     className="mb-2 text-lg font-semibold text-black"
                   />
-                  <ConfigProvider
-                    theme={{
-                      token: {
-                        colorPrimary: "#0AADE0",
-                      },
-                    }}
-                  >
-                    <Upload {...props}>
-                      <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
-                    </Upload>
-                  </ConfigProvider>
+                  <Link rel="noopener noreferrer" target="_blank" href={getValues("document_path")}>
+                    {getValues("document_path")}
+                  </Link>
                 </div>
+
+                <Text label="Note" className="text-xl font-semibold text-black" />
+                <Text
+                  label={getValues("document_note")}
+                  className="text-base font-normal text-black"
+                />
               </div>
 
               <div className="w-1/2">
@@ -475,23 +570,24 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   .filter(
                     (filtering) =>
                       ![
-                        "recipients",
-                        "file",
-                        "docName",
+                        "document_recipient_id",
+                        "document_path",
+                        "document_name",
                         "memoId",
-                        "textRemarks",
+                        "text_remarks",
                         "status",
-                        "tags",
-                        "docNumber",
+                        "document_tag_id",
+                        "document_number",
                         "id",
-                        "numericRemarks",
-                        "collaborators",
+                        "numeric_remarks",
+                        "document_collaborator_id",
                         "latestApproval",
+                        "document_note",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
                     const labelMap: any = {
-                      authorizers: "Authorizers",
+                      document_authorizer_id: "Authorizers",
                     };
 
                     const valueMap: any = watch();
@@ -502,15 +598,19 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           label={labelMap[mapping]}
                           className="text-xl font-semibold text-black"
                         />
-                        {mapping === "collaborators" ? (
+                        {mapping === "document_authorizer_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
-                            {valueMap[mapping].map((item: string) => (
-                              <Text
-                                key={item}
-                                label={item}
-                                className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
-                              />
-                            ))}
+                            {dataAuthorizer
+                              ?.filter((filteringTag: DefaultOptionType) =>
+                                valueMap.document_authorizer_id.includes(filteringTag.value)
+                              )
+                              .map((item: DefaultOptionType) => (
+                                <Text
+                                  key={String(item.label)}
+                                  label={String(item.label)}
+                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                />
+                              ))}
                           </div>
                         ) : mapping === "status" ? (
                           <Text
@@ -540,22 +640,24 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   .filter(
                     (filtering) =>
                       ![
-                        "file",
-                        "docName",
+                        "document_path",
+                        "document_name",
                         "memoId",
-                        "textRemarks",
+                        "text_remarks",
                         "status",
-                        "tags",
-                        "docNumber",
+                        "document_tag_id",
+                        "document_number",
                         "id",
-                        "numericRemarks",
-                        "collaborators",
+                        "numeric_remarks",
+                        "document_collaborator_id",
                         "latestApproval",
+                        "document_note",
+                        "document_authorizer_id",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
                     const labelMap: any = {
-                      recipients: "Recipients",
+                      document_recipient_id: "Recipients",
                     };
 
                     const valueMap: any = watch();
@@ -566,15 +668,19 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           label={labelMap[mapping]}
                           className="text-xl font-semibold text-black"
                         />
-                        {mapping === "collaborators" ? (
+                        {mapping === "document_recipient_id" ? (
                           <div className="flex gap-2 flex-wrap mt-2">
-                            {valueMap[mapping].map((item: string) => (
-                              <Text
-                                key={item}
-                                label={item}
-                                className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
-                              />
-                            ))}
+                            {dataRecipient
+                              ?.filter((filteringTag: DefaultOptionType) =>
+                                valueMap.document_recipient_id.includes(filteringTag.value)
+                              )
+                              .map((item: DefaultOptionType) => (
+                                <Text
+                                  key={String(item.label)}
+                                  label={String(item.label)}
+                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                />
+                              ))}
                           </div>
                         ) : mapping === "status" ? (
                           <Text
@@ -622,15 +728,16 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                   <Button
                     type="button"
                     disabled
-                    onClick={() => setIsEdit(!isEdit)}
+                    onClick={() => {}}
                     label="Certificate"
                     icon={<ProtectIcon />}
                     className="gap-2 flex justify-center items-center rounded-md bg-primary-gray px-6 py-1.5 text-lg font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   />
                 </div>
               )}
-              columns={columns}
-              dataSource={data}
+              columns={columnsLogHistory}
+              dataSource={dataLogHistory}
+              scroll={{ x: 1500 }}
               pagination={false}
               rowKey={(record) => record.id}
             />

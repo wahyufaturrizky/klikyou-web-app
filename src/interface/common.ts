@@ -1,6 +1,20 @@
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
 export interface OptionInterface {
   label: string;
   value: string;
+}
+
+export interface QueryType {
+  search: string;
+  status: string;
+  role?: string;
+  page: number;
+  limit: number;
+  orderBy: string;
+  updated_at_start: string;
+  updated_at_end: string;
+  history?: number;
+  currentUserRole?: string;
 }
 
 export interface RoleType {

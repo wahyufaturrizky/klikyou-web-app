@@ -3,7 +3,7 @@ import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
-import { TagType, UserType } from "@/interface/common";
+import { TagType, UserType, FormApproveRejectProcessValues } from "@/interface/common";
 import {
   DataInfoDocumentType,
   DataTypeActionHistory,
@@ -16,7 +16,7 @@ import {
 } from "@/interface/documents.interface";
 import { ColumnsType } from "@/interface/user-management.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
-import { useDocumentById } from "@/services/document/useDocument";
+import { useDocumentApproveRejectProcess, useDocumentById } from "@/services/document/useDocument";
 import { useUserList } from "@/services/user-list/useUserList";
 import {
   BackIcon,
@@ -27,12 +27,25 @@ import {
   ProtectIcon,
   RejectIcon,
 } from "@/style/icon";
-import { ConfigProvider, Spin, Table, TableProps, message } from "antd";
+import {
+  ConfigProvider,
+  Spin,
+  Table,
+  TableProps,
+  message,
+  Button as ButtonAntd,
+  Modal,
+  Upload,
+} from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import InputTextArea from "@/components/InputTextArea";
+import { UploadOutlined } from "@ant-design/icons";
+import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
+import { ApproveAndRejectToReviewModal } from "@/interface/to-review.interface";
 
 export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();
@@ -46,6 +59,13 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const [dataAuthorizer, setDataAuthorizer] = useState<DefaultOptionType[]>([]);
   const [dataRecipient, setDataRecipient] = useState<DefaultOptionType[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
+
+  const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
+    useState<ApproveAndRejectToReviewModal>({
+      open: false,
+      data: null,
+      type: "approve",
+    });
 
   const { setValue, watch, getValues } = useForm<FormDocumentValues>({
     defaultValues: {
@@ -62,6 +82,17 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       document_authorizer_id: [],
       document_recipient_id: [],
       document_note: "",
+    },
+  });
+
+  const {
+    control: controlApproveRejectEdit,
+    handleSubmit: handleSubmitApproveRejectEdit,
+    reset: resetApproveRejectEdit,
+  } = useForm<FormApproveRejectProcessValues>({
+    defaultValues: {
+      supporting_document_note: "",
+      supporting_document_path: null,
     },
   });
 
@@ -118,8 +149,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   });
 
   useEffect(() => {
-    if (dataDocument) {
-      console.log("🚀 ~ useEffect ~ dataDocument:", dataDocument);
+    if (dataDocument?.data?.data) {
       const { data: mainData } = dataDocument;
       const { data: rawData } = mainData;
 
@@ -186,6 +216,30 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataDocument]);
+
+  const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =
+    useDocumentApproveRejectProcess({
+      id: stateApproveAndRejectModal.data?.id,
+      action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
+      options: {
+        onSuccess: () => {
+          messageApi.open({
+            type: "success",
+            content: "Success " + stateApproveAndRejectModal.type,
+          });
+
+          resetApproveRejectEdit();
+
+          setStateApproveAndRejectModal({
+            data: null,
+            open: false,
+            type: "",
+          });
+
+          router.back();
+        },
+      },
+    });
 
   const columnsLogHistory: TableProps<DataTypeActionHistory>["columns"] = [
     {
@@ -364,6 +418,17 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     },
   ];
 
+  const onSubmitApproveRejectEdit = (data: FormApproveRejectProcessValues) => {
+    const { supporting_document_note, supporting_document_path } = data;
+
+    let formdata = new FormData();
+
+    formdata.append("note", supporting_document_note);
+    formdata.append("supporting_document_path", supporting_document_path?.file.originFileObj);
+
+    updateApproveRejectProcess(data);
+  };
+
   const isLoading = isPendingDocument || isPendingTag || isPendingUserList;
 
   return (
@@ -382,7 +447,13 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       <div className="flex gap-4 items-center my-4">
         <Button
           type="button"
-          onClick={() => {}}
+          onClick={() =>
+            setStateApproveAndRejectModal({
+              open: true,
+              data: null,
+              type: "approve",
+            })
+          }
           label="Approve"
           icon={
             <CheckIcon
@@ -398,7 +469,13 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
         <Button
           type="button"
-          onClick={() => {}}
+          onClick={() =>
+            setStateApproveAndRejectModal({
+              open: true,
+              data: null,
+              type: "reject",
+            })
+          }
           label="Reject"
           icon={
             <RejectIcon
@@ -800,6 +877,136 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
           </ConfigProvider>
         </div>
       </div>
+
+      <Modal
+        title={`${stateApproveAndRejectModal.type === "approve" ? "Approve" : "Reject"} document`}
+        open={stateApproveAndRejectModal.open}
+        onCancel={() => {
+          resetApproveRejectEdit();
+          setStateApproveAndRejectModal({
+            open: false,
+            data: null,
+            type: "",
+          });
+        }}
+        footer={
+          <div className="flex justify-end items-center">
+            <div className="flex gap-4 items-center">
+              <Button
+                type="button"
+                disabled={isPendingApproveRejectProcess}
+                loading={isPendingApproveRejectProcess}
+                onClick={() => {
+                  resetApproveRejectEdit();
+                  setStateApproveAndRejectModal({
+                    open: false,
+                    data: null,
+                    type: "",
+                  });
+                }}
+                label="Cancel"
+                className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              />
+
+              <Button
+                type="button"
+                label="Approve"
+                disabled={isPendingApproveRejectProcess}
+                loading={isPendingApproveRejectProcess}
+                onClick={handleSubmitApproveRejectEdit(onSubmitApproveRejectEdit)}
+                icon={
+                  stateApproveAndRejectModal.type === "approve" ? (
+                    <CheckIcon
+                      style={{
+                        color: "white",
+                        height: 32,
+                        width: 32,
+                      }}
+                    />
+                  ) : (
+                    <RejectIcon
+                      style={{
+                        color: "white",
+                        height: 32,
+                        width: 32,
+                      }}
+                    />
+                  )
+                }
+                className={`${
+                  stateApproveAndRejectModal.type === "approve" ? "bg-green" : "bg-red"
+                } gap-2 text-white flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
+              />
+            </div>
+          </div>
+        }
+      >
+        <div>
+          <div className="mb-6">
+            <Controller
+              control={controlApproveRejectEdit}
+              name="supporting_document_note"
+              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                <InputTextArea
+                  onChange={onChange}
+                  error={error}
+                  onBlur={onBlur}
+                  value={value}
+                  name="supporting_document_note"
+                  placeholder="Enter note"
+                  classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
+                  classNameLabel="block text-xl font-semibold text-black"
+                  label="Note"
+                />
+              )}
+            />
+          </div>
+
+          <div>
+            <Text
+              label="Upload supporting files"
+              className="mb-2 text-lg font-semibold text-black"
+            />
+
+            <Controller
+              control={controlApproveRejectEdit}
+              rules={{
+                required: "Document is required",
+              }}
+              name="supporting_document_path"
+              render={({ field: { onChange } }) => (
+                <ConfigProvider
+                  theme={{
+                    token: {
+                      colorPrimary: "#0AADE0",
+                    },
+                  }}
+                >
+                  <Upload
+                    name="supporting_document_path"
+                    headers={{
+                      authorization: "authorization-text",
+                    }}
+                    onChange={(info) => {
+                      if (info.file.status !== "uploading") {
+                        console.log(info.file, info.fileList);
+                      }
+                      if (info.file.status === "done") {
+                        message.success(`${info.file.name} file uploaded successfully`);
+                        onChange(info);
+                      } else if (info.file.status === "error") {
+                        message.error(`${info.file.name} file upload failed.`);
+                      }
+                    }}
+                  >
+                    <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
+                  </Upload>
+                </ConfigProvider>
+              )}
+            />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

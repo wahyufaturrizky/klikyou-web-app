@@ -220,7 +220,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
   });
 
   useEffect(() => {
-    if (dataDocument) {
+    if (dataDocument?.data?.data) {
       const { data: mainData } = dataDocument;
       const { data: rawData } = mainData;
 

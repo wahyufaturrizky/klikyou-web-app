@@ -3,13 +3,14 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
+import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
 import { FormApproveRejectProcessValues, FormFilterValues } from "@/interface/common";
-import { DocumentTagsType } from "@/interface/documents.interface";
-import { ApproveAndRejectToReviewModal, DataResToReview } from "@/interface/to-review.interface";
-import { useApproveRejectProcess, useToReview } from "@/services/to-view/useToReview";
+import { DataResDocument, DocumentTagsType } from "@/interface/documents.interface";
+import { ApproveAndRejectToReviewModal } from "@/interface/to-review.interface";
+import { useDocument, useDocumentApproveRejectProcess } from "@/services/document/useDocument";
 import { CheckIcon, FileIcon, FilterIcon, RejectIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -26,12 +27,11 @@ import {
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 
 export default function ToReviewPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [selectedRows, setSelectedRows] = useState<DataResToReview[]>([]);
+  const [selectedRows, setSelectedRows] = useState<DataResDocument[]>([]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -42,7 +42,7 @@ export default function ToReviewPage() {
       type: "approve",
     });
 
-  const [dataToReview, setDataToReview] = useState<DataResToReview[]>([]);
+  const [dataListDocument, setDataListDocument] = useState<DataResDocument[]>([]);
 
   const [tableParams, setTableParams] = useState<any>({
     pagination: {
@@ -78,7 +78,7 @@ export default function ToReviewPage() {
     },
   });
 
-  const columns: TableProps<DataResToReview>["columns"] = [
+  const columns: TableProps<DataResDocument>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -93,7 +93,7 @@ export default function ToReviewPage() {
       dataIndex: "documentName",
       key: "documentName",
       sorter: true,
-      render: (text: string, record: DataResToReview) => {
+      render: (text: string, record: DataResDocument) => {
         const { id } = record;
         return (
           <Link href={`/approvals/to-review/view/${id}`}>
@@ -125,7 +125,7 @@ export default function ToReviewPage() {
       title: "File",
       dataIndex: "file",
       key: "file",
-      render: (text: string) => {
+      render: () => {
         return (
           <div className="flex justify-center items-center">
             <FileIcon
@@ -224,17 +224,18 @@ export default function ToReviewPage() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setDataToReview([]);
+      setDataListDocument([]);
     }
   };
 
   const debounceSearch = useDebounce(watchFilter("search"), 1000);
 
   const {
-    data: dataRawToReview,
-    isPending: isPendingRawToReview,
+    data: dataDocument,
+    isPending: isPendingDocument,
     refetch: refetchRawToReview,
-  } = useToReview({
+  } = useDocument({
+    action: "approval",
     query: {
       search: debounceSearch,
       status: getValuesFilter("status").join(","),
@@ -244,16 +245,17 @@ export default function ToReviewPage() {
       orderBy: useOrderTableParams(tableParams),
       updated_at_start: getValuesFilter("date")[0],
       updated_at_end: getValuesFilter("date")[1],
+      history: 0,
     },
   });
 
   useEffect(() => {
-    if (dataRawToReview) {
-      const { data: mainData } = dataRawToReview.data;
+    if (dataDocument) {
+      const { data: mainData } = dataDocument.data;
       const { data: dataListTable, meta } = mainData;
 
-      setDataToReview(
-        dataListTable?.map((item: DataResToReview) => ({
+      setDataListDocument(
+        dataListTable?.map((item: DataResDocument) => ({
           ...item,
           key: item.id,
         }))
@@ -267,7 +269,8 @@ export default function ToReviewPage() {
         },
       });
     }
-  }, [dataRawToReview]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataDocument]);
 
   const optionsStatus = [
     {
@@ -322,7 +325,7 @@ export default function ToReviewPage() {
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selectedRowKeys: Key[], selectedRows: DataResToReview[]) => {
+    onChange: (selectedRowKeys: Key[], selectedRows: DataResDocument[]) => {
       setSelectedRowKeys(selectedRowKeys);
       setSelectedRows(selectedRows);
     },
@@ -334,14 +337,14 @@ export default function ToReviewPage() {
   }, [JSON.stringify(tableParams)]);
 
   const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =
-    useApproveRejectProcess({
+    useDocumentApproveRejectProcess({
       id: stateApproveAndRejectModal.data?.id,
       action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
       options: {
         onSuccess: () => {
           messageApi.open({
             type: "success",
-            content: "Success update review",
+            content: "Success " + stateApproveAndRejectModal.type,
           });
 
           resetApproveRejectEdit();
@@ -471,9 +474,9 @@ export default function ToReviewPage() {
         >
           <Table
             columns={columns}
-            dataSource={dataToReview}
+            dataSource={dataListDocument}
             scroll={{ x: 1500 }}
-            loading={isPendingRawToReview}
+            loading={isPendingDocument}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}

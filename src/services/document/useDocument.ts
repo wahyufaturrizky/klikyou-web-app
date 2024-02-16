@@ -1,18 +1,28 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { client, clientFormData } from "../client";
+import { QueryType } from "@/interface/common";
+import { DataResponseDocumentType } from "@/interface/documents.interface";
 
-const fetchDocument = async ({ query = {} }) => {
-  return client("/documents", {
+const fetchDocument = async ({ query = {}, action }: { query: any; action?: string }) => {
+  return client(`/documents${action ? `/${action}` : ""}`, {
     params: {
       ...query,
     },
   }).then((data) => data);
 };
 
-const useDocument = ({ query = {}, options }: any = {}) => {
+const useDocument = ({
+  query,
+  options,
+  action,
+}: {
+  query?: QueryType;
+  options?: any;
+  action?: string;
+} = {}): UseQueryResult<DataResponseDocumentType, Error> => {
   return useQuery({
     queryKey: ["documents", query],
-    queryFn: () => fetchDocument({ query }),
+    queryFn: () => fetchDocument({ query, action }),
     ...options,
   }) as any;
 };
@@ -71,6 +81,25 @@ function useDeleteBulkDocument({ options }: any) {
   });
 }
 
+function useDocumentApproveRejectProcess({
+  options,
+  id,
+  action,
+}: {
+  options: any;
+  id?: number | string;
+  action: string;
+}) {
+  return useMutation({
+    mutationFn: (updates) =>
+      clientFormData(`/documents/${action}/${id}`, {
+        method: "POST",
+        data: updates,
+      }),
+    ...options,
+  }) as any;
+}
+
 export {
   useCreateDocument,
   useDeleteBulkDocument,
@@ -78,4 +107,5 @@ export {
   useDocument,
   useDocumentById,
   useUpdateDocument,
+  useDocumentApproveRejectProcess,
 };

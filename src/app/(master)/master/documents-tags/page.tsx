@@ -173,7 +173,7 @@ export default function DocumentTagsPage() {
   });
 
   useEffect(() => {
-    if (dataDocumentTags) {
+    if (dataDocumentTags?.data?.data) {
       const { data: mainData } = dataDocumentTags.data;
       const { data: dataListTable, meta } = mainData;
 

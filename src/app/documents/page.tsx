@@ -7,7 +7,7 @@ import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { FormFilterValues, RoleType } from "@/interface/common";
 import {
-  DataDocumentsType,
+  DataResDocument,
   DeleteDocumentModal,
   DocumentTagsType,
   FormFilterValuesDocuments,
@@ -46,7 +46,7 @@ export default function DocumentsPage() {
       selectedRowKeys: [],
     },
   });
-  const [dataListDocument, setDataListDocument] = useState<DataDocumentsType[]>([]);
+  const [dataListDocument, setDataListDocument] = useState<DataResDocument[]>([]);
 
   const [tableParams, setTableParams] = useState<any>({
     pagination: {
@@ -88,7 +88,7 @@ export default function DocumentsPage() {
     }
   }, [dataListRole]);
 
-  const columns: TableProps<DataDocumentsType>["columns"] = [
+  const columns: TableProps<DataResDocument>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -103,7 +103,7 @@ export default function DocumentsPage() {
       dataIndex: "documentName",
       sorter: true,
       key: "documentName",
-      render: (text: string, record: DataDocumentsType) => {
+      render: (text: string, record: DataResDocument) => {
         const { id } = record;
         return (
           <Link href={`/documents/view/${id}`}>
@@ -260,12 +260,12 @@ export default function DocumentsPage() {
   });
 
   useEffect(() => {
-    if (dataDocument) {
+    if (dataDocument?.data?.data) {
       const { data: mainData } = dataDocument.data;
       const { data: dataListTable, meta } = mainData;
 
       setDataListDocument(
-        dataListTable?.map((item: DataDocumentsType) => ({
+        dataListTable?.map((item: DataResDocument) => ({
           ...item,
           key: item.id,
         }))
