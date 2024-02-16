@@ -117,7 +117,7 @@ export default function DashboardPage() {
         />
       ),
       label: "Total documents",
-      value: dataRawDashboard?.dashboard_info.total_documents,
+      value: dataRawDashboard?.dashboard_info.total_documents || "Loading...",
     },
     {
       icon: (
@@ -129,7 +129,7 @@ export default function DashboardPage() {
         />
       ),
       label: "Pending",
-      value: dataRawDashboard?.dashboard_info.pending,
+      value: dataRawDashboard?.dashboard_info.pending || "Loading...",
     },
     {
       icon: (
@@ -142,7 +142,7 @@ export default function DashboardPage() {
         />
       ),
       label: "Approved",
-      value: dataRawDashboard?.dashboard_info.approved,
+      value: dataRawDashboard?.dashboard_info.approved || "Loading...",
     },
     {
       icon: (
@@ -155,7 +155,7 @@ export default function DashboardPage() {
         />
       ),
       label: "Rejected",
-      value: dataRawDashboard?.dashboard_info.rejected,
+      value: dataRawDashboard?.dashboard_info.rejected || "Loading...",
     },
   ];
 
