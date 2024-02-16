@@ -1,11 +1,11 @@
 // from new Date() default format to 30/06/2023 17:00 Date Format
 const UseDateTimeFormat = (date: Date = new Date()) => {
   // Extract date and time components
-  let day: number | string = date.getDate();
-  let month: number | string = date.getMonth() + 1; // Months are zero-based, so add 1
-  let year: number | string = date.getFullYear();
-  let hours: number | string = date.getHours();
-  let minutes: number | string = date.getMinutes();
+  let day: number | string = date?.getDate();
+  let month: number | string = date?.getMonth() + 1; // Months are zero-based, so add 1
+  let year: number | string = date?.getFullYear();
+  let hours: number | string = date?.getHours();
+  let minutes: number | string = date?.getMinutes();
 
   // Pad single-digit values with leading zeros
   if (day < 10) {

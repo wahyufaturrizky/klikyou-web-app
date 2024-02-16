@@ -4,7 +4,10 @@ import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
-import UseDateTimeFormat from "@/hook/useDateFormat";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
+import { RoleType, TagType } from "@/interface/common";
+import { DataMyProfileType, FormProfileValues } from "@/interface/my-profile.interface";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import { useCreateProfile, useProfile } from "@/services/profile/useProfile";
 import { useRole } from "@/services/role/useRole";
 import { BackIcon, PencilIcon } from "@/style/icon";
@@ -15,9 +18,6 @@ import { DefaultOptionType } from "antd/es/cascader";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
-import { DataMyProfileType, FormProfileValues } from "@/interface/my-profile.interface";
-import { RoleType, TagType } from "@/interface/common";
 
 export default function ProfilePage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -128,7 +128,7 @@ export default function ProfilePage() {
       title: "Created At",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (text: Date) => UseDateTimeFormat(text),
+      render: (text: Date) => UseConvertDateFormat(text),
     },
     {
       title: "Updated By",
@@ -153,7 +153,7 @@ export default function ProfilePage() {
       title: "Updated At",
       dataIndex: "updatedAt",
       key: "updatedAt",
-      render: (text: Date) => UseDateTimeFormat(text),
+      render: (text: Date) => UseConvertDateFormat(text),
     },
   ];
 

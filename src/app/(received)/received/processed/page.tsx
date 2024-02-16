@@ -3,13 +3,17 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
-import UseDateTimeFormat from "@/hook/useDateFormat";
+import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
 import {
   ApproveRejectProcessModal,
   FormApproveRejectProcessValues,
   FormFilterValues,
 } from "@/interface/common";
+import { DataResDocument, DocumentTagsType } from "@/interface/documents.interface";
+import { useDocument, useDocumentApproveRejectProcess } from "@/services/document/useDocument";
 import { DownloadIcon, FilterIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -26,10 +30,6 @@ import {
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
-import { useDocument, useDocumentApproveRejectProcess } from "@/services/document/useDocument";
-import { useOrderTableParams } from "@/hook/useOrderTableParams";
-import { DataResDocument, DocumentTagsType } from "@/interface/documents.interface";
 
 export default function ProcessedPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
@@ -129,7 +129,7 @@ export default function ProcessedPage() {
       dataIndex: "updatedAt",
       sorter: true,
       key: "updatedAt",
-      render: (text: Date) => UseDateTimeFormat(text),
+      render: (text: Date) => UseConvertDateFormat(text),
     },
     {
       title: "Latest document",

@@ -4,7 +4,7 @@ import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
-import UseDateTimeFormat from "@/hook/useDateFormat";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
 import {
@@ -178,7 +178,7 @@ export default function HistoryPage() {
       dataIndex: "updateAt",
       key: "updateAt",
       sorter: true,
-      render: (text: Date) => UseDateTimeFormat(text),
+      render: (text: Date) => UseConvertDateFormat(text),
     },
     {
       title: "Approval",

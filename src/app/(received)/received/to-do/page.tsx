@@ -4,7 +4,7 @@ import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
-import UseDateTimeFormat from "@/hook/useDateFormat";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
 import {
@@ -127,7 +127,7 @@ export default function ToDoPage() {
       dataIndex: "updatedAt",
       sorter: true,
       key: "updatedAt",
-      render: (text: Date) => UseDateTimeFormat(text),
+      render: (text: Date) => UseConvertDateFormat(text),
     },
     {
       title: "Latest document",
