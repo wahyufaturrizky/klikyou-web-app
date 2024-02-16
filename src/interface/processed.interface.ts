@@ -13,12 +13,3 @@ export type FormProcessedValues = {
   authorizers: string[];
   recipients: string[];
 };
-
-export interface DataProcessedType {
-  id: string;
-  docName: string;
-  tags: string[];
-  file: string;
-  status: string;
-  updatedAt: string;
-}

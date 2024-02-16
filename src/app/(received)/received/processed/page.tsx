@@ -5,9 +5,11 @@ import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormApproveRejectProcessValues, FormFilterValues } from "@/interface/common";
-import { useProcessed } from "@/services/processed/useProcessed";
-import { useApproveRejectProcess } from "@/services/to-view/useToReview";
+import {
+  ApproveRejectProcessModal,
+  FormApproveRejectProcessValues,
+  FormFilterValues,
+} from "@/interface/common";
 import { DownloadIcon, FilterIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -25,44 +27,25 @@ import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
-
-export interface DataProcessedType {
-  id: string;
-  docName: string;
-  tags: string[];
-  file: string;
-  updatedAt: string;
-}
-
-interface ApproveAndRejectModal {
-  open: boolean;
-  data: DataProcessedType | null;
-  type: "approve" | "reject" | "";
-}
+import { useDocument, useDocumentApproveRejectProcess } from "@/services/document/useDocument";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
+import { DataResDocument, DocumentTagsType } from "@/interface/documents.interface";
 
 export default function ProcessedPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [selectedRows, setSelectedRows] = useState<DataProcessedType[]>([]);
+  const [selectedRows, setSelectedRows] = useState<DataResDocument[]>([]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
   const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
-    useState<ApproveAndRejectModal>({
+    useState<ApproveRejectProcessModal>({
       open: false,
       data: null,
       type: "approve",
     });
 
-  const [dataProcessed, setDataProcessed] = useState<DataProcessedType[]>([
-    {
-      id: "101",
-      docName: "Project Antasari - Quotation",
-      tags: ["Quotation", "Project"],
-      file: "file.pdf",
-      updatedAt: "30/06/2023 17:00",
-    },
-  ]);
+  const [dataListDocument, setDataListDocument] = useState<DataResDocument[]>([]);
 
   const [tableParams, setTableParams] = useState<any>({
     pagination: {
@@ -98,7 +81,7 @@ export default function ProcessedPage() {
     },
   });
 
-  const columns: TableProps<DataProcessedType>["columns"] = [
+  const columns: TableProps<DataResDocument>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -110,10 +93,10 @@ export default function ProcessedPage() {
     },
     {
       title: "Document name",
-      dataIndex: "docName",
+      dataIndex: "documentName",
       sorter: true,
-      key: "docName",
-      render: (text: string, record: DataProcessedType) => {
+      key: "documentName",
+      render: (text: string, record: DataResDocument) => {
         const { id } = record;
         return (
           <Link href={`/received/processed/view/${id}`}>
@@ -124,16 +107,16 @@ export default function ProcessedPage() {
     },
     {
       title: "Tags",
-      dataIndex: "tags",
+      dataIndex: "documentTags",
+      key: "documentTags",
       sorter: true,
-      key: "tags",
-      render: (text: string[]) => (
+      render: (text: DocumentTagsType[]) => (
         <div className="flex gap-2 flex-wrap">
-          {text?.map((item: string) => {
+          {text?.map((item: DocumentTagsType) => {
             return (
               <Text
-                key={item}
-                label={item}
+                key={item.id}
+                label={item.tag.name}
                 className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
               />
             );
@@ -142,17 +125,17 @@ export default function ProcessedPage() {
       ),
     },
     {
-      title: "Update At",
-      dataIndex: "updateAt",
+      title: "Updated At",
+      dataIndex: "updatedAt",
       sorter: true,
-      key: "updateAt",
+      key: "updatedAt",
       render: (text: Date) => UseDateTimeFormat(text),
     },
     {
       title: "Latest document",
-      dataIndex: "file",
-      key: "file",
-      render: (text: string, record: DataProcessedType) => {
+      dataIndex: "documentPath",
+      key: "documentPath",
+      render: (text: string, record: DataResDocument) => {
         const { id } = record;
         return (
           <div className="gap-2 flex items-center cursor-pointer">
@@ -179,7 +162,7 @@ export default function ProcessedPage() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setDataProcessed([]);
+      setDataListDocument([]);
     }
   };
 
@@ -189,18 +172,18 @@ export default function ProcessedPage() {
     data: dataRawProcessed,
     isPending: isPendingProcessed,
     refetch: refetchProcessed,
-  } = useProcessed({
+  } = useDocument({
+    action: "receival",
     query: {
       search: debounceSearch,
       status: getValuesFilter("status").join(","),
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
-      orderBy: tableParams?.field
-        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
-        : "",
+      orderBy: useOrderTableParams(tableParams),
       updated_at_start: getValuesFilter("date")[0],
       updated_at_end: getValuesFilter("date")[1],
+      history: 0,
     },
   });
 
@@ -209,8 +192,8 @@ export default function ProcessedPage() {
       const { data: mainData } = dataRawProcessed.data;
       const { data: dataListTable, meta } = mainData;
 
-      setDataProcessed(
-        dataListTable?.map((item: DataProcessedType) => ({
+      setDataListDocument(
+        dataListTable?.map((item: DataResDocument) => ({
           ...item,
           key: item.id,
         }))
@@ -279,7 +262,7 @@ export default function ProcessedPage() {
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selectedRowKeys: Key[], selectedRows: DataProcessedType[]) => {
+    onChange: (selectedRowKeys: Key[], selectedRows: DataResDocument[]) => {
       setSelectedRowKeys(selectedRowKeys);
       setSelectedRows(selectedRows);
     },
@@ -290,7 +273,7 @@ export default function ProcessedPage() {
   }, [JSON.stringify(tableParams)]);
 
   const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =
-    useApproveRejectProcess({
+    useDocumentApproveRejectProcess({
       id: stateApproveAndRejectModal.data?.id,
       action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
       options: {
@@ -364,7 +347,7 @@ export default function ProcessedPage() {
         >
           <Table
             columns={columns}
-            dataSource={dataProcessed}
+            dataSource={dataListDocument}
             loading={isPendingProcessed}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
