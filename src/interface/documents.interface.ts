@@ -1,5 +1,12 @@
-import { FormFilterValues, UserType } from "@/interface/common";
+import {
+  FormFilterValues,
+  UserType,
+  DataStatusMessageResponseType,
+  MetaType,
+  CommonResponseType,
+} from "@/interface/common";
 import { Key } from "react";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export interface FormFilterValuesDocuments extends FormFilterValues {
   currentUserRole: string;
@@ -76,34 +83,13 @@ export interface DocumentTagsType {
   documentId: number;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface DataDocumentsType {
-  id: number;
-  userId: number;
-  documentName: string;
-  documentNumber: string;
-  textRemarks: string;
-  numericRemarks: number;
-  documentPath: string;
-  documentNote: string;
-  action: string;
-  createdAt: string;
-  updatedAt: string;
-  currentUserRole: string;
-  status: string;
-  makers: MakersType;
-  documentTags: DocumentTagsType[];
-  documentAuthorizers: DocumentAuthorizersType[];
-  documentRecipients: DocumentRecipientsType[];
-  documentCollaborators: DocumentCollaboratorsType[];
-  documentLogs: DocumentLogType[];
+  tag: DataDocumentTags;
 }
 
 export interface DeleteDocumentModal {
   open: boolean;
   type: string;
-  data?: { data: DataDocumentsType[] | null; selectedRowKeys: Key[] } | null;
+  data?: { data: DataResDocument[] | null; selectedRowKeys: Key[] } | null;
 }
 
 export type FormDocumentValues = {
@@ -155,4 +141,49 @@ export interface DataInfoType {
 export interface EditDocumentsModal {
   open: boolean;
   data?: null;
+}
+
+interface CreatedByDocumentType {
+  id: number;
+  roleId: number;
+  avatarPath: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  tags: null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: null;
+}
+
+export interface DataResDocument {
+  id: number;
+  userId: number;
+  memoId: string;
+  documentName: string;
+  documentNumber: string;
+  textRemarks: string;
+  numericRemarks: number;
+  documentPath: string;
+  documentNote: string;
+  action: string;
+  createdAt: string;
+  updatedByUserId: null;
+  updatedAt: string;
+  createdBy: CreatedByDocumentType;
+  documentTags: DocumentTagsType[];
+  currentUserRole: string;
+  status: string;
+}
+
+interface DataMessageStatusDashboardType extends DataStatusMessageResponseType {
+  data: {
+    meta: MetaType;
+    data: DataResDocument[];
+  };
+}
+
+export interface DataResponseDocumentType extends CommonResponseType {
+  data: DataMessageStatusDashboardType;
 }

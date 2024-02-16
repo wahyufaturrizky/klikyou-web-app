@@ -1,9 +1,10 @@
 import { Key } from "react";
 export interface DataDocumentTags {
-  id: string;
+  id: string | number;
   code: string;
   name: string;
-  updatedAt: Date;
+  updatedAt: string;
+  createdAt: string;
 }
 
 export type FormDocumentTagsValues = {

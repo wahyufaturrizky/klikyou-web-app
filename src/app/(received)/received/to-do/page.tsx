@@ -3,11 +3,12 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
+import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormApproveRejectValues, FormFilterValues } from "@/interface/common";
+import { FormApproveRejectProcessValues, FormFilterValues } from "@/interface/common";
 import { ApproveAndRejectToDoModal, DataToDoType } from "@/interface/to-do.interface";
-import { useToReview, useUpdateToReview } from "@/services/to-view/useToReview";
+import { useApproveRejectProcess, useToReview } from "@/services/to-view/useToReview";
 import { DownloadIcon, FilterIcon, PeopleCheckIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -24,6 +25,7 @@ import {
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
 
 export default function ToDoPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
@@ -68,10 +70,10 @@ export default function ToDoPage() {
     control: controlApproveRejectEdit,
     handleSubmit: handleSubmitApproveRejectEdit,
     reset: resetApproveRejectEdit,
-  } = useForm<FormApproveRejectValues>({
+  } = useForm<FormApproveRejectProcessValues>({
     defaultValues: {
-      note: "",
-      file: "",
+      supporting_document_note: "",
+      supporting_document_path: "",
     },
   });
 
@@ -198,9 +200,7 @@ export default function ToDoPage() {
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
-      orderBy: tableParams?.field
-        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
-        : "",
+      orderBy: useOrderTableParams(tableParams),
       updated_at_start: getValuesFilter("date")[0],
       updated_at_end: getValuesFilter("date")[1],
     },
@@ -212,7 +212,7 @@ export default function ToDoPage() {
       const { data: dataListTable, meta } = mainData;
 
       setDataToReview(
-        dataListTable?.map((item: DataToDoType) => ({
+        dataListTable?.map((item: any) => ({
           ...item,
           key: item.id,
         }))
@@ -292,7 +292,9 @@ export default function ToDoPage() {
   }, [JSON.stringify(tableParams)]);
 
   const { mutate: updateApproveReject, isPending: isPendingUpdateApproveReject } =
-    useUpdateToReview({
+    useApproveRejectProcess({
+      id: stateApproveAndRejectModal.data?.id,
+      action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
       options: {
         onSuccess: () => {
           messageApi.open({
@@ -311,7 +313,7 @@ export default function ToDoPage() {
       },
     });
 
-  const onSubmitApproveRejectEdit = (data: FormApproveRejectValues) => {
+  const onSubmitApproveRejectEdit = (data: FormApproveRejectProcessValues) => {
     updateApproveReject(data);
   };
 
@@ -534,14 +536,14 @@ export default function ToDoPage() {
           <div className="mb-6">
             <Controller
               control={controlApproveRejectEdit}
-              name="note"
+              name="supporting_document_note"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <InputTextArea
                   onChange={onChange}
                   error={error}
                   onBlur={onBlur}
                   value={value}
-                  name="note"
+                  name="supporting_document_note"
                   placeholder="Enter note"
                   classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                   classNameLabel="block text-xl font-semibold text-black"
@@ -562,7 +564,7 @@ export default function ToDoPage() {
               rules={{
                 required: "Document is required",
               }}
-              name="file"
+              name="supporting_document_path"
               render={({ field: { onChange } }) => (
                 <ConfigProvider
                   theme={{
@@ -572,7 +574,7 @@ export default function ToDoPage() {
                   }}
                 >
                   <Upload
-                    name="file"
+                    name="supporting_document_path"
                     headers={{
                       authorization: "authorization-text",
                     }}

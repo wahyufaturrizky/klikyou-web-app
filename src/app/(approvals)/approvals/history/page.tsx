@@ -5,14 +5,13 @@ import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormApproveRejectValues, FormFilterValues } from "@/interface/common";
+import { FormApproveRejectProcessValues, FormFilterValues } from "@/interface/common";
 import {
   ApproveAndRejectHistoryModal,
   DataHistoryType,
   DeleteHistoryModal,
 } from "@/interface/history.interface";
 import { useDeleteHistory, useHistory } from "@/services/history/useHistory";
-import { useUpdateToReview } from "@/services/to-view/useToReview";
 import { FileIcon, FilterIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -29,6 +28,9 @@ import {
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
+import { useApproveRejectProcess } from "@/services/to-view/useToReview";
+import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 
 export default function HistoryPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
@@ -92,10 +94,10 @@ export default function HistoryPage() {
     control: controlApproveRejectEdit,
     handleSubmit: handleSubmitApproveRejectEdit,
     reset: resetApproveRejectEdit,
-  } = useForm<FormApproveRejectValues>({
+  } = useForm<FormApproveRejectProcessValues>({
     defaultValues: {
-      note: "",
-      file: "",
+      supporting_document_note: "",
+      supporting_document_path: "",
     },
   });
 
@@ -222,9 +224,7 @@ export default function HistoryPage() {
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
-      orderBy: tableParams?.field
-        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
-        : "",
+      orderBy: useOrderTableParams(tableParams),
       updated_at_start: getValuesFilter("date")[0],
       updated_at_end: getValuesFilter("date")[1],
     },
@@ -313,10 +313,13 @@ export default function HistoryPage() {
 
   useEffect(() => {
     refetchHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(tableParams)]);
 
-  const { mutate: updateApproveReject, isPending: isPendingUpdateApproveReject } =
-    useUpdateToReview({
+  const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =
+    useApproveRejectProcess({
+      id: stateApproveAndRejectModal.data?.id,
+      action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
       options: {
         onSuccess: () => {
           messageApi.open({
@@ -335,8 +338,8 @@ export default function HistoryPage() {
       },
     });
 
-  const onSubmitApproveRejectEdit = (data: FormApproveRejectValues) => {
-    updateApproveReject(data);
+  const onSubmitApproveRejectEdit = (data: FormApproveRejectProcessValues) => {
+    updateApproveRejectProcess(data);
   };
 
   const { mutate: deleteUserManagement, isPending: isPendingDeleteUserManagement }: any =
@@ -584,8 +587,8 @@ export default function HistoryPage() {
             <div className="flex gap-4 items-center">
               <Button
                 type="button"
-                disabled={isPendingUpdateApproveReject}
-                loading={isPendingUpdateApproveReject}
+                disabled={isPendingApproveRejectProcess}
+                loading={isPendingApproveRejectProcess}
                 onClick={() => {
                   resetApproveRejectEdit();
                   setStateApproveAndRejectModal({
@@ -600,8 +603,8 @@ export default function HistoryPage() {
 
               <Button
                 type="button"
-                disabled={isPendingUpdateApproveReject}
-                loading={isPendingUpdateApproveReject}
+                disabled={isPendingApproveRejectProcess}
+                loading={isPendingApproveRejectProcess}
                 onClick={handleSubmitApproveRejectEdit(onSubmitApproveRejectEdit)}
                 label="Yes"
                 className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -614,14 +617,14 @@ export default function HistoryPage() {
           <div className="mb-6">
             <Controller
               control={controlApproveRejectEdit}
-              name="note"
+              name="supporting_document_note"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                 <InputTextArea
                   onChange={onChange}
                   error={error}
                   onBlur={onBlur}
                   value={value}
-                  name="note"
+                  name="supporting_document_note"
                   placeholder="Enter note"
                   classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                   classNameLabel="block text-xl font-semibold text-black"
@@ -642,7 +645,7 @@ export default function HistoryPage() {
               rules={{
                 required: "Document is required",
               }}
-              name="file"
+              name="supporting_document_path"
               render={({ field: { onChange } }) => (
                 <ConfigProvider
                   theme={{
@@ -652,7 +655,7 @@ export default function HistoryPage() {
                   }}
                 >
                   <Upload
-                    name="file"
+                    name="supporting_document_path"
                     headers={{
                       authorization: "authorization-text",
                     }}

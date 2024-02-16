@@ -1,16 +1,8 @@
-export interface DataToReviewType {
-  id: string;
-  docName: string;
-  tags: string[];
-  file: string;
-  status: string;
-  updatedAt: string;
-}
-
+import { DataResDocument } from "@/interface/documents.interface";
 export interface ApproveAndRejectToReviewModal {
   open: boolean;
-  data: DataToReviewType | null;
-  type: "approve" | "reject" | "";
+  data: DataResDocument | null;
+  type: "approve" | "reject" | "process" | "";
 }
 
 export type FormToReviewValues = {

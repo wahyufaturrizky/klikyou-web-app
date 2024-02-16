@@ -220,7 +220,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
   });
 
   useEffect(() => {
-    if (dataDocument) {
+    if (dataDocument?.data?.data) {
       const { data: mainData } = dataDocument;
       const { data: rawData } = mainData;
 
@@ -1142,7 +1142,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                 required: "Document name is required",
               }}
               name="document_path"
-              render={({ field: { onChange, value } }) => {
+              render={({ field: { onChange } }) => {
                 return (
                   <ConfigProvider
                     theme={{

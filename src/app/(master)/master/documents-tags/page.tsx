@@ -166,16 +166,14 @@ export default function DocumentTagsPage() {
       role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
-      orderBy: tableParams?.field
-        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
-        : "",
+      orderBy: useOrderTableParams(tableParams),
       updated_at_start: getValuesFilter("date")[0],
       updated_at_end: getValuesFilter("date")[1],
     },
   });
 
   useEffect(() => {
-    if (dataDocumentTags) {
+    if (dataDocumentTags?.data?.data) {
       const { data: mainData } = dataDocumentTags.data;
       const { data: dataListTable, meta } = mainData;
 

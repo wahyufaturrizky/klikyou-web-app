@@ -1,17 +1,19 @@
 "use client";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormFilterValues, RoleType, TagType } from "@/interface/common";
+import { FormFilterValues, RoleType } from "@/interface/common";
 import {
-  DataDocumentsType,
+  DataResDocument,
   DeleteDocumentModal,
   DocumentTagsType,
   FormFilterValuesDocuments,
 } from "@/interface/documents.interface";
 import { useDeleteBulkDocument, useDocument } from "@/services/document/useDocument";
+import { useRole } from "@/services/role/useRole";
 import { FileIcon, FilterIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import {
   Checkbox,
@@ -23,14 +25,12 @@ import {
   TableProps,
   message,
 } from "antd";
+import { DefaultOptionType } from "antd/es/cascader";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import Select from "@/components/Select";
-import { DefaultOptionType } from "antd/es/cascader";
-import { useRole } from "@/services/role/useRole";
-import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
 
 export default function DocumentsPage() {
   const router = useRouter();
@@ -38,7 +38,6 @@ export default function DocumentsPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
   const [isShowDelete, setShowDelete] = useState<DeleteDocumentModal>({
     open: false,
     type: "selection",
@@ -47,7 +46,7 @@ export default function DocumentsPage() {
       selectedRowKeys: [],
     },
   });
-  const [dataListDocument, setDataListDocument] = useState<DataDocumentsType[]>([]);
+  const [dataListDocument, setDataListDocument] = useState<DataResDocument[]>([]);
 
   const [tableParams, setTableParams] = useState<any>({
     pagination: {
@@ -72,20 +71,9 @@ export default function DocumentsPage() {
     },
   });
 
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
-
   const { data: dataListRole, isPending: isPendingRole } = useRole();
 
   useEffect(() => {
-    const fetchDataTag = () => {
-      setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
-          label: itemTag.name,
-          value: itemTag.id,
-        }))
-      );
-    };
-
     const fetchDataRole = () => {
       setDataRole(
         dataListRole.data.data.map((itemRole: RoleType) => ({
@@ -98,13 +86,9 @@ export default function DocumentsPage() {
     if (dataListRole) {
       fetchDataRole();
     }
+  }, [dataListRole]);
 
-    if (dataListTag) {
-      fetchDataTag();
-    }
-  }, [dataListRole, dataListTag]);
-
-  const columns: TableProps<DataDocumentsType>["columns"] = [
+  const columns: TableProps<DataResDocument>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -119,7 +103,7 @@ export default function DocumentsPage() {
       dataIndex: "documentName",
       sorter: true,
       key: "documentName",
-      render: (text: string, record: DataDocumentsType) => {
+      render: (text: string, record: DataResDocument) => {
         const { id } = record;
         return (
           <Link href={`/documents/view/${id}`}>
@@ -135,22 +119,15 @@ export default function DocumentsPage() {
       sorter: true,
       render: (text: DocumentTagsType[]) => (
         <div className="flex gap-2 flex-wrap">
-          {dataTag
-            ?.filter((filteringTag: DefaultOptionType) =>
-              text
-                .map((itemTag: DocumentTagsType) => itemTag.masterDocumentTagId)
-                .includes(Number(filteringTag.value))
-            )
-            ?.map((item: DefaultOptionType) => {
-              const { label } = item;
-              return (
-                <Text
-                  key={String(label)}
-                  label={String(label)}
-                  className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
-                />
-              );
-            })}
+          {text?.map((item: DocumentTagsType) => {
+            return (
+              <Text
+                key={item.id}
+                label={item.tag.name}
+                className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
+              />
+            );
+          })}
         </div>
       ),
     },
@@ -214,6 +191,8 @@ export default function DocumentsPage() {
           bgColorAction = "bg-warn";
         } else if (text?.includes("Uploaded")) {
           bgColorAction = "bg-link";
+        } else if (text?.includes("upload")) {
+          bgColorAction = "bg-link";
         } else if (text?.includes("pending")) {
           bgColorAction = "bg-link";
         }
@@ -274,21 +253,19 @@ export default function DocumentsPage() {
       currentUserRole: getValuesFilter("currentUserRole"),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
-      orderBy: tableParams?.field
-        ? `${tableParams.field}_${tableParams.order === "ascend" ? "asc" : "desc"}`
-        : "",
+      orderBy: useOrderTableParams(tableParams),
       updated_at_start: getValuesFilter("date")[0],
       updated_at_end: getValuesFilter("date")[1],
     },
   });
 
   useEffect(() => {
-    if (dataDocument) {
+    if (dataDocument?.data?.data) {
       const { data: mainData } = dataDocument.data;
       const { data: dataListTable, meta } = mainData;
 
       setDataListDocument(
-        dataListTable?.map((item: DataDocumentsType) => ({
+        dataListTable?.map((item: DataResDocument) => ({
           ...item,
           key: item.id,
         }))
@@ -404,7 +381,7 @@ export default function DocumentsPage() {
     refetchDocument();
   }, [JSON.stringify(tableParams)]);
 
-  const isLoading = isPendingTag || isPendingRole;
+  const isLoading = isPendingRole;
 
   return (
     <div className="p-6">
