@@ -1,11 +1,15 @@
 "use client";
 import Text from "@/components/Text";
+import {
+  DataRawDashboardType,
+  LowestHighestApprovalTimeType,
+  ShortestLongestProcessTimeType,
+} from "@/interface/dashboard.interface";
+import { CompanyProfileType } from "@/interface/settings.interface";
 import { useDashboard } from "@/services/dashboard/useDashboard";
 import { CheckIcon, FileIcon, RejectIcon, StopwatchIcon } from "@/style/icon";
 import { ConfigProvider, DatePicker, Grid, Spin, Table, TableProps } from "antd";
 import { useEffect, useState } from "react";
-import { DataLowestType, DataShortestType } from "@/interface/dashboard.interface";
-import { CompanyProfileType } from "@/interface/settings.interface";
 
 const { useBreakpoint } = Grid;
 
@@ -15,6 +19,7 @@ export default function DashboardPage() {
   const { lg, xl, xxl, xs } = screens;
 
   const [companyProfile, setCompanyProfile] = useState<CompanyProfileType>();
+  const [dataRawDashboard, setDataRawDashboard] = useState<DataRawDashboardType>();
 
   useEffect(() => {
     const handleFetchCompanyProfile = () => {
@@ -26,7 +31,7 @@ export default function DashboardPage() {
     handleFetchCompanyProfile();
   }, []);
 
-  const columnsShortest: TableProps<DataShortestType>["columns"] = [
+  const columnsProcessTime: TableProps<ShortestLongestProcessTimeType>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -37,8 +42,8 @@ export default function DashboardPage() {
     },
     {
       title: "Document name",
-      dataIndex: "docName",
-      key: "docName",
+      dataIndex: "name",
+      key: "name",
       render: (text: string) => {
         return <Text label={text} className="text-base font-normal text-link" />;
       },
@@ -53,15 +58,15 @@ export default function DashboardPage() {
     },
     {
       title: "Elapsed time",
-      dataIndex: "elapsedTime",
-      key: "elapsedTime",
+      dataIndex: "elapsed_time",
+      key: "elapsed_time",
       render: (text: string) => {
         return <Text label={text} className="text-base font-normal text-black" />;
       },
     },
   ];
 
-  const columnsLongest: TableProps<DataShortestType>["columns"] = [
+  const columnsApprovalTime: TableProps<LowestHighestApprovalTimeType>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -72,71 +77,19 @@ export default function DashboardPage() {
     },
     {
       title: "Document name",
-      dataIndex: "docName",
-      key: "docName",
-      render: (text: string) => {
-        return <Text label={text} className="text-base font-normal text-link" />;
-      },
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (text: string) => {
-        return <Text label={text} className="text-base font-normal text-black p-2 rounded-full" />;
-      },
-    },
-    {
-      title: "Elapsed time",
-      dataIndex: "elapsedTime",
-      key: "elapsedTime",
-      render: (text: string) => {
-        return <Text label={text} className="text-base font-normal text-black" />;
-      },
-    },
-  ];
-
-  const columnsLowest: TableProps<DataLowestType>["columns"] = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      render: (text: string) => {
-        return <Text label={text} className="text-base font-normal text-black" />;
-      },
-    },
-    {
-      title: "Document name",
-      dataIndex: "docName",
-      key: "docName",
+      dataIndex: "name",
+      key: "name",
       render: (text: string) => {
         return <Text label={text} className="text-base font-normal text-link" />;
       },
     },
     {
       title: "Rejected",
-      dataIndex: "rejected",
-      key: "rejected",
+      dataIndex: "reject_count",
+      key: "reject_count",
       render: (text: string) => {
         return <Text label={text} className="text-base font-normal text-black p-2 rounded-full" />;
       },
-    },
-  ];
-
-  const data: DataShortestType[] = [
-    {
-      id: "101",
-      docName: "Project Antasari - Quotation",
-      status: "(3/3) Fully approved",
-      elapsedTime: "0d 0h 37m",
-    },
-  ];
-
-  const dataRejected: DataLowestType[] = [
-    {
-      id: "101",
-      docName: "Project Antasari - Quotation",
-      rejected: "0x",
     },
   ];
 
@@ -147,7 +100,8 @@ export default function DashboardPage() {
   });
 
   useEffect(() => {
-    if (dataDashboard) {
+    if (dataDashboard?.data.data) {
+      setDataRawDashboard(dataDashboard.data.data);
     }
   }, [dataDashboard]);
 
@@ -163,7 +117,7 @@ export default function DashboardPage() {
         />
       ),
       label: "Total documents",
-      value: "100",
+      value: dataRawDashboard?.dashboard_info.total_documents,
     },
     {
       icon: (
@@ -175,7 +129,7 @@ export default function DashboardPage() {
         />
       ),
       label: "Pending",
-      value: "20",
+      value: dataRawDashboard?.dashboard_info.pending,
     },
     {
       icon: (
@@ -188,7 +142,7 @@ export default function DashboardPage() {
         />
       ),
       label: "Approved",
-      value: "65",
+      value: dataRawDashboard?.dashboard_info.approved,
     },
     {
       icon: (
@@ -201,7 +155,7 @@ export default function DashboardPage() {
         />
       ),
       label: "Rejected",
-      value: "15",
+      value: dataRawDashboard?.dashboard_info.rejected,
     },
   ];
 
@@ -209,9 +163,9 @@ export default function DashboardPage() {
     <div>
       {isPendingDashboard && <Spin fullscreen />}
       <div
-        className={`bg-img-login h-[${
-          xxl || xl || lg ? "343px justify-center" : "100px"
-        }] bg-bottom flex flex-col items-start p-6`}
+        className={`${
+          xxl || xl || lg ? "h-[343px] justify-center" : "h-[100px]"
+        } bg-img-login bg-bottom flex flex-col items-start p-6`}
       >
         <Text
           label={`👋 Hello, ${companyProfile?.companyName || ""}`}
@@ -248,7 +202,7 @@ export default function DashboardPage() {
                   />
 
                   <Text
-                    label={value}
+                    label={String(value)}
                     className={`${
                       xxl || xl || lg ? "text-3xl" : "text-sm"
                     } font-semibold text-black`}
@@ -282,9 +236,10 @@ export default function DashboardPage() {
                   />
                 )}
                 scroll={lg || xl || xxl ? undefined : { x: 500 }}
-                columns={columnsShortest}
-                dataSource={data}
+                columns={columnsProcessTime}
+                dataSource={dataRawDashboard?.process_time.shortest}
                 pagination={false}
+                loading={isPendingDashboard}
                 rowKey={(record) => record.id}
               />
             </ConfigProvider>
@@ -314,8 +269,9 @@ export default function DashboardPage() {
                   />
                 )}
                 scroll={lg || xl || xxl ? undefined : { x: 500 }}
-                columns={columnsLongest}
-                dataSource={data}
+                columns={columnsProcessTime}
+                loading={isPendingDashboard}
+                dataSource={dataRawDashboard?.process_time.longest}
                 pagination={false}
                 rowKey={(record) => record.id}
               />
@@ -344,9 +300,10 @@ export default function DashboardPage() {
                   />
                 )}
                 scroll={lg || xl || xxl ? undefined : { x: 500 }}
-                columns={columnsLowest}
-                dataSource={dataRejected}
+                columns={columnsApprovalTime}
+                dataSource={dataRawDashboard?.approval_time.lowest}
                 pagination={false}
+                loading={isPendingDashboard}
                 rowKey={(record) => record.id}
               />
             </ConfigProvider>
@@ -372,8 +329,9 @@ export default function DashboardPage() {
                   />
                 )}
                 scroll={lg || xl || xxl ? undefined : { x: 500 }}
-                columns={columnsLowest}
-                dataSource={dataRejected}
+                columns={columnsApprovalTime}
+                loading={isPendingDashboard}
+                dataSource={dataRawDashboard?.approval_time.highest}
                 pagination={false}
                 rowKey={(record) => record.id}
               />

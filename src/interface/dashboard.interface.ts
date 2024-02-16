@@ -19,7 +19,7 @@ interface DashboardInfoDashboardType {
   rejected: number;
 }
 
-interface ShortestLongestProcessTimeType {
+export interface ShortestLongestProcessTimeType {
   id: number;
   name: string;
   processed_count: number;
@@ -33,7 +33,7 @@ interface ProcessTimeDashboardType {
   longest: ShortestLongestProcessTimeType[];
 }
 
-interface LowestHighestApprovalTimeType {
+export interface LowestHighestApprovalTimeType {
   id: number;
   name: string;
   reject_count: number;
@@ -44,7 +44,7 @@ interface ApprovalTimeReviewType {
   highest: LowestHighestApprovalTimeType[];
 }
 
-interface DataRawDashboardType {
+export interface DataRawDashboardType {
   dashboard_info: DashboardInfoDashboardType;
   process_time: ProcessTimeDashboardType;
   approval_time: ApprovalTimeReviewType;

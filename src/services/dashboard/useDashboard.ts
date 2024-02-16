@@ -1,4 +1,5 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { DataResponseDashboardType } from "@/interface/dashboard.interface";
+import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { client } from "../client";
 
 const fetchDashboard = async ({ query = {} }) => {
@@ -9,12 +10,15 @@ const fetchDashboard = async ({ query = {} }) => {
   }).then((data) => data);
 };
 
-const useDashboard = ({ query = {}, options }: any = {}) => {
+const useDashboard = ({ query = {}, options }: any = {}): UseQueryResult<
+  DataResponseDashboardType,
+  Error
+> => {
   return useQuery({
     queryKey: ["dashboard", query],
     queryFn: () => fetchDashboard({ query }),
     ...options,
-  }) as any;
+  });
 };
 
 const fetchDashboardById = async ({ id }: { id: string }) => {
@@ -64,8 +68,8 @@ function useDeleteDashboard({ options }: any) {
 
 export {
   useCreateDashboard,
-  useDeleteDashboard,
   useDashboard,
   useDashboardById,
+  useDeleteDashboard,
   useUpdateDashboard,
 };
