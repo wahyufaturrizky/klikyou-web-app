@@ -7,7 +7,7 @@ import {
   TagType,
   UserType,
   FormApproveRejectProcessValues,
-  ApproveAndRejectToReviewModal,
+  ApproveRejectProcessModal,
 } from "@/interface/common";
 import {
   DataInfoDocumentType,
@@ -51,6 +51,7 @@ import InputTextArea from "@/components/InputTextArea";
 import { UploadOutlined } from "@ant-design/icons";
 import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
+import { UseBgColorAction } from "@/hook/useBgColorAction";
 
 export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();
@@ -66,7 +67,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const [messageApi, contextHolder] = message.useMessage();
 
   const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
-    useState<ApproveAndRejectToReviewModal>({
+    useState<ApproveRejectProcessModal>({
       open: false,
       data: null,
       type: "approve",
@@ -272,24 +273,12 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       dataIndex: "action",
       key: "action",
       render: (text: string) => {
-        let bgColorAction = "";
-
-        if (text?.includes("Rejected")) {
-          bgColorAction = "bg-red";
-        } else if (text?.includes("Approved")) {
-          bgColorAction = "bg-green";
-        } else if (text?.includes("Updated")) {
-          bgColorAction = "bg-warn";
-        } else if (text?.includes("Uploaded")) {
-          bgColorAction = "bg-link";
-        } else if (text?.includes("pending")) {
-          bgColorAction = "bg-link";
-        }
-
         return (
           <Text
             label={text}
-            className={`text-base inline-block font-normal text-white py-1 px-2 rounded-full ${bgColorAction}`}
+            className={`text-base inline-block font-normal text-white py-1 px-2 rounded-full ${UseBgColorAction(
+              text
+            )}`}
           />
         );
       },
@@ -593,20 +582,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
                     const valueMap: any = watch();
 
-                    let bgColorAction = "";
-
-                    if (mapping === "action" && valueMap[mapping]?.includes("Rejected")) {
-                      bgColorAction = "bg-red";
-                    } else if (mapping === "action" && valueMap[mapping]?.includes("Approved")) {
-                      bgColorAction = "bg-green";
-                    } else if (mapping === "action" && valueMap[mapping]?.includes("Updated")) {
-                      bgColorAction = "bg-warn";
-                    } else if (mapping === "action" && valueMap[mapping]?.includes("Uploaded")) {
-                      bgColorAction = "bg-link";
-                    } else if (mapping === "action" && valueMap[mapping]?.includes("pending")) {
-                      bgColorAction = "bg-link";
-                    }
-
                     return (
                       <div className="mb-6" key={mapping}>
                         <Text
@@ -630,7 +605,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         ) : mapping === "action" ? (
                           <Text
                             label={valueMap[mapping]}
-                            className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${bgColorAction}`}
+                            className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${UseBgColorAction(
+                              valueMap[mapping]
+                            )}`}
                           />
                         ) : (
                           <Text

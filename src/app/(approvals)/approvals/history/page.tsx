@@ -8,7 +8,7 @@ import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
 import {
-  ApproveAndRejectToReviewModal,
+  ApproveRejectProcessModal,
   FormApproveRejectProcessValues,
   FormFilterValues,
 } from "@/interface/common";
@@ -56,7 +56,7 @@ export default function HistoryPage() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
-    useState<ApproveAndRejectToReviewModal>({
+    useState<ApproveRejectProcessModal>({
       open: false,
       data: null,
       type: "approve",
@@ -215,6 +215,7 @@ export default function HistoryPage() {
     isPending: isPendingDocument,
     refetch: refetchDocument,
   } = useDocument({
+    action: "approval",
     query: {
       search: debounceSearch,
       status: getValuesFilter("status").join(","),

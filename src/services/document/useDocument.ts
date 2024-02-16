@@ -3,7 +3,13 @@ import { client, clientFormData } from "../client";
 import { QueryType } from "@/interface/common";
 import { DataResponseDocumentType } from "@/interface/documents.interface";
 
-const fetchDocument = async ({ query = {}, action }: { query: any; action?: string }) => {
+const fetchDocument = async ({
+  query = {},
+  action,
+}: {
+  query: any;
+  action?: "receival" | "approval" | "";
+}) => {
   return client(`/documents${action ? `/${action}` : ""}`, {
     params: {
       ...query,
@@ -18,7 +24,7 @@ const useDocument = ({
 }: {
   query?: QueryType;
   options?: any;
-  action?: string;
+  action?: "receival" | "approval" | "";
 } = {}): UseQueryResult<DataResponseDocumentType, Error> => {
   return useQuery({
     queryKey: ["documents", query],

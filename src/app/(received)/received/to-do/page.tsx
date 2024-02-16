@@ -6,9 +6,14 @@ import Text from "@/components/Text";
 import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormApproveRejectProcessValues, FormFilterValues } from "@/interface/common";
-import { ApproveAndRejectToDoModal, DataToDoType } from "@/interface/to-do.interface";
-import { useApproveRejectProcess, useToReview } from "@/services/to-view/useToReview";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
+import {
+  ApproveRejectProcessModal,
+  FormApproveRejectProcessValues,
+  FormFilterValues,
+} from "@/interface/common";
+import { DataResDocument, DocumentTagsType } from "@/interface/documents.interface";
+import { useDocument, useDocumentApproveRejectProcess } from "@/services/document/useDocument";
 import { DownloadIcon, FilterIcon, PeopleCheckIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -25,23 +30,22 @@ import {
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useOrderTableParams } from "@/hook/useOrderTableParams";
 
 export default function ToDoPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [selectedRows, setSelectedRows] = useState<DataToDoType[]>([]);
+  const [selectedRows, setSelectedRows] = useState<DataResDocument[]>([]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
   const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
-    useState<ApproveAndRejectToDoModal>({
+    useState<ApproveRejectProcessModal>({
       open: false,
       data: null,
       type: "approve",
     });
 
-  const [dataToReview, setDataToReview] = useState<DataToDoType[]>([]);
+  const [dataListDocument, setDataListDocument] = useState<DataResDocument[]>([]);
 
   const [tableParams, setTableParams] = useState<any>({
     pagination: {
@@ -77,7 +81,7 @@ export default function ToDoPage() {
     },
   });
 
-  const columns: TableProps<DataToDoType>["columns"] = [
+  const columns: TableProps<DataResDocument>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -89,10 +93,10 @@ export default function ToDoPage() {
     },
     {
       title: "Document name",
-      dataIndex: "docName",
+      dataIndex: "documentName",
       sorter: true,
-      key: "docName",
-      render: (text: string, record: DataToDoType) => {
+      key: "documentName",
+      render: (text: string, record: DataResDocument) => {
         const { id } = record;
         return (
           <Link href={`/received/to-do/view/${id}`}>
@@ -103,16 +107,16 @@ export default function ToDoPage() {
     },
     {
       title: "Tags",
-      dataIndex: "tags",
+      dataIndex: "documentTags",
+      key: "documentTags",
       sorter: true,
-      key: "tags",
-      render: (text: string[]) => (
+      render: (text: DocumentTagsType[]) => (
         <div className="flex gap-2 flex-wrap">
-          {text?.map((item: string) => {
+          {text?.map((item: DocumentTagsType) => {
             return (
               <Text
-                key={item}
-                label={item}
+                key={item.id}
+                label={item.tag.name}
                 className="text-base font-normal text-white py-1 px-2 rounded-full bg-gray-dark"
               />
             );
@@ -121,17 +125,17 @@ export default function ToDoPage() {
       ),
     },
     {
-      title: "Update At",
-      dataIndex: "updateAt",
+      title: "Updated At",
+      dataIndex: "updatedAt",
       sorter: true,
-      key: "updateAt",
+      key: "updatedAt",
       render: (text: Date) => UseDateTimeFormat(text),
     },
     {
       title: "Latest document",
-      dataIndex: "file",
-      key: "file",
-      render: (text: string, record: DataToDoType) => {
+      dataIndex: "documentPath",
+      key: "documentPath",
+      render: (text: string, record: DataResDocument) => {
         const { id } = record;
         return (
           <div className="gap-2 flex items-center cursor-pointer">
@@ -150,12 +154,18 @@ export default function ToDoPage() {
     {
       title: "Action",
       key: "action",
-      render: (_, record) => {
+      render: (_, record: DataResDocument) => {
         return (
           <div className="flex items-center">
             <Button
               type="button"
-              onClick={() => {}}
+              onClick={() =>
+                setStateApproveAndRejectModal({
+                  open: true,
+                  data: record,
+                  type: "process",
+                })
+              }
               label="Mark as Processed"
               icon={
                 <PeopleCheckIcon
@@ -183,17 +193,18 @@ export default function ToDoPage() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setDataToReview([]);
+      setDataListDocument([]);
     }
   };
 
   const debounceSearch = useDebounce(watchFilter("search"), 1000);
 
   const {
-    data: dataRawToReview,
-    isPending: isPendingRawToReview,
-    refetch: refetchRawToReview,
-  } = useToReview({
+    data: dataDocument,
+    isPending: isPendingDocument,
+    refetch: refetchDocument,
+  } = useDocument({
+    action: "receival",
     query: {
       search: debounceSearch,
       status: getValuesFilter("status").join(","),
@@ -203,15 +214,16 @@ export default function ToDoPage() {
       orderBy: useOrderTableParams(tableParams),
       updated_at_start: getValuesFilter("date")[0],
       updated_at_end: getValuesFilter("date")[1],
+      history: 0,
     },
   });
 
   useEffect(() => {
-    if (dataRawToReview) {
-      const { data: mainData } = dataRawToReview.data;
+    if (dataDocument) {
+      const { data: mainData } = dataDocument.data;
       const { data: dataListTable, meta } = mainData;
 
-      setDataToReview(
+      setDataListDocument(
         dataListTable?.map((item: any) => ({
           ...item,
           key: item.id,
@@ -226,7 +238,8 @@ export default function ToDoPage() {
         },
       });
     }
-  }, [dataRawToReview]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataDocument]);
 
   const optionsStatus = [
     {
@@ -275,35 +288,35 @@ export default function ToDoPage() {
   ];
 
   const onSubmitFilter = (data: FormFilterValues) => {
-    refetchRawToReview();
+    refetchDocument();
     setIsShowModalFilter(false);
   };
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selectedRowKeys: Key[], selectedRows: DataToDoType[]) => {
+    onChange: (selectedRowKeys: Key[], selectedRows: DataResDocument[]) => {
       setSelectedRowKeys(selectedRowKeys);
       setSelectedRows(selectedRows);
     },
   };
 
   useEffect(() => {
-    refetchRawToReview();
+    refetchDocument();
   }, [JSON.stringify(tableParams)]);
 
-  const { mutate: updateApproveReject, isPending: isPendingUpdateApproveReject } =
-    useApproveRejectProcess({
+  const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =
+    useDocumentApproveRejectProcess({
       id: stateApproveAndRejectModal.data?.id,
       action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
       options: {
         onSuccess: () => {
           messageApi.open({
             type: "success",
-            content: "Success update review",
+            content: "Success " + stateApproveAndRejectModal.type,
           });
 
           resetApproveRejectEdit();
-          refetchRawToReview();
+          refetchDocument();
           setStateApproveAndRejectModal({
             data: null,
             open: false,
@@ -314,7 +327,14 @@ export default function ToDoPage() {
     });
 
   const onSubmitApproveRejectEdit = (data: FormApproveRejectProcessValues) => {
-    updateApproveReject(data);
+    const { supporting_document_note, supporting_document_path } = data;
+
+    let formdata = new FormData();
+
+    formdata.append("note", supporting_document_note);
+    formdata.append("supporting_document_path", supporting_document_path?.file.originFileObj);
+
+    updateApproveRejectProcess(data);
   };
 
   return (
@@ -366,8 +386,8 @@ export default function ToDoPage() {
         >
           <Table
             columns={columns}
-            dataSource={dataToReview}
-            loading={isPendingRawToReview}
+            dataSource={dataListDocument}
+            loading={isPendingDocument}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
@@ -489,9 +509,7 @@ export default function ToDoPage() {
       </Modal>
 
       <Modal
-        title={`${
-          stateApproveAndRejectModal.type === "approve" ? "Approve" : "Reject"
-        } document tag`}
+        title={`${stateApproveAndRejectModal.type === "process" ? "Process" : ""} document tag`}
         open={stateApproveAndRejectModal.open}
         onCancel={() => {
           resetApproveRejectEdit();
@@ -506,8 +524,8 @@ export default function ToDoPage() {
             <div className="flex gap-4 items-center">
               <Button
                 type="button"
-                disabled={isPendingUpdateApproveReject}
-                loading={isPendingUpdateApproveReject}
+                disabled={isPendingApproveRejectProcess}
+                loading={isPendingApproveRejectProcess}
                 onClick={() => {
                   resetApproveRejectEdit();
                   setStateApproveAndRejectModal({
@@ -522,11 +540,20 @@ export default function ToDoPage() {
 
               <Button
                 type="button"
-                disabled={isPendingUpdateApproveReject}
-                loading={isPendingUpdateApproveReject}
+                disabled={isPendingApproveRejectProcess}
+                loading={isPendingApproveRejectProcess}
                 onClick={handleSubmitApproveRejectEdit(onSubmitApproveRejectEdit)}
-                label="Yes"
-                className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                label="Mark as Processed"
+                icon={
+                  <PeopleCheckIcon
+                    style={{
+                      height: 32,
+                      width: 32,
+                      color: "white",
+                    }}
+                  />
+                }
+                className="flex gap-2 justify-center items-center rounded-md bg-primary-purple px-6 py-1.5 text-lg font-semibold text-white hover:bg-primary-purple/70 active:bg-primary-purple/90"
               />
             </div>
           </div>

@@ -8,7 +8,7 @@ import UseDateTimeFormat from "@/hook/useDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
 import {
-  ApproveAndRejectToReviewModal,
+  ApproveRejectProcessModal,
   FormApproveRejectProcessValues,
   FormFilterValues,
 } from "@/interface/common";
@@ -39,7 +39,7 @@ export default function ToReviewPage() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
-    useState<ApproveAndRejectToReviewModal>({
+    useState<ApproveRejectProcessModal>({
       open: false,
       data: null,
       type: "approve",
@@ -236,7 +236,7 @@ export default function ToReviewPage() {
   const {
     data: dataDocument,
     isPending: isPendingDocument,
-    refetch: refetchRawToReview,
+    refetch: refetchDocument,
   } = useDocument({
     action: "approval",
     query: {
@@ -322,7 +322,7 @@ export default function ToReviewPage() {
   ];
 
   const onSubmitFilter = (data: FormFilterValues) => {
-    refetchRawToReview();
+    refetchDocument();
     setIsShowModalFilter(false);
   };
 
@@ -335,7 +335,7 @@ export default function ToReviewPage() {
   };
 
   useEffect(() => {
-    refetchRawToReview();
+    refetchDocument();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(tableParams)]);
 
@@ -351,7 +351,7 @@ export default function ToReviewPage() {
           });
 
           resetApproveRejectEdit();
-          refetchRawToReview();
+          refetchDocument();
           setStateApproveAndRejectModal({
             data: null,
             open: false,

@@ -4,7 +4,7 @@ export interface OptionInterface {
   value: string;
 }
 
-export interface ApproveAndRejectToReviewModal {
+export interface ApproveRejectProcessModal {
   open: boolean;
   data: DataResDocument | null;
   type: "approve" | "reject" | "process" | "";
