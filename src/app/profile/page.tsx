@@ -226,8 +226,8 @@ export default function ProfilePage() {
                       render={({ field: { onChange, value } }) => (
                         <div>
                           <Upload
-                           multiple={false}
-                           maxCount={1}
+                            multiple={false}
+                            maxCount={1}
                             name="avatar_path"
                             listType="picture-circle"
                             showUploadList={false}
@@ -412,7 +412,7 @@ export default function ProfilePage() {
                                   <Text
                                     key={item + indexTag}
                                     label={item}
-                                    className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                    className="text-base font-normal text-white rounded-full py-2 px-4 bg-gray-dark"
                                   />
                                 ))}
                               </div>

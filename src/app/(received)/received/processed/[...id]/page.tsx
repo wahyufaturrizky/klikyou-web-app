@@ -423,21 +423,20 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                                 <Text
                                   key={String(item.label)}
                                   label={String(item.label)}
-                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-gray-dark"
                                 />
                               ))}
                           </div>
-                        ) : mapping === "status" ? (
-                          <Text
-                            label={valueMap[mapping]}
-                            className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${UseBgColorStatus(
-                              valueMap[mapping]
-                            )}`}
-                          />
                         ) : (
                           <Text
                             label={valueMap[mapping]}
-                            className="text-base font-normal text-black"
+                            className={`${
+                              mapping === "status"
+                                ? `inline-block text-white rounded-full py-2 px-4 ${UseBgColorStatus(
+                                    valueMap[mapping]
+                                  )}`
+                                : "text-black"
+                            } text-base font-normal`}
                           />
                         )}
                       </div>
@@ -489,7 +488,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                                 <Text
                                   key={String(item.label)}
                                   label={String(item.label)}
-                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-gray-dark"
                                 />
                               ))}
                           </div>
@@ -580,20 +579,20 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                                 <Text
                                   key={String(item.label)}
                                   label={String(item.label)}
-                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-gray-dark"
                                 />
                               ))}
                           </div>
-                        ) : mapping === "status" ? (
-                          <Text
-                            key={valueMap[mapping]}
-                            label={valueMap[mapping]}
-                            className="inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
-                          />
                         ) : (
                           <Text
                             label={valueMap[mapping]}
-                            className="text-base font-normal text-black"
+                            className={`${
+                              mapping === "status"
+                                ? `inline-block text-white rounded-full py-2 px-4 ${UseBgColorStatus(
+                                    valueMap[mapping]
+                                  )}`
+                                : "text-black"
+                            } text-base font-normal`}
                           />
                         )}
                       </div>
@@ -650,20 +649,20 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                                 <Text
                                   key={String(item.label)}
                                   label={String(item.label)}
-                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
+                                  className="text-base font-normal text-white rounded-full py-2 px-4 bg-gray-dark"
                                 />
                               ))}
                           </div>
-                        ) : mapping === "status" ? (
-                          <Text
-                            key={valueMap[mapping]}
-                            label={valueMap[mapping]}
-                            className="inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 bg-[#455C72]"
-                          />
                         ) : (
                           <Text
                             label={valueMap[mapping]}
-                            className="text-base font-normal text-black"
+                            className={`${
+                              mapping === "status"
+                                ? `inline-block text-white rounded-full py-2 px-4 ${UseBgColorStatus(
+                                    valueMap[mapping]
+                                  )}`
+                                : "text-black"
+                            } text-base font-normal`}
                           />
                         )}
                       </div>
