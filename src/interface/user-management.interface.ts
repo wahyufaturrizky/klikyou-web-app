@@ -1,6 +1,5 @@
 import { TableProps } from "antd";
 import { Key } from "react";
-import { DataHistoryType } from "@/interface/history.interface";
 
 export type ColumnsType<T> = TableProps<T>["columns"];
 
