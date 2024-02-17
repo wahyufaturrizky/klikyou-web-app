@@ -27,10 +27,12 @@ import {
   Upload,
   message,
   UploadFile,
+  TablePaginationConfig,
 } from "antd";
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { FilterValue } from "antd/es/table/interface";
 
 export default function ToDoPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
@@ -47,7 +49,9 @@ export default function ToDoPage() {
 
   const [dataListDocument, setDataListDocument] = useState<DataResDocument[]>([]);
 
-  const [tableParams, setTableParams] = useState<any>({
+  const [tableParams, setTableParams] = useState<{
+    pagination: TablePaginationConfig;
+  }>({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -184,7 +188,11 @@ export default function ToDoPage() {
     },
   ];
 
-  const handleTableChange: TableProps["onChange"] = (pagination, filters, sorter) => {
+  const handleTableChange = (
+    pagination: TablePaginationConfig,
+    filters: Record<string, FilterValue | null>,
+    sorter: any
+  ) => {
     setTableParams({
       pagination,
       filters,

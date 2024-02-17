@@ -16,8 +16,8 @@ export interface QueryType {
   search: string;
   status: string;
   role?: string;
-  page: number;
-  limit: number;
+  page?: number;
+  limit?: number;
   orderBy: string;
   updated_at_start: string;
   updated_at_end: string;

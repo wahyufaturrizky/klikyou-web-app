@@ -19,9 +19,19 @@ import {
   useUpdateDocumentTags,
 } from "@/services/document-tags/useDocumentTags";
 import { FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
-import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps, message } from "antd";
+import {
+  Checkbox,
+  ConfigProvider,
+  DatePicker,
+  Modal,
+  Table,
+  TableProps,
+  message,
+  TablePaginationConfig,
+} from "antd";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { FilterValue } from "antd/es/table/interface";
 
 export default function DocumentTagsPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
@@ -42,7 +52,9 @@ export default function DocumentTagsPage() {
   });
   const [dataDocTag, setDataDocTag] = useState<DataDocumentTags[]>();
 
-  const [tableParams, setTableParams] = useState<any>({
+  const [tableParams, setTableParams] = useState<{
+    pagination: TablePaginationConfig;
+  }>({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -141,7 +153,11 @@ export default function DocumentTagsPage() {
     },
   ];
 
-  const handleTableChange: TableProps["onChange"] = (pagination, filters, sorter) => {
+  const handleTableChange = (
+    pagination: TablePaginationConfig,
+    filters: Record<string, FilterValue | null>,
+    sorter: any
+  ) => {
     setTableParams({
       pagination,
       filters,

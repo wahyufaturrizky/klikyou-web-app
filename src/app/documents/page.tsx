@@ -24,6 +24,7 @@ import {
   Table,
   TableProps,
   message,
+  TablePaginationConfig,
 } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import Link from "next/link";
@@ -33,6 +34,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import { UseBgColorAction } from "@/hook/useBgColorAction";
+import { FilterValue } from "antd/es/table/interface";
 
 export default function DocumentsPage() {
   const router = useRouter();
@@ -50,7 +52,9 @@ export default function DocumentsPage() {
   });
   const [dataListDocument, setDataListDocument] = useState<DataResDocument[]>([]);
 
-  const [tableParams, setTableParams] = useState<any>({
+  const [tableParams, setTableParams] = useState<{
+    pagination: TablePaginationConfig;
+  }>({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -205,7 +209,11 @@ export default function DocumentsPage() {
     },
   ];
 
-  const handleTableChange: TableProps["onChange"] = (pagination, filters, sorter) => {
+  const handleTableChange = (
+    pagination: TablePaginationConfig,
+    filters: Record<string, FilterValue | null>,
+    sorter: any
+  ) => {
     setTableParams({
       pagination,
       filters,

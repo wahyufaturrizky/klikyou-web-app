@@ -17,12 +17,21 @@ import {
   useUserManagement,
 } from "@/services/user-management/useUserManagement";
 import { FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
-import { Checkbox, ConfigProvider, DatePicker, Modal, Table, TableProps } from "antd";
+import {
+  Checkbox,
+  ConfigProvider,
+  DatePicker,
+  Modal,
+  Table,
+  TableProps,
+  TablePaginationConfig,
+} from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
+import { FilterValue } from "antd/es/table/interface";
 
 export default function UserManagementPage() {
   const router = useRouter();
@@ -38,7 +47,9 @@ export default function UserManagementPage() {
   });
   const [dataListUser, setDataListUser] = useState<DataUserManagementType[]>([]);
 
-  const [tableParams, setTableParams] = useState<any>({
+  const [tableParams, setTableParams] = useState<{
+    pagination: TablePaginationConfig;
+  }>({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -140,7 +151,11 @@ export default function UserManagementPage() {
     },
   ];
 
-  const handleTableChange: TableProps["onChange"] = (pagination, filters, sorter) => {
+  const handleTableChange = (
+    pagination: TablePaginationConfig,
+    filters: Record<string, FilterValue | null>,
+    sorter: any
+  ) => {
     setTableParams({
       pagination,
       filters,

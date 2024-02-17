@@ -32,13 +32,15 @@ import {
   DatePicker,
   Modal,
   Table,
+  TablePaginationConfig,
   TableProps,
   Upload,
   UploadFile,
   message,
 } from "antd";
+import { FilterValue } from "antd/es/table/interface";
 import Link from "next/link";
-import { Key, useEffect, useState } from "react";
+import { Key, SetStateAction, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 export default function HistoryPage() {
@@ -66,7 +68,9 @@ export default function HistoryPage() {
 
   const [dataListDocument, setDataListDocument] = useState<DataResDocument[]>([]);
 
-  const [tableParams, setTableParams] = useState<any>({
+  const [tableParams, setTableParams] = useState<{
+    pagination: TablePaginationConfig;
+  }>({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -199,7 +203,11 @@ export default function HistoryPage() {
     },
   ];
 
-  const handleTableChange: TableProps["onChange"] = (pagination, filters, sorter) => {
+  const handleTableChange = (
+    pagination: TablePaginationConfig,
+    filters: Record<string, FilterValue | null>,
+    sorter: any
+  ) => {
     setTableParams({
       pagination,
       filters,
