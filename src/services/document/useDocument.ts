@@ -1,7 +1,7 @@
+import { QueryType } from "@/interface/common";
+import { DataResponseDocumentType } from "@/interface/documents.interface";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { client, clientFormData } from "../client";
-import { QueryType, ModalType } from "@/interface/common";
-import { DataResponseDocumentType } from "@/interface/documents.interface";
 
 const fetchDocument = async ({
   query = {},
@@ -113,7 +113,7 @@ export {
   useDeleteBulkDocument,
   useDeleteDocument,
   useDocument,
+  useDocumentApproveRejectProcess,
   useDocumentById,
   useUpdateDocument,
-  useDocumentApproveRejectProcess,
 };
