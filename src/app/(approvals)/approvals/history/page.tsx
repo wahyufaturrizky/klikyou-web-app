@@ -38,6 +38,7 @@ import {
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 
 export default function HistoryPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
@@ -168,7 +169,9 @@ export default function HistoryPage() {
         return (
           <Text
             label={text}
-            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
+            className={`text-base inline-block font-normal text-white py-1 px-2 rounded-full ${UseBgColorStatus(
+              text
+            )}`}
           />
         );
       },

@@ -10,6 +10,7 @@ import { useDashboard } from "@/services/dashboard/useDashboard";
 import { CheckIcon, FileIcon, RejectIcon, StopwatchIcon } from "@/style/icon";
 import { ConfigProvider, DatePicker, Grid, Spin, Table, TableProps } from "antd";
 import { useEffect, useState } from "react";
+import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 
 const { useBreakpoint } = Grid;
 
@@ -53,7 +54,14 @@ export default function DashboardPage() {
       dataIndex: "status",
       key: "status",
       render: (text: string) => {
-        return <Text label={text} className="text-base font-normal text-black p-2 rounded-full" />;
+        return (
+          <Text
+            label={text}
+            className={`text-base font-normal text-black p-2 rounded-full ${UseBgColorStatus(
+              text
+            )}`}
+          />
+        );
       },
     },
     {

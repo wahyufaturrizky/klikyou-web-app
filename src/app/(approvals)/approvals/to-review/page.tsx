@@ -4,6 +4,7 @@ import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
+import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
@@ -151,7 +152,9 @@ export default function ToReviewPage() {
         return (
           <Text
             label={text}
-            className="text-base inline-block font-normal text-white py-1 px-2 rounded-full bg-link"
+            className={`text-base inline-block font-normal text-white py-1 px-2 rounded-full ${UseBgColorStatus(
+              text
+            )}`}
           />
         );
       },
