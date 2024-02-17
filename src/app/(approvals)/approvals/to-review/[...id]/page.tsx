@@ -78,6 +78,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const { setValue, watch, getValues } = useForm<FormDocumentValues>({
     defaultValues: {
       document_name: "",
+      memoId: "",
       document_number: "",
       id: "",
       text_remarks: "",
@@ -178,6 +179,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
         documentLogs,
         createdBy,
         updatedBy,
+        memoId,
       } = rawData;
 
       setDataLogHistory(documentLogs);
@@ -195,6 +197,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       ]);
 
       setValue("document_name", documentName);
+      setValue("memoId", memoId);
       setValue("action", action);
       setValue("id", id);
       setValue("document_number", documentNumber);
@@ -505,6 +508,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "document_recipient_id",
                         "document_path",
                         "document_note",
+                        "action",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
