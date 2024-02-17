@@ -607,17 +607,16 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                                 />
                               ))}
                           </div>
-                        ) : mapping === "action" ? (
-                          <Text
-                            label={valueMap[mapping]}
-                            className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${UseBgColorAction(
-                              valueMap[mapping]
-                            )}`}
-                          />
                         ) : (
                           <Text
                             label={valueMap[mapping]}
-                            className="text-base font-normal text-black"
+                            className={`${
+                              mapping === "action"
+                                ? `inline-block text-white rounded-full py-2 px-4 ${UseBgColorAction(
+                                    valueMap[mapping]
+                                  )}`
+                                : "text-black"
+                            } text-base font-normal`}
                           />
                         )}
                       </div>
