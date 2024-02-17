@@ -5,7 +5,11 @@ import { DataAuthType } from "@/interface/login.interface";
 import { NotificationType } from "@/interface/notification.interface";
 import { CompanyProfileType } from "@/interface/settings.interface";
 import { useLogOut } from "@/services/auth/useAuth";
-import { useNotification } from "@/services/notification/useNotification";
+import {
+  useNotification,
+  useNotificationMarkReadAll,
+  useNotificationById,
+} from "@/services/notification/useNotification";
 import {
   ApprovalsIcon,
   BackIcon,
@@ -59,6 +63,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
   const pathname = usePathname();
   const [currentMenu, setCurrentMenu] = useState<string | null>(null);
   const [openKeys, setOpenKeys] = useState<string[] | undefined>();
+  const [notifId, setNotifId] = useState<string>();
 
   useEffect(() => {
     const handleFetchUserProfile = () => {
@@ -97,6 +102,27 @@ const Layout = ({ ...props }: LayoutInterface) => {
     isPending: isPendingNotification,
     refetch: refetchNotification,
   } = useNotification({});
+
+  const { data: dataNotificationById, refetch: refetchNotificationById } = useNotificationById({
+    id: notifId,
+    options: {
+      enabled: !!notifId,
+    },
+  });
+
+  const { refetch: refetchMarkReadAll, data: dataMarkReadAll } = useNotificationMarkReadAll({
+    options: {
+      enabled: false,
+    },
+  });
+
+  useEffect(() => {
+    if (dataMarkReadAll || dataNotificationById) {
+      refetchNotification();
+      setIsShowNotif(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataMarkReadAll, dataNotificationById]);
 
   useEffect(() => {
     if (dataNotification?.data?.data) {
@@ -453,7 +479,15 @@ const Layout = ({ ...props }: LayoutInterface) => {
           >
             <div className="overflow-auto h-[200px]">
               {dataListNotif.map((itemNotif: NotificationType) => (
-                <div key={itemNotif.id} className="py-2 px-3.5">
+                <div
+                  key={itemNotif.id}
+                  className="py-2 px-3.5 cursor-pointer hover:bg-primary-gray/10 active:bg-primary-gray/20"
+                  onClick={() => {
+                    setNotifId(String(itemNotif.id));
+
+                    setTimeout(() => refetchNotificationById(), 700);
+                  }}
+                >
                   <div className="flex gap-2">
                     <Badge color="red" />
 
@@ -469,12 +503,13 @@ const Layout = ({ ...props }: LayoutInterface) => {
               ))}
             </div>
 
-            <div className="">
-              <Text
-                className="text-primary-blue font-medium text-base text-center py-2 cursor-pointer hover:text-primary-blue/70 active:text-primary-blue/90"
-                label="Mark all as read"
-              />
-            </div>
+            <Text
+              onClick={() => {
+                refetchMarkReadAll();
+              }}
+              className="text-primary-blue font-medium text-base text-center py-2 cursor-pointer hover:text-primary-blue/70 active:text-primary-blue/90"
+              label="Mark all as read"
+            />
           </div>
         )}
       </ConfigProvider>
