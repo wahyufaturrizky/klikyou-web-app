@@ -95,6 +95,7 @@ export interface DeleteDocumentModal {
 export type FormDocumentValues = {
   document_name: string;
   document_number: string;
+  memoId: string;
   text_remarks: string;
   numeric_remarks: string;
   document_tag_id: string[];

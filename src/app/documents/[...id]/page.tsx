@@ -86,6 +86,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
   const { control, handleSubmit, setValue, watch, getValues } = useForm<FormDocumentValues>({
     defaultValues: {
       document_name: "",
+      memoId: "",
       document_number: "",
       id: "",
       text_remarks: "",
@@ -245,6 +246,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
         documentLogs,
         createdBy,
         updatedBy,
+        memoId,
       } = rawData;
 
       setDataLogHistory(documentLogs);
@@ -262,6 +264,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
       ]);
 
       setValue("document_name", documentName);
+      setValue("memoId", memoId);
       setValue("action", action);
       setValue("id", id);
       setValue("document_number", documentNumber);
@@ -514,6 +517,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                         "document_recipient_id",
                         "document_path",
                         "document_note",
+                        "action",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -617,7 +621,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                           <Text
                             label={valueMap[mapping]}
                             className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${UseBgColorAction(
-                              valueMap[mapping]?.includes("Rejected")
+                              valueMap[mapping]
                             )}`}
                           />
                         ) : (

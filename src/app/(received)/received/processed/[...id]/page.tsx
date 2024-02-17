@@ -469,20 +469,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
                     const valueMap: any = watch();
 
-                    let bgColorAction = "";
-
-                    if (mapping === "action" && valueMap[mapping]?.includes("Rejected")) {
-                      bgColorAction = "bg-red";
-                    } else if (mapping === "action" && valueMap[mapping]?.includes("Approved")) {
-                      bgColorAction = "bg-green";
-                    } else if (mapping === "action" && valueMap[mapping]?.includes("Updated")) {
-                      bgColorAction = "bg-warn";
-                    } else if (mapping === "action" && valueMap[mapping]?.includes("Uploaded")) {
-                      bgColorAction = "bg-link";
-                    } else if (mapping === "action" && valueMap[mapping]?.includes("pending")) {
-                      bgColorAction = "bg-link";
-                    }
-
                     return (
                       <div className="mb-6" key={mapping}>
                         <Text
@@ -506,7 +492,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         ) : mapping === "action" ? (
                           <Text
                             label={valueMap[mapping]}
-                            className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${bgColorAction}`}
+                            className={`inline-block mt-2 text-base font-normal text-white rounded-full py-2 px-4 ${UseBgColorAction(
+                              valueMap[mapping]
+                            )}`}
                           />
                         ) : (
                           <Text
