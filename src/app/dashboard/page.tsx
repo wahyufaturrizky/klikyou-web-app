@@ -57,7 +57,7 @@ export default function DashboardPage() {
         return (
           <Text
             label={text}
-            className={`text-base font-normal text-black p-2 rounded-full ${UseBgColorStatus(
+            className={`text-base font-normal text-white p-2 rounded-full ${UseBgColorStatus(
               text
             )}`}
           />
