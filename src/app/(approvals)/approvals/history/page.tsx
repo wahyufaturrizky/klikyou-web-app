@@ -4,6 +4,7 @@ import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
 import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
+import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
@@ -33,21 +34,19 @@ import {
   Table,
   TableProps,
   Upload,
-  message,
   UploadFile,
+  message,
 } from "antd";
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 
 export default function HistoryPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [selectedRows, setSelectedRows] = useState<DataResDocument[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const [isShowDelete, setShowDelete] = useState<DeleteDocumentModal>({
+  const [isShowDelete, setIsShowDelete] = useState<DeleteDocumentModal>({
     open: false,
     type: "selection",
     data: {
@@ -310,9 +309,8 @@ export default function HistoryPage() {
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selectedRowKeys: Key[], selectedRows: DataResDocument[]) => {
+    onChange: (selectedRowKeys: Key[]) => {
       setSelectedRowKeys(selectedRowKeys);
-      setSelectedRows(selectedRows);
     },
   };
 
@@ -352,7 +350,7 @@ export default function HistoryPage() {
       options: {
         onSuccess: () => {
           refetchDocument();
-          setShowDelete({
+          setIsShowDelete({
             open: true,
             type: "",
             data: null,
@@ -382,7 +380,7 @@ export default function HistoryPage() {
           <Button
             type="button"
             onClick={() =>
-              setShowDelete({
+              setIsShowDelete({
                 open: true,
                 type: "selection",
                 data: { data: dataListDocument, selectedRowKeys },
@@ -692,7 +690,7 @@ export default function HistoryPage() {
         title="Confirm Delete"
         open={isShowDelete.open}
         onCancel={() => {
-          setShowDelete({
+          setIsShowDelete({
             open: false,
             data: null,
             type: "",
@@ -704,7 +702,7 @@ export default function HistoryPage() {
               <Button
                 type="button"
                 onClick={() => {
-                  setShowDelete({
+                  setIsShowDelete({
                     open: false,
                     data: null,
                     type: "",

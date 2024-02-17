@@ -40,7 +40,7 @@ export default function DocumentsPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
-  const [isShowDelete, setShowDelete] = useState<DeleteDocumentModal>({
+  const [isShowDelete, setIsShowDelete] = useState<DeleteDocumentModal>({
     open: false,
     type: "selection",
     data: {
@@ -287,27 +287,8 @@ export default function DocumentsPage() {
     },
   ];
 
-  const optionsRole = [
-    {
-      label: "Owner",
-      value: "Owner",
-    },
-    {
-      label: "Collaborator",
-      value: "Collaborator",
-    },
-    {
-      label: "Authorizer",
-      value: "Authorizer",
-    },
-    {
-      label: "Recipient",
-      value: "Recipient",
-    },
-  ];
-
-  const resetShowDelete = () => {
-    setShowDelete({
+  const resetIsShowDelete = () => {
+    setIsShowDelete({
       open: false,
       data: null,
       type: "",
@@ -327,15 +308,14 @@ export default function DocumentsPage() {
   };
 
   const renderConfirmationText = (type: any, data: any) => {
-    switch (type) {
-      case "selection":
-        return data.selectedRowKeys.length > 1
-          ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
-          : `Are you sure to delete document ${
-              data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.documentName
-            } ?`;
-      default:
-        return `Are you sure to delete document ${data?.documentName} ?`;
+    if (type === "selection") {
+      return data.selectedRowKeys.length > 1
+        ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
+        : `Are you sure to delete document ${
+            data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.documentName
+          } ?`;
+    } else {
+      return `Are you sure to delete document ${data?.documentName} ?`;
     }
   };
 
@@ -349,7 +329,7 @@ export default function DocumentsPage() {
           });
 
           refetchDocument();
-          resetShowDelete();
+          resetIsShowDelete();
           setSelectedRowKeys([]);
         },
       },
@@ -380,7 +360,7 @@ export default function DocumentsPage() {
           <Button
             type="button"
             onClick={() =>
-              setShowDelete({
+              setIsShowDelete({
                 open: true,
                 type: "selection",
                 data: { data: dataListDocument, selectedRowKeys },
@@ -565,7 +545,7 @@ export default function DocumentsPage() {
         title="Confirm Delete"
         open={isShowDelete.open}
         onCancel={() => {
-          setShowDelete({
+          setIsShowDelete({
             open: false,
             data: null,
             type: "",
@@ -577,7 +557,7 @@ export default function DocumentsPage() {
               <Button
                 type="button"
                 onClick={() => {
-                  setShowDelete({
+                  setIsShowDelete({
                     open: false,
                     data: null,
                     type: "",

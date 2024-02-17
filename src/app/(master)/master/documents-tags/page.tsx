@@ -27,7 +27,7 @@ export default function DocumentTagsPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
-  const [isShowDelete, setShowDelete] = useState<DeleteDocumentTagsModal>({
+  const [isShowDelete, setIsShowDelete] = useState<DeleteDocumentTagsModal>({
     open: false,
     type: "selection",
     data: {
@@ -193,6 +193,7 @@ export default function DocumentTagsPage() {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataDocumentTags]);
 
   const optionsStatus = [
@@ -241,8 +242,8 @@ export default function DocumentTagsPage() {
     },
   ];
 
-  const resetShowDelete = () => {
-    setShowDelete({
+  const resetIsShowDelete = () => {
+    setIsShowDelete({
       open: false,
       data: null,
       type: "",
@@ -262,15 +263,14 @@ export default function DocumentTagsPage() {
   };
 
   const renderConfirmationText = (type: any, data: any) => {
-    switch (type) {
-      case "selection":
-        return data.selectedRowKeys.length > 1
-          ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
-          : `Are you sure to delete document ${
-              data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.name
-            } ?`;
-      default:
-        return `Are you sure to delete document ${data?.name} ?`;
+    if (type === "selection") {
+      return data.selectedRowKeys.length > 1
+        ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
+        : `Are you sure to delete document ${
+            data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.name
+          } ?`;
+    } else {
+      return `Are you sure to delete document ${data?.name} ?`;
     }
   };
 
@@ -284,7 +284,7 @@ export default function DocumentTagsPage() {
           });
 
           refetchDocumentTags();
-          resetShowDelete();
+          resetIsShowDelete();
           setSelectedRowKeys([]);
         },
       },
@@ -366,7 +366,7 @@ export default function DocumentTagsPage() {
           <Button
             type="button"
             onClick={() =>
-              setShowDelete({
+              setIsShowDelete({
                 open: true,
                 type: "selection",
                 data: { data: dataDocTag, selectedRowKeys },
@@ -562,7 +562,7 @@ export default function DocumentTagsPage() {
         title="Confirm Delete"
         open={isShowDelete.open}
         onCancel={() => {
-          setShowDelete({
+          setIsShowDelete({
             open: false,
             data: null,
             type: "",
@@ -574,7 +574,7 @@ export default function DocumentTagsPage() {
               <Button
                 type="button"
                 onClick={() => {
-                  setShowDelete({
+                  setIsShowDelete({
                     open: false,
                     data: null,
                     type: "",

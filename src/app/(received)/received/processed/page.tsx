@@ -25,8 +25,8 @@ import {
   Table,
   TableProps,
   Upload,
-  message,
   UploadFile,
+  message,
 } from "antd";
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
@@ -36,7 +36,6 @@ export default function ProcessedPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [selectedRows, setSelectedRows] = useState<DataResDocument[]>([]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -264,9 +263,8 @@ export default function ProcessedPage() {
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selectedRowKeys: Key[], selectedRows: DataResDocument[]) => {
+    onChange: (selectedRowKeys: Key[]) => {
       setSelectedRowKeys(selectedRowKeys);
-      setSelectedRows(selectedRows);
     },
   };
 

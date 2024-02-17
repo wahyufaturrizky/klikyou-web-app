@@ -35,7 +35,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const [dataRole, setDatarole] = useState<DefaultOptionType[]>([]);
+  const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
   const [dataInfo, setDataInfo] = useState<DataInfoUserManagementType[]>([]);
   const [dataUserTag, setDataUserTag] = useState<DefaultOptionType[]>([]);
 
@@ -44,7 +44,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
   const [isEdit, setIsEdit] = useState<boolean>(id[0] === "view" ? false : true);
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
-  const [isShowDelete, setShowDelete] = useState<DeleteUserManagementModal>({
+  const [isShowDelete, setIsShowDelete] = useState<DeleteUserManagementModal>({
     open: false,
     type: "selection",
     data: {
@@ -72,7 +72,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
 
   useEffect(() => {
     const fetchDatarole = () => {
-      setDatarole(
+      setDataRole(
         dataListRole.data.data
           .filter((filterRole: RoleType) => !["Super Admin"].includes(filterRole.levelName))
           .map((itemRole: RoleType) => ({
@@ -233,6 +233,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
       setValue("username", username);
       setValue("email", email);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataUserManagement]);
 
   const uploadButton = (
@@ -288,7 +289,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
           <Button
             type="button"
             onClick={() =>
-              setShowDelete({
+              setIsShowDelete({
                 open: true,
                 type: "single",
                 data: dataUserManagement,
@@ -732,7 +733,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
         title="Confirm Delete"
         open={isShowDelete.open}
         onCancel={() => {
-          setShowDelete({
+          setIsShowDelete({
             open: false,
             data: null,
             type: "",
@@ -744,7 +745,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
               <Button
                 type="button"
                 onClick={() => {
-                  setShowDelete({
+                  setIsShowDelete({
                     open: false,
                     data: null,
                     type: "",

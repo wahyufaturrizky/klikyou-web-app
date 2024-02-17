@@ -36,7 +36,6 @@ import { Controller, useForm } from "react-hook-form";
 export default function ToReviewPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [selectedRows, setSelectedRows] = useState<DataResDocument[]>([]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -334,9 +333,8 @@ export default function ToReviewPage() {
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selectedRowKeys: Key[], selectedRows: DataResDocument[]) => {
+    onChange: (selectedRowKeys: Key[]) => {
       setSelectedRowKeys(selectedRowKeys);
-      setSelectedRows(selectedRows);
     },
   };
 

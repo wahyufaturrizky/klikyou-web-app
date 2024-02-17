@@ -28,7 +28,7 @@ export default function UserManagementPage() {
   const router = useRouter();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [isShowDelete, setShowDelete] = useState<DeleteUserManagementModal>({
+  const [isShowDelete, setIsShowDelete] = useState<DeleteUserManagementModal>({
     open: false,
     type: "selection",
     data: {
@@ -245,8 +245,8 @@ export default function UserManagementPage() {
     },
   ];
 
-  const resetShowDelete = () => {
-    setShowDelete({
+  const resetIsShowDelete = () => {
+    setIsShowDelete({
       open: false,
       data: null,
       type: "",
@@ -265,15 +265,14 @@ export default function UserManagementPage() {
   };
 
   const renderConfirmationText = (type: any, data: any) => {
-    switch (type) {
-      case "selection":
-        return data.selectedRowKeys.length > 1
-          ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
-          : `Are you sure to delete document ${
-              data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.email
-            } ?`;
-      default:
-        return `Are you sure to delete document ${data?.name} ?`;
+    if (type === "selection") {
+      return data.selectedRowKeys.length > 1
+        ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
+        : `Are you sure to delete document ${
+            data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.name
+          } ?`;
+    } else {
+      return `Are you sure to delete document ${data?.name} ?`;
     }
   };
 
@@ -282,7 +281,7 @@ export default function UserManagementPage() {
       options: {
         onSuccess: () => {
           refetchDocumentUserManagement();
-          resetShowDelete();
+          resetIsShowDelete();
           setSelectedRowKeys([]);
         },
       },
@@ -303,7 +302,7 @@ export default function UserManagementPage() {
           <Button
             type="button"
             onClick={() =>
-              setShowDelete({
+              setIsShowDelete({
                 open: true,
                 type: "selection",
                 data: { data: dataListUser, selectedRowKeys },
@@ -498,7 +497,7 @@ export default function UserManagementPage() {
         title="Confirm Delete"
         open={isShowDelete.open}
         onCancel={() => {
-          setShowDelete({
+          setIsShowDelete({
             open: false,
             data: null,
             type: "",
@@ -510,7 +509,7 @@ export default function UserManagementPage() {
               <Button
                 type="button"
                 onClick={() => {
-                  setShowDelete({
+                  setIsShowDelete({
                     open: false,
                     data: null,
                     type: "",
