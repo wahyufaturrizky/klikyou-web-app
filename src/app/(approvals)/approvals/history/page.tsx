@@ -34,6 +34,7 @@ import {
   TableProps,
   Upload,
   message,
+  UploadFile,
 } from "antd";
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
@@ -44,6 +45,7 @@ export default function HistoryPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<DataResDocument[]>([]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const [isShowDelete, setShowDelete] = useState<DeleteDocumentModal>({
     open: false,
@@ -657,11 +659,15 @@ export default function HistoryPage() {
                   }}
                 >
                   <Upload
+                    multiple={false}
+                    maxCount={1}
+                    fileList={fileList}
                     name="supporting_document_path"
                     headers={{
                       authorization: "authorization-text",
                     }}
                     onChange={(info) => {
+                      setFileList(info.fileList);
                       if (info.file.status !== "uploading") {
                         console.log(info.file, info.fileList);
                       }

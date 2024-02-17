@@ -45,6 +45,7 @@ import {
   TableProps,
   Upload,
   message,
+  UploadFile,
 } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import Link from "next/link";
@@ -58,6 +59,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
   const [dataInfo, setDataInfo] = useState<DataInfoDocumentType[]>([]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [dataLogHistory, setDataLogHistory] = useState<DataTypeActionHistory[]>([]);
 
   const [dataCollaborator, setDataCollaborator] = useState<DefaultOptionType[]>([]);
@@ -920,11 +922,15 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                   }}
                 >
                   <Upload
+                    multiple={false}
+                    maxCount={1}
+                    fileList={fileList}
                     name="supporting_document_path"
                     headers={{
                       authorization: "authorization-text",
                     }}
                     onChange={(info) => {
+                      setFileList(info.fileList);
                       if (info.file.status !== "uploading") {
                         console.log(info.file, info.fileList);
                       }

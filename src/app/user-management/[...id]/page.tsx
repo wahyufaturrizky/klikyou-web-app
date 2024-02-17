@@ -334,6 +334,8 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                       render={({ field: { onChange, value } }) => (
                         <div>
                           <Upload
+                            multiple={false}
+                            maxCount={1}
                             name="avatar_path"
                             listType="picture-circle"
                             showUploadList={false}

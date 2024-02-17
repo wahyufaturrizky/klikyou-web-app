@@ -11,7 +11,7 @@ import { useCreateDocument } from "@/services/document/useDocument";
 import { useUserList } from "@/services/user-list/useUserList";
 import { BackIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
-import { Button as ButtonAntd, ConfigProvider, Spin, Upload, message } from "antd";
+import { Button as ButtonAntd, ConfigProvider, Spin, Upload, message, UploadFile } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -25,6 +25,7 @@ export default function AddDocumentPage() {
   const [dataCollaborator, setDataCollaborator] = useState<DefaultOptionType[]>([]);
   const [dataAuthorizer, setDataAuthorizer] = useState<DefaultOptionType[]>([]);
   const [dataRecipient, setDataRecipient] = useState<DefaultOptionType[]>([]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
 
   const { control, handleSubmit, setValue } = useForm<FormDocumentValues>({
@@ -336,9 +337,14 @@ export default function AddDocumentPage() {
                         }}
                       >
                         <Upload
+                          multiple={false}
+                          maxCount={1}
+                          fileList={fileList}
                           name="document_path"
                           headers={{ authorization: "authorization-text" }}
                           onChange={(info) => {
+                            setFileList(info.fileList);
+
                             if (info.file.status !== "uploading") {
                               console.log(info.file, info.fileList);
                             }

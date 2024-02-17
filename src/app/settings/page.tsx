@@ -111,6 +111,8 @@ export default function SettingsPage() {
                     render={({ field: { onChange, value } }) => (
                       <div>
                         <Upload
+                         multiple={false}
+                         maxCount={1}
                           name="company_image_path"
                           listType="picture-circle"
                           showUploadList={false}

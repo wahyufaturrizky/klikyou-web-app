@@ -26,6 +26,7 @@ import {
   TableProps,
   Upload,
   message,
+  UploadFile,
 } from "antd";
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
@@ -33,6 +34,7 @@ import { Controller, useForm } from "react-hook-form";
 
 export default function ToDoPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -591,11 +593,15 @@ export default function ToDoPage() {
                   }}
                 >
                   <Upload
+                    multiple={false}
+                    maxCount={1}
+                    fileList={fileList}
                     name="supporting_document_path"
                     headers={{
                       authorization: "authorization-text",
                     }}
                     onChange={(info) => {
+                      setFileList(info.fileList);
                       if (info.file.status !== "uploading") {
                         console.log(info.file, info.fileList);
                       }

@@ -26,6 +26,7 @@ import {
   TableProps,
   Upload,
   message,
+  UploadFile,
 } from "antd";
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
@@ -34,6 +35,7 @@ import { Controller, useForm } from "react-hook-form";
 export default function ProcessedPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [selectedRows, setSelectedRows] = useState<DataResDocument[]>([]);
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -556,11 +558,15 @@ export default function ProcessedPage() {
                   }}
                 >
                   <Upload
+                    multiple={false}
+                    maxCount={1}
+                    fileList={fileList}
                     name="supporting_document_path"
                     headers={{
                       authorization: "authorization-text",
                     }}
                     onChange={(info) => {
+                      setFileList(info.fileList);
                       if (info.file.status !== "uploading") {
                         console.log(info.file, info.fileList);
                       }

@@ -226,6 +226,8 @@ export default function ProfilePage() {
                       render={({ field: { onChange, value } }) => (
                         <div>
                           <Upload
+                           multiple={false}
+                           maxCount={1}
                             name="avatar_path"
                             listType="picture-circle"
                             showUploadList={false}
