@@ -193,6 +193,7 @@ export default function UserTagsPage() {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataUserTags]);
 
   const optionsStatus = [

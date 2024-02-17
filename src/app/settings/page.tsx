@@ -85,6 +85,7 @@ export default function SettingsPage() {
       setValue("tel", data.tel);
       setValue("email", data.email);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSettings]);
 
   return (
@@ -111,8 +112,8 @@ export default function SettingsPage() {
                     render={({ field: { onChange, value } }) => (
                       <div>
                         <Upload
-                         multiple={false}
-                         maxCount={1}
+                          multiple={false}
+                          maxCount={1}
                           name="company_image_path"
                           listType="picture-circle"
                           showUploadList={false}

@@ -197,6 +197,7 @@ export default function UserManagementPage() {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataUserManagement]);
 
   const optionsStatus = [

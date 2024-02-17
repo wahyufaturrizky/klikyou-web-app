@@ -88,6 +88,7 @@ export default function ProfilePage() {
       setValue("email", dataRaw?.email);
       setValue("password", dataRaw?.password);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataProfile]);
 
   const { mutate: createUserManagement, isPending: isPendingCreateUserManagement } =

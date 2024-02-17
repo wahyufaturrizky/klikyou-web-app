@@ -292,6 +292,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
         documentRecipients.map((itemRecipient: DocumentRecipientsType) => itemRecipient.userId)
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataDocument]);
 
   const columnsLogHistory: TableProps<DataTypeActionHistory>["columns"] = [
