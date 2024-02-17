@@ -26,6 +26,7 @@ import {
   Table,
   TableProps,
   Upload,
+  UploadFile,
   message,
 } from "antd";
 import Link from "next/link";
@@ -47,6 +48,8 @@ export default function ToReviewPage() {
     });
 
   const [dataListDocument, setDataListDocument] = useState<DataResDocument[]>([]);
+
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const [tableParams, setTableParams] = useState<any>({
     pagination: {
@@ -354,6 +357,8 @@ export default function ToReviewPage() {
             content: "Success " + stateApproveAndRejectModal.type,
           });
 
+          setFileList([]);
+
           resetApproveRejectEdit();
           refetchDocument();
           setStateApproveAndRejectModal({
@@ -608,6 +613,7 @@ export default function ToReviewPage() {
         title={`${stateApproveAndRejectModal.type === "approve" ? "Approve" : "Reject"} document`}
         open={stateApproveAndRejectModal.open}
         onCancel={() => {
+          setFileList([]);
           resetApproveRejectEdit();
           setStateApproveAndRejectModal({
             open: false,
@@ -623,6 +629,7 @@ export default function ToReviewPage() {
                 disabled={isPendingApproveRejectProcess}
                 loading={isPendingApproveRejectProcess}
                 onClick={() => {
+                  setFileList([]);
                   resetApproveRejectEdit();
                   setStateApproveAndRejectModal({
                     open: false,
@@ -702,35 +709,41 @@ export default function ToReviewPage() {
                 required: "Document is required",
               }}
               name="supporting_document_path"
-              render={({ field: { onChange } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                    },
-                  }}
-                >
-                  <Upload
-                    name="supporting_document_path"
-                    headers={{
-                      authorization: "authorization-text",
-                    }}
-                    onChange={(info) => {
-                      if (info.file.status !== "uploading") {
-                        console.log(info.file, info.fileList);
-                      }
-                      if (info.file.status === "done") {
-                        message.success(`${info.file.name} file uploaded successfully`);
-                        onChange(info);
-                      } else if (info.file.status === "error") {
-                        message.error(`${info.file.name} file upload failed.`);
-                      }
+              render={({ field: { onChange } }) => {
+                return (
+                  <ConfigProvider
+                    theme={{
+                      token: {
+                        colorPrimary: "#0AADE0",
+                      },
                     }}
                   >
-                    <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
-                  </Upload>
-                </ConfigProvider>
-              )}
+                    <Upload
+                      multiple={false}
+                      maxCount={1}
+                      fileList={fileList}
+                      name="supporting_document_path"
+                      headers={{
+                        authorization: "authorization-text",
+                      }}
+                      onChange={(info) => {
+                        setFileList(info.fileList);
+                        if (info.file.status !== "uploading") {
+                          console.log(info.file, info.fileList);
+                        }
+                        if (info.file.status === "done") {
+                          message.success(`${info.file.name} file uploaded successfully`);
+                          onChange(info);
+                        } else if (info.file.status === "error") {
+                          message.error(`${info.file.name} file upload failed.`);
+                        }
+                      }}
+                    >
+                      <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
+                    </Upload>
+                  </ConfigProvider>
+                );
+              }}
             />
           </div>
         </div>
