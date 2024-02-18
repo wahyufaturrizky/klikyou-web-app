@@ -96,7 +96,7 @@ export default function AddDocumentPage() {
       fetchDataTag();
     }
 
-    if (dataListTag) {
+    if (dataListUserList) {
       fetchDataUserList();
     }
   }, [dataListTag, dataListUserList]);

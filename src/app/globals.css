@@ -15,6 +15,14 @@
     );
   }
 
+  .bg-gradient-certificate {
+    background: linear-gradient(
+      180deg,
+      rgba(10.27, 172.68, 223.98, 0.6) 0%,
+      rgba(10.27, 172.68, 223.98, 0) 20%
+    );
+  }
+
   .scrollbar::-webkit-scrollbar {
     width: 20px;
     height: 20px;

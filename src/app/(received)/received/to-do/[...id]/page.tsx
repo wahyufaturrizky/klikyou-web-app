@@ -117,7 +117,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       );
     };
 
-    const FetchDataUserList = () => {
+    const fetchDataUserList = () => {
       setDataAuthorizer(
         dataListUserList?.data?.data.map((itemTag: UserListType) => ({
           label: itemTag.label,
@@ -144,8 +144,8 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       fetchDataTag();
     }
 
-    if (dataListTag) {
-      FetchDataUserList();
+    if (dataListUserList) {
+      fetchDataUserList();
     }
   }, [dataListTag, dataListUserList]);
 
