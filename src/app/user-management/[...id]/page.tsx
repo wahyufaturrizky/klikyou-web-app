@@ -30,7 +30,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-export default function ViewEditProfile({ params }: { params: { id: string } }) {
+export default function ViewEditProfile({ params }: Readonly<{ params: { id: string } }>) {
   const { id } = params;
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -41,7 +41,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
 
   const router = useRouter();
   const [avatarPathRaw, setAvatarPathRaw] = useState<UploadChangeParam<UploadFile<any>>>();
-  const [isEdit, setIsEdit] = useState<boolean>(id[0] === "view" ? false : true);
+  const [isEdit, setIsEdit] = useState<boolean>(id[0] !== "view");
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
   const [isShowDelete, setIsShowDelete] = useState<DeleteUserManagementModal>({

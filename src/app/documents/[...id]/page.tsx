@@ -51,7 +51,7 @@ import { Controller, useForm } from "react-hook-form";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import { UseBgColorAction } from "@/hook/useBgColorAction";
 
-export default function ViewEditDocumentPage({ params }: { params: { id: string } }) {
+export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();
   const { id } = params;
 
@@ -64,8 +64,6 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
   const [dataAuthorizer, setDataAuthorizer] = useState<DefaultOptionType[]>([]);
   const [dataRecipient, setDataRecipient] = useState<DefaultOptionType[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
-
-  const [isEdit, setIsEdit] = useState<boolean>(id[0] === "view" ? false : true);
 
   const [stateEditDocumentInfoModal, setStateEditDocumentInfoModal] = useState<EditDocumentsModal>({
     open: false,
