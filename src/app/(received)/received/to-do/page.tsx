@@ -159,8 +159,7 @@ export default function ToDoPage() {
       title: "Latest document",
       dataIndex: "documentPath",
       key: "documentPath",
-      render: (text: string, record: DataResDocument) => {
-        const { id } = record;
+      render: () => {
         return (
           <div className="gap-2 flex items-center cursor-pointer">
             <DownloadIcon
