@@ -20,18 +20,17 @@ import {
 } from "@/services/document-tags/useDocumentTags";
 import { FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import {
-  Checkbox,
   ConfigProvider,
   DatePicker,
   Modal,
   Table,
+  TablePaginationConfig,
   TableProps,
   message,
-  TablePaginationConfig,
 } from "antd";
+import { FilterValue } from "antd/es/table/interface";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { FilterValue } from "antd/es/table/interface";
 
 export default function DocumentTagsPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
@@ -72,8 +71,6 @@ export default function DocumentTagsPage() {
     defaultValues: {
       search: "",
       date: "",
-      status: [],
-      role: [],
     },
   });
 
@@ -179,8 +176,6 @@ export default function DocumentTagsPage() {
   } = useDocumentTags({
     query: {
       search: debounceSearch,
-      status: getValuesFilter("status").join(","),
-      role: getValuesFilter("role").join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: useOrderTableParams(tableParams),
@@ -211,52 +206,6 @@ export default function DocumentTagsPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataDocumentTags]);
-
-  const optionsStatus = [
-    {
-      label: "Uploaded",
-      value: "Uploaded",
-    },
-    {
-      label: "Updated",
-      value: "Updated",
-    },
-    {
-      label: "Partially Approved",
-      value: "Partially Approved",
-    },
-    {
-      label: "Fully Approved",
-      value: "Fully Approved",
-    },
-    {
-      label: "Partially Processed",
-      value: "Partially Processed",
-    },
-    {
-      label: "Fully Processed",
-      value: "Fully Processed",
-    },
-  ];
-
-  const optionsRole = [
-    {
-      label: "Owner",
-      value: "Owner",
-    },
-    {
-      label: "Collaborator",
-      value: "Collaborator",
-    },
-    {
-      label: "Authorizer",
-      value: "Authorizer",
-    },
-    {
-      label: "Recipient",
-      value: "Recipient",
-    },
-  ];
 
   const resetIsShowDelete = () => {
     setIsShowDelete({
@@ -511,66 +460,6 @@ export default function DocumentTagsPage() {
               );
             }}
           />
-
-          <Text label="Status" className="mb-2 mt-4 text-lg font-semibold text-black" />
-
-          <div className="p-2 border border-black rounded-md mb-4">
-            <Controller
-              control={controlFilter}
-              name="status"
-              render={({ field: { onChange, value } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                      colorPrimaryBorder: "#2379AA",
-                      colorPrimaryHover: "#2379AA",
-                    },
-                  }}
-                >
-                  <Checkbox.Group value={value} onChange={onChange}>
-                    <div className="flex flex-col">
-                      {optionsStatus.map((item) => (
-                        <Checkbox key={item.value} value={item.label}>
-                          {item.label}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </Checkbox.Group>
-                </ConfigProvider>
-              )}
-            />
-          </div>
-
-          <Text label="Role" className="mb-2 text-lg font-semibold text-black" />
-
-          <div className="p-2 border border-black rounded-md mb-4">
-            <Controller
-              control={controlFilter}
-              name="role"
-              render={({ field: { onChange, value } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                      colorPrimaryBorder: "#2379AA",
-                      colorPrimaryHover: "#2379AA",
-                    },
-                  }}
-                >
-                  <Checkbox.Group value={value} onChange={onChange}>
-                    <div className="flex flex-col">
-                      {optionsRole.map((item) => (
-                        <Checkbox key={item.value} value={item.label}>
-                          {item.label}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </Checkbox.Group>
-                </ConfigProvider>
-              )}
-            />
-          </div>
         </div>
       </Modal>
 

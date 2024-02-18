@@ -41,10 +41,12 @@ export interface TagType {
 }
 
 export type FormFilterValues = {
-  search: string;
+  search?: string;
   date: string;
-  status: string[];
-  role: string[];
+  status?: string[];
+  role?: string[];
+  filter_tag?: string[];
+  filter_type?: string;
 };
 
 export type FormApproveRejectProcessValues = {

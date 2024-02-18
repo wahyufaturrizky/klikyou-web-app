@@ -235,7 +235,7 @@ export default function DocumentsPage() {
   } = useDocument({
     query: {
       search: debounceSearch,
-      status: getValuesFilter("status").join(","),
+      status: (getValuesFilter("status") ?? [""]).join(","),
       currentUserRole: getValuesFilter("currentUserRole"),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,

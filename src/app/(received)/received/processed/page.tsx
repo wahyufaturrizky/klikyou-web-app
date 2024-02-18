@@ -185,8 +185,8 @@ export default function ProcessedPage() {
     action: "receival",
     query: {
       search: debounceSearch,
-      status: getValuesFilter("status").join(","),
-      role: getValuesFilter("role").join(","),
+      status: (getValuesFilter("status") ?? [""]).join(","),
+      role: (getValuesFilter("role") ?? [""]).join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: useOrderTableParams(tableParams),

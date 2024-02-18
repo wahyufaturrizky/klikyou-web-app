@@ -5,7 +5,8 @@ import Input from "@/components/Input";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormFilterValues } from "@/interface/common";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
+import { FormFilterValues, RoleType } from "@/interface/common";
 import {
   ColumnsType,
   DataUserManagementType,
@@ -17,26 +18,24 @@ import {
   useUserManagement,
 } from "@/services/user-management/useUserManagement";
 import { FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
-import {
-  Checkbox,
-  ConfigProvider,
-  DatePicker,
-  Modal,
-  Table,
-  TableProps,
-  TablePaginationConfig,
-} from "antd";
+import { ConfigProvider, DatePicker, Modal, Table, TablePaginationConfig } from "antd";
+import { FilterValue } from "antd/es/table/interface";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useOrderTableParams } from "@/hook/useOrderTableParams";
-import { FilterValue } from "antd/es/table/interface";
+import { useRole } from "@/services/role/useRole";
+import { useUserTags } from "@/services/user-tags/useUserTags";
+import { DataUserTags } from "@/interface/user-tag.interface";
+import { DefaultOptionType } from "antd/es/cascader";
+import Select from "@/components/Select";
 
 export default function UserManagementPage() {
   const router = useRouter();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
+  const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
+  const [dataUserTag, setDataUserTag] = useState<DefaultOptionType[]>([]);
   const [isShowDelete, setIsShowDelete] = useState<DeleteUserManagementModal>({
     open: false,
     type: "selection",
@@ -67,10 +66,43 @@ export default function UserManagementPage() {
     defaultValues: {
       search: "",
       date: "",
-      status: [],
-      role: [],
+      filter_tag: [],
+      filter_type: "",
     },
   });
+
+  const { data: dataListRole, isPending: isPendingRole } = useRole();
+  const { data: dataListUserTag, isPending: isPendingUserTag } = useUserTags();
+
+  useEffect(() => {
+    const fetchDataRole = () => {
+      setDataRole(
+        dataListRole.data.data
+          .filter((filterRole: RoleType) => !["Super Admin"].includes(filterRole.levelName))
+          .map((itemRole: RoleType) => ({
+            label: itemRole.levelName,
+            value: itemRole.id,
+          }))
+      );
+    };
+
+    const fetchDataUserTag = () => {
+      setDataUserTag(
+        dataListUserTag.data.data.data.map((itemTag: DataUserTags) => ({
+          label: itemTag.documentType,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    if (dataListRole) {
+      fetchDataRole();
+    }
+
+    if (dataListUserTag) {
+      fetchDataUserTag();
+    }
+  }, [dataListRole, dataListUserTag]);
 
   const columns: ColumnsType<DataUserManagementType> = [
     {
@@ -177,8 +209,8 @@ export default function UserManagementPage() {
   } = useUserManagement({
     query: {
       search: debounceSearch,
-      status: getValuesFilter("status").join(","),
-      role: getValuesFilter("role").join(","),
+      filter_type: getValuesFilter("filter_type") || "",
+      filter_tag: (getValuesFilter("filter_tag") ?? [""]).join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: useOrderTableParams(tableParams),
@@ -214,52 +246,6 @@ export default function UserManagementPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataUserManagement]);
-
-  const optionsStatus = [
-    {
-      label: "Uploaded",
-      value: "Uploaded",
-    },
-    {
-      label: "Updated",
-      value: "Updated",
-    },
-    {
-      label: "Partially Approved",
-      value: "Partially Approved",
-    },
-    {
-      label: "Fully Approved",
-      value: "Fully Approved",
-    },
-    {
-      label: "Partially Processed",
-      value: "Partially Processed",
-    },
-    {
-      label: "Fully Processed",
-      value: "Fully Processed",
-    },
-  ];
-
-  const optionsRole = [
-    {
-      label: "Owner",
-      value: "Owner",
-    },
-    {
-      label: "Collaborator",
-      value: "Collaborator",
-    },
-    {
-      label: "Authorizer",
-      value: "Authorizer",
-    },
-    {
-      label: "Recipient",
-      value: "Recipient",
-    },
-  ];
 
   const resetIsShowDelete = () => {
     setIsShowDelete({
@@ -436,73 +422,62 @@ export default function UserManagementPage() {
         }
       >
         <div>
-          <Text label="Updated at" className="mb-2 text-lg font-semibold text-black" />
-          <Controller
-            control={controlFilter}
-            name="date"
-            render={({ field: { onChange, value } }: any) => {
-              return (
-                <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
-              );
-            }}
-          />
-
-          <Text label="Status" className="mb-2 mt-4 text-lg font-semibold text-black" />
-
-          <div className="p-2 border border-black rounded-md mb-4">
+          <div className="mb-2">
+            <Text label="Updated at" className="mb-2 text-lg font-semibold text-black" />
             <Controller
               control={controlFilter}
-              name="status"
-              render={({ field: { onChange, value } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                      colorPrimaryBorder: "#2379AA",
-                      colorPrimaryHover: "#2379AA",
-                    },
-                  }}
-                >
-                  <Checkbox.Group value={value} onChange={onChange}>
-                    <div className="flex flex-col">
-                      {optionsStatus.map((item) => (
-                        <Checkbox key={item.value} value={item.label}>
-                          {item.label}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </Checkbox.Group>
-                </ConfigProvider>
+              name="date"
+              render={({ field: { onChange, value } }: any) => {
+                return (
+                  <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+                );
+              }}
+            />
+          </div>
+
+          <div className="mb-2">
+            <Controller
+              control={controlFilter}
+              rules={{
+                required: "tags is required",
+              }}
+              name="filter_tag"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Select
+                  mode="multiple"
+                  name="filter_tag"
+                  onChange={onChange}
+                  options={dataUserTag}
+                  tokenSeparators={[","]}
+                  value={value}
+                  styleSelect={{ width: "100%" }}
+                  required
+                  error={error}
+                  label="Tags"
+                  classNameLabel="block text-lg font-semibold text-black"
+                />
               )}
             />
           </div>
 
-          <Text label="Role" className="mb-2 text-lg font-semibold text-black" />
-
-          <div className="p-2 border border-black rounded-md mb-4">
+          <div className="mb-2">
             <Controller
               control={controlFilter}
-              name="role"
-              render={({ field: { onChange, value } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                      colorPrimaryBorder: "#2379AA",
-                      colorPrimaryHover: "#2379AA",
-                    },
-                  }}
-                >
-                  <Checkbox.Group value={value} onChange={onChange}>
-                    <div className="flex flex-col">
-                      {optionsRole.map((item) => (
-                        <Checkbox key={item.value} value={item.label}>
-                          {item.label}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </Checkbox.Group>
-                </ConfigProvider>
+              rules={{
+                required: "role is required",
+              }}
+              name="filter_type"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Select
+                  name="filter_type"
+                  options={dataRole}
+                  onChange={onChange}
+                  value={value}
+                  styleSelect={{ width: "100%" }}
+                  required
+                  label="Role"
+                  classNameLabel="block text-lg font-semibold text-black"
+                />
               )}
             />
           </div>
