@@ -417,15 +417,14 @@ export default function ProfilePage() {
                                   />
                                 ))}
                               </div>
-                            ) : mapping === "role_id" ? (
-                              <Text
-                                label={dataRole?.[valueMap[mapping]]?.label as string}
-                                className="text-base font-normal text-black"
-                              />
                             ) : (
                               <Text
-                                label={valueMap[mapping]}
-                                className="text-base font-normal text-black"
+                                label={
+                                  mapping === "role_id"
+                                    ? dataProfile?.data?.data?.role?.levelName
+                                    : valueMap[mapping]
+                                }
+                                className="text-sm font-normal text-black"
                               />
                             )}
                           </div>

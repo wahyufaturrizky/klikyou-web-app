@@ -506,6 +506,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                         };
 
                         const valueMap: any = watch();
+                        console.log("@dataUserManagement", dataUserManagement);
 
                         return (
                           <div className="mb-6" key={mapping}>
@@ -527,14 +528,13 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                                     />
                                   ))}
                               </div>
-                            ) : mapping === "role_id" ? (
-                              <Text
-                                label={dataRole?.[valueMap[mapping]]?.label as string}
-                                className="text-base font-normal text-black"
-                              />
                             ) : (
                               <Text
-                                label={valueMap[mapping]}
+                                label={
+                                  mapping === "role_id"
+                                    ? dataUserManagement?.data?.data?.role?.levelName
+                                    : valueMap[mapping]
+                                }
                                 className="text-sm font-normal text-black"
                               />
                             )}
