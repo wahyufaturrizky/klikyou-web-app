@@ -848,7 +848,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
 
                   <Button
                     type="button"
-                    // disabled={!getValues("status")?.includes("Fully approved")}
+                    disabled={!getValues("status")?.includes("Fully approved")}
                     onClick={() => window.open(`/certificate/${id[1]}`, "_blank")}
                     label="Certificate"
                     icon={<ProtectIcon />}
