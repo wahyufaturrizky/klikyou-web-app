@@ -109,7 +109,7 @@ export default function SettingsPage() {
                   <Controller
                     control={control}
                     name="company_image_path"
-                    render={({ field: { onChange, value } }) => (
+                    render={({ field: { onChange, value }, fieldState: { error } }) => (
                       <div>
                         <Upload
                           multiple={false}
@@ -145,6 +145,13 @@ export default function SettingsPage() {
                             uploadButton
                           )}
                         </Upload>
+
+                        {error && (
+                          <Text
+                            className="text-[#EB5757] font-roboto mt-2 font-bold text-sm"
+                            label={String(error.message)}
+                          />
+                        )}
                       </div>
                     )}
                   />

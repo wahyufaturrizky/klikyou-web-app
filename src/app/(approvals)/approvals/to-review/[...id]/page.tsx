@@ -952,38 +952,47 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                 required: "Document is required",
               }}
               name="supporting_document_path"
-              render={({ field: { onChange } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                    },
-                  }}
-                >
-                  <Upload
-                    multiple={false}
-                    maxCount={1}
-                    fileList={fileList}
-                    name="supporting_document_path"
-                    headers={{
-                      authorization: "authorization-text",
-                    }}
-                    onChange={(info) => {
-                      setFileList(info.fileList);
-                      if (info.file.status !== "uploading") {
-                        console.log(info.file, info.fileList);
-                      }
-                      if (info.file.status === "done") {
-                        message.success(`${info.file.name} file uploaded successfully`);
-                        onChange(info);
-                      } else if (info.file.status === "error") {
-                        message.error(`${info.file.name} file upload failed.`);
-                      }
+              render={({ field: { onChange }, fieldState: { error } }) => (
+                <div>
+                  <ConfigProvider
+                    theme={{
+                      token: {
+                        colorPrimary: "#0AADE0",
+                      },
                     }}
                   >
-                    <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
-                  </Upload>
-                </ConfigProvider>
+                    <Upload
+                      multiple={false}
+                      maxCount={1}
+                      fileList={fileList}
+                      name="supporting_document_path"
+                      headers={{
+                        authorization: "authorization-text",
+                      }}
+                      onChange={(info) => {
+                        setFileList(info.fileList);
+                        if (info.file.status !== "uploading") {
+                          console.log(info.file, info.fileList);
+                        }
+                        if (info.file.status === "done") {
+                          message.success(`${info.file.name} file uploaded successfully`);
+                          onChange(info);
+                        } else if (info.file.status === "error") {
+                          message.error(`${info.file.name} file upload failed.`);
+                        }
+                      }}
+                    >
+                      <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
+                    </Upload>
+                  </ConfigProvider>
+
+                  {error && (
+                    <Text
+                      className="text-[#EB5757] font-roboto mt-2 font-bold text-sm"
+                      label={String(error.message)}
+                    />
+                  )}
+                </div>
               )}
             />
           </div>

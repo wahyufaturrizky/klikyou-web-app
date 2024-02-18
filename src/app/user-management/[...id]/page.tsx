@@ -332,7 +332,7 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                     <Controller
                       control={control}
                       name="avatar_path"
-                      render={({ field: { onChange, value } }) => (
+                      render={({ field: { onChange, value }, fieldState: { error } }) => (
                         <div>
                           <Upload
                             multiple={false}
@@ -369,6 +369,13 @@ export default function ViewEditProfile({ params }: { params: { id: string } }) 
                               uploadButton
                             )}
                           </Upload>
+
+                          {error && (
+                            <Text
+                              className="text-[#EB5757] font-roboto mt-2 font-bold text-sm"
+                              label={String(error.message)}
+                            />
+                          )}
                         </div>
                       )}
                     />
