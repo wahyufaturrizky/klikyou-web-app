@@ -1,3 +1,5 @@
+import { CommonResponseType, DataStatusMessageResponseType, MetaType } from "@/interface/common";
+import { DataResDocument } from "@/interface/documents.interface";
 export type FormLoginValues = {
   email: string;
   password: string;
@@ -24,8 +26,10 @@ export interface DataAuthType {
   access_token: string;
 }
 
-export interface ResLogin {
-  data: {
-    data: DataAuthType;
-  };
+interface DataMessageStatusType extends DataStatusMessageResponseType {
+  data: DataAuthType;
+}
+
+export interface ResLogin extends CommonResponseType {
+  data: DataMessageStatusType;
 }

@@ -24,20 +24,20 @@ export default function Home() {
   const { mutate: loginUser, isPending: isPendingLogin } = useSignIn({
     options: {
       onSuccess: (res: ResLogin) => {
-        messageApi.open({
-          type: "success",
-          content: "Success login",
-        });
+        if (res.status === 200) {
+          messageApi.open({
+            type: "success",
+            content: "Success login",
+          });
 
-        const { data } = res.data;
-        const { access_token } = data;
-        localStorage.setItem("access_token", access_token);
-        localStorage.setItem("user_profile", JSON.stringify(data));
+          localStorage.setItem("access_token", res.data.data.access_token);
+          localStorage.setItem("user_profile", JSON.stringify(res.data.data));
 
-        localStorage.setItem("currentMenu", "1");
-        localStorage.setItem("openKeys", "[]");
+          localStorage.setItem("currentMenu", "1");
+          localStorage.setItem("openKeys", "[]");
 
-        router.push("/dashboard");
+          router.push("/dashboard");
+        }
       },
       onError: () => {
         messageApi.open({
