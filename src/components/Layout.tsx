@@ -132,19 +132,17 @@ const Layout = ({ ...props }: LayoutInterface) => {
   }, [dataNotification]);
 
   const pathNameList: any = {
-    "/dashboard": "Dashboard",
-    "/profile": "Profile",
-    "/documents": "Documents",
-    "/documents/add": "Documents",
-    "/user-management": "User Management",
-    "/user-management/add": "User Management",
-    "/master/documents-tags": "Document Tags",
-    "/master/user-tags": "User Tags",
-    "/settings": "Settings",
-    "/approvals/to-review": "To Review",
-    "/approvals/history": "History",
-    "/received/to-do": "To Do",
-    "/received/processed": "Processed",
+    dashboard: "Dashboard",
+    profile: "Profile",
+    documents: "Documents",
+    "user-management": "User Management",
+    "documents-tags": "Document Tags",
+    "user-tags": "User Tags",
+    settings: "Settings",
+    "to-review": "To Review",
+    history: "History",
+    "to-do": "To Do",
+    processed: "Processed",
   };
 
   const [isShowNotif, setIsShowNotif] = useState<boolean>(false);
@@ -260,10 +258,15 @@ const Layout = ({ ...props }: LayoutInterface) => {
       },
     },
     {
-      label: <Text className="text-primary-blue font-normal" label="Logout" />,
+      label: (
+        <Text
+          className="text-primary-blue font-normal"
+          label={isPendingLogOutUser ? "Loading..." : "Logout"}
+        />
+      ),
       key: "2",
       icon: createElement(LogoutIcon),
-      onClick: () => logOutUser({ email: userProfile?.email }),
+      onClick: () => !isPendingLogOutUser && logOutUser({ email: userProfile?.email }),
     },
   ];
 
@@ -300,7 +303,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
       const latestOpenKey = keys.find((key) => openKeys?.indexOf(key) === -1);
       if (
         latestOpenKey &&
-        items.map((itemSubMenu: MenuItem) => itemSubMenu?.key).indexOf(latestOpenKey!) === -1
+        items.map((itemSubMenu: MenuItem) => itemSubMenu?.key).indexOf(latestOpenKey) === -1
       ) {
         setOpenKeys(keys);
         localStorage.setItem("openKeys", JSON.stringify(keys));
@@ -323,7 +326,23 @@ const Layout = ({ ...props }: LayoutInterface) => {
     const isMobileSize = !(lg ?? xl ?? xxl);
 
     handleSetCollapsedWhenMobileSize(isMobileSize);
-  }, [screens]);
+  }, [lg, screens, xl, xxl]);
+
+  const handleHeaderTitle = () => {
+    if (
+      pathname.includes("master") ||
+      pathname.includes("approvals") ||
+      pathname.includes("received")
+    ) {
+      return xs
+        ? pathNameList[pathname.split("/")[2]].substring(0, 2) + "..."
+        : pathNameList[pathname.split("/")[2]];
+    } else {
+      return xs
+        ? pathNameList[pathname.split("/")[1]].substring(0, 2) + "..."
+        : pathNameList[pathname.split("/")[1]];
+    }
+  };
 
   return (
     <div>
@@ -403,9 +422,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
                   className={`${
                     xxl || xl || lg ? "text-2xl" : "text-xs"
                   } text-secondary-blue font-bold`}
-                  label={
-                    xs ? pathNameList[pathname].substring(0, 2) + "..." : pathNameList[pathname]
-                  }
+                  label={handleHeaderTitle()}
                 />
 
                 <Text
