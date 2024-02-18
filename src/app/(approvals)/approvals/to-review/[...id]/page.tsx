@@ -814,11 +814,15 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
                   <Button
                     type="button"
-                    disabled
-                    onClick={() => {}}
+                    disabled={!getValues("status")?.includes("Fully approved")}
+                    onClick={() => window.open(`/certificate/${id[1]}`, "_blank")}
                     label="Certificate"
                     icon={<ProtectIcon />}
-                    className="gap-2 flex justify-center items-center rounded-md bg-primary-gray px-6 py-1.5 text-lg font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    className={`${
+                      getValues("status")?.includes("Fully approved")
+                        ? "bg-primary-blue"
+                        : "bg-primary-gray"
+                    } cursor-pointer gap-2 flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
                   />
                 </div>
               )}
