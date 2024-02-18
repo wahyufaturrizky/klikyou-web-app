@@ -2,6 +2,7 @@
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
+import Select from "@/components/Select";
 import Text from "@/components/Text";
 import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
@@ -12,32 +13,35 @@ import {
   ApproveRejectProcessModal,
   FormApproveRejectProcessValues,
   FormFilterValues,
+  TagType,
 } from "@/interface/common";
 import { DataResDocument, DocumentTagsType } from "@/interface/documents.interface";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import { useDocument, useDocumentApproveRejectProcess } from "@/services/document/useDocument";
 import { CheckIcon, FileIcon, FilterIcon, RejectIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
   Button as ButtonAntd,
-  Checkbox,
   ConfigProvider,
   DatePicker,
   Modal,
   Table,
+  TablePaginationConfig,
   TableProps,
   Upload,
   UploadFile,
   message,
-  TablePaginationConfig,
 } from "antd";
+import { DefaultOptionType } from "antd/es/cascader";
+import { FilterValue } from "antd/es/table/interface";
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { FilterValue } from "antd/es/table/interface";
 
 export default function ToReviewPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -73,9 +77,26 @@ export default function ToReviewPage() {
       search: "",
       date: "",
       status: [],
-      role: [],
+      filter_tag: [],
     },
   });
+
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+
+  useEffect(() => {
+    const fetchDataTag = () => {
+      setDataTag(
+        dataListTag.data.data.data.map((itemTag: TagType) => ({
+          label: itemTag.name,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    if (dataListTag) {
+      fetchDataTag();
+    }
+  }, [dataListTag]);
 
   const {
     control: controlApproveRejectEdit,
@@ -255,7 +276,7 @@ export default function ToReviewPage() {
     query: {
       search: debounceSearch,
       status: (getValuesFilter("status") ?? [""]).join(","),
-      role: (getValuesFilter("role") ?? [""]).join(","),
+      filter_tag: (getValuesFilter("filter_tag") ?? [""]).join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: useOrderTableParams(tableParams),
@@ -312,25 +333,6 @@ export default function ToReviewPage() {
     {
       label: "Fully Processed",
       value: "Fully Processed",
-    },
-  ];
-
-  const optionsRole = [
-    {
-      label: "Owner",
-      value: "Owner",
-    },
-    {
-      label: "Collaborator",
-      value: "Collaborator",
-    },
-    {
-      label: "Authorizer",
-      value: "Authorizer",
-    },
-    {
-      label: "Recipient",
-      value: "Recipient",
     },
   ];
 
@@ -494,7 +496,7 @@ export default function ToReviewPage() {
             columns={columns}
             dataSource={dataListDocument}
             scroll={{ x: 1500 }}
-            loading={isPendingDocument}
+            loading={isPendingDocument || isPendingTag}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
@@ -542,73 +544,57 @@ export default function ToReviewPage() {
         }
       >
         <div>
-          <Text label="Updated at" className="mb-2 text-lg font-semibold text-black" />
-          <Controller
-            control={controlFilter}
-            name="date"
-            render={({ field: { onChange, value } }: any) => {
-              return (
-                <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
-              );
-            }}
-          />
-
-          <Text label="Status" className="mb-2 mt-4 text-lg font-semibold text-black" />
-
-          <div className="p-2 border border-black rounded-md mb-4">
+          <div className="mb-2">
+            <Text label="Updated at" className="mb-2 text-lg font-semibold text-black" />
             <Controller
               control={controlFilter}
-              name="status"
-              render={({ field: { onChange, value } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                      colorPrimaryBorder: "#2379AA",
-                      colorPrimaryHover: "#2379AA",
-                    },
-                  }}
-                >
-                  <Checkbox.Group value={value} onChange={onChange}>
-                    <div className="flex flex-col">
-                      {optionsStatus.map((item) => (
-                        <Checkbox key={item.value} value={item.label}>
-                          {item.label}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </Checkbox.Group>
-                </ConfigProvider>
+              name="date"
+              render={({ field: { onChange, value } }: any) => {
+                return (
+                  <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+                );
+              }}
+            />
+          </div>
+
+          <div className="mb-2">
+            <Controller
+              control={controlFilter}
+              name="filter_tag"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Select
+                  mode="multiple"
+                  name="filter_tag"
+                  onChange={onChange}
+                  options={dataTag}
+                  tokenSeparators={[","]}
+                  value={value}
+                  styleSelect={{ width: "100%" }}
+                  error={error}
+                  label="Tags"
+                  classNameLabel="block text-lg font-semibold text-black"
+                />
               )}
             />
           </div>
 
-          <Text label="Role" className="mb-2 text-lg font-semibold text-black" />
-
-          <div className="p-2 border border-black rounded-md mb-4">
+          <div className="mb-2">
             <Controller
               control={controlFilter}
-              name="role"
-              render={({ field: { onChange, value } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                      colorPrimaryBorder: "#2379AA",
-                      colorPrimaryHover: "#2379AA",
-                    },
-                  }}
-                >
-                  <Checkbox.Group value={value} onChange={onChange}>
-                    <div className="flex flex-col">
-                      {optionsRole.map((item) => (
-                        <Checkbox key={item.value} value={item.label}>
-                          {item.label}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </Checkbox.Group>
-                </ConfigProvider>
+              name="status"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Select
+                  name="status"
+                  mode="multiple"
+                  tokenSeparators={[","]}
+                  options={optionsStatus}
+                  onChange={onChange}
+                  value={value}
+                  error={error}
+                  styleSelect={{ width: "100%" }}
+                  label="Status"
+                  classNameLabel="block text-lg font-semibold text-black"
+                />
               )}
             />
           </div>

@@ -14,7 +14,7 @@ export interface ApproveRejectProcessModal {
 
 export interface QueryType {
   search: string;
-  status: string;
+  status?: string;
   role?: string;
   page?: number;
   limit?: number;
@@ -22,7 +22,10 @@ export interface QueryType {
   updated_at_start: string;
   updated_at_end: string;
   history?: number;
-  currentUserRole?: string;
+  filter_type?: string;
+  filter_tag?: string;
+  latest_action_filter?: string;
+  filter_approval?: string;
 }
 
 export interface RoleType {
@@ -44,6 +47,7 @@ export type FormFilterValues = {
   search?: string;
   date: string;
   status?: string[];
+  filter_approval?: string[];
   role?: string[];
   filter_tag?: string[];
   filter_type?: string;

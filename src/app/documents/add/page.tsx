@@ -69,7 +69,7 @@ export default function AddDocumentPage() {
       );
     };
 
-    const FetchDataUserList = () => {
+    const fetchDataUserList = () => {
       setDataAuthorizer(
         dataListUserList?.data?.data?.map((itemTag: UserListType) => ({
           label: itemTag.label,
@@ -97,7 +97,7 @@ export default function AddDocumentPage() {
     }
 
     if (dataListTag) {
-      FetchDataUserList();
+      fetchDataUserList();
     }
   }, [dataListTag, dataListUserList]);
 

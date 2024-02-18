@@ -2,6 +2,7 @@
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
+import Select from "@/components/Select";
 import Text from "@/components/Text";
 import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
@@ -12,12 +13,14 @@ import {
   ApproveRejectProcessModal,
   FormApproveRejectProcessValues,
   FormFilterValues,
+  TagType,
 } from "@/interface/common";
 import {
   DataResDocument,
   DeleteDocumentModal,
   DocumentTagsType,
 } from "@/interface/documents.interface";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import {
   useDeleteDocument,
   useDocument,
@@ -27,7 +30,6 @@ import { FileIcon, FilterIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
   Button as ButtonAntd,
-  Checkbox,
   ConfigProvider,
   DatePicker,
   Modal,
@@ -38,15 +40,17 @@ import {
   UploadFile,
   message,
 } from "antd";
+import { DefaultOptionType } from "antd/es/cascader";
 import { FilterValue } from "antd/es/table/interface";
 import Link from "next/link";
-import { Key, SetStateAction, useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 export default function HistoryPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
   const [isShowDelete, setIsShowDelete] = useState<DeleteDocumentModal>({
     open: false,
@@ -89,9 +93,26 @@ export default function HistoryPage() {
       search: "",
       date: "",
       status: [],
-      role: [],
+      filter_approval: [],
     },
   });
+
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+
+  useEffect(() => {
+    const fetchDataTag = () => {
+      setDataTag(
+        dataListTag.data.data.data.map((itemTag: TagType) => ({
+          label: itemTag.name,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    if (dataListTag) {
+      fetchDataTag();
+    }
+  }, [dataListTag]);
 
   const {
     control: controlApproveRejectEdit,
@@ -231,7 +252,8 @@ export default function HistoryPage() {
     query: {
       search: debounceSearch,
       status: (getValuesFilter("status") ?? [""]).join(","),
-      role: (getValuesFilter("role") ?? [""]).join(","),
+      filter_tag: (getValuesFilter("filter_tag") ?? [""]).join(","),
+      filter_approval: (getValuesFilter("filter_approval") ?? [""]).join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: useOrderTableParams(tableParams),
@@ -291,22 +313,14 @@ export default function HistoryPage() {
     },
   ];
 
-  const optionsRole = [
+  const optionsApproval = [
     {
-      label: "Owner",
-      value: "Owner",
+      label: "Approved",
+      value: "approved",
     },
     {
-      label: "Collaborator",
-      value: "Collaborator",
-    },
-    {
-      label: "Authorizer",
-      value: "Authorizer",
-    },
-    {
-      label: "Recipient",
-      value: "Recipient",
+      label: "Rejected",
+      value: "rejected",
     },
   ];
 
@@ -458,7 +472,7 @@ export default function HistoryPage() {
             columns={columns}
             dataSource={dataListDocument}
             scroll={{ x: 1500 }}
-            loading={isPendingDocument}
+            loading={isPendingDocument || isPendingTag}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
@@ -506,73 +520,78 @@ export default function HistoryPage() {
         }
       >
         <div>
-          <Text label="Updated at" className="mb-2 text-lg font-semibold text-black" />
-          <Controller
-            control={controlFilter}
-            name="date"
-            render={({ field: { onChange, value } }: any) => {
-              return (
-                <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
-              );
-            }}
-          />
-
-          <Text label="Status" className="mb-2 mt-4 text-lg font-semibold text-black" />
-
-          <div className="p-2 border border-black rounded-md mb-4">
+          <div className="mb-2">
+            <Text label="Updated at" className="mb-2 text-lg font-semibold text-black" />
             <Controller
               control={controlFilter}
-              name="status"
-              render={({ field: { onChange, value } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                      colorPrimaryBorder: "#2379AA",
-                      colorPrimaryHover: "#2379AA",
-                    },
-                  }}
-                >
-                  <Checkbox.Group value={value} onChange={onChange}>
-                    <div className="flex flex-col">
-                      {optionsStatus.map((item) => (
-                        <Checkbox key={item.value} value={item.label}>
-                          {item.label}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </Checkbox.Group>
-                </ConfigProvider>
+              name="date"
+              render={({ field: { onChange, value } }: any) => {
+                return (
+                  <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+                );
+              }}
+            />
+          </div>
+
+          <div className="mb-2">
+            <Controller
+              control={controlFilter}
+              name="filter_tag"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Select
+                  mode="multiple"
+                  name="filter_tag"
+                  onChange={onChange}
+                  options={dataTag}
+                  tokenSeparators={[","]}
+                  value={value}
+                  styleSelect={{ width: "100%" }}
+                  error={error}
+                  label="Tags"
+                  classNameLabel="block text-lg font-semibold text-black"
+                />
               )}
             />
           </div>
 
-          <Text label="Role" className="mb-2 text-lg font-semibold text-black" />
-
-          <div className="p-2 border border-black rounded-md mb-4">
+          <div className="mb-2">
             <Controller
               control={controlFilter}
-              name="role"
-              render={({ field: { onChange, value } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                      colorPrimaryBorder: "#2379AA",
-                      colorPrimaryHover: "#2379AA",
-                    },
-                  }}
-                >
-                  <Checkbox.Group value={value} onChange={onChange}>
-                    <div className="flex flex-col">
-                      {optionsRole.map((item) => (
-                        <Checkbox key={item.value} value={item.label}>
-                          {item.label}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </Checkbox.Group>
-                </ConfigProvider>
+              name="status"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Select
+                  name="status"
+                  mode="multiple"
+                  tokenSeparators={[","]}
+                  options={optionsStatus}
+                  onChange={onChange}
+                  value={value}
+                  error={error}
+                  styleSelect={{ width: "100%" }}
+                  label="Status"
+                  classNameLabel="block text-lg font-semibold text-black"
+                />
+              )}
+            />
+          </div>
+
+          <div className="mb-2">
+            <Controller
+              control={controlFilter}
+              name="filter_approval"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Select
+                  name="filter_approval"
+                  mode="multiple"
+                  tokenSeparators={[","]}
+                  options={optionsApproval}
+                  onChange={onChange}
+                  value={value}
+                  error={error}
+                  styleSelect={{ width: "100%" }}
+                  label="Approval"
+                  classNameLabel="block text-lg font-semibold text-black"
+                />
               )}
             />
           </div>

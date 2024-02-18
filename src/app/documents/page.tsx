@@ -3,44 +3,46 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
+import { UseBgColorAction } from "@/hook/useBgColorAction";
+import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { FormFilterValues, RoleType } from "@/interface/common";
+import { useOrderTableParams } from "@/hook/useOrderTableParams";
+import { FormFilterValues, RoleType, TagType } from "@/interface/common";
 import {
   DataResDocument,
   DeleteDocumentModal,
   DocumentTagsType,
   FormFilterValuesDocuments,
 } from "@/interface/documents.interface";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import { useDeleteBulkDocument, useDocument } from "@/services/document/useDocument";
 import { useRole } from "@/services/role/useRole";
 import { FileIcon, FilterIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
 import {
-  Checkbox,
   ConfigProvider,
   DatePicker,
   Modal,
   Spin,
   Table,
+  TablePaginationConfig,
   TableProps,
   message,
-  TablePaginationConfig,
 } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
+import { FilterValue } from "antd/es/table/interface";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useOrderTableParams } from "@/hook/useOrderTableParams";
-import { UseBgColorStatus } from "@/hook/useBgColorStatus";
-import { UseBgColorAction } from "@/hook/useBgColorAction";
-import { FilterValue } from "antd/es/table/interface";
 
 export default function DocumentsPage() {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
   const [isShowDelete, setIsShowDelete] = useState<DeleteDocumentModal>({
     open: false,
@@ -72,27 +74,45 @@ export default function DocumentsPage() {
     defaultValues: {
       search: "",
       date: "",
+      filter_type: "",
       status: [],
-      currentUserRole: "",
+      filter_tag: [],
+      latest_action_filter: [],
     },
   });
 
   const { data: dataListRole, isPending: isPendingRole } = useRole();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
 
   useEffect(() => {
+    const fetchDataTag = () => {
+      setDataTag(
+        dataListTag.data.data.data.map((itemTag: TagType) => ({
+          label: itemTag.name,
+          value: itemTag.id,
+        }))
+      );
+    };
+
     const fetchDataRole = () => {
       setDataRole(
-        dataListRole.data.data.map((itemRole: RoleType) => ({
-          label: itemRole.levelName,
-          value: itemRole.id,
-        }))
+        dataListRole.data.data
+          .filter((filterRole: RoleType) => !["Super Admin"].includes(filterRole.levelName))
+          .map((itemRole: RoleType) => ({
+            label: itemRole.levelName,
+            value: itemRole.id,
+          }))
       );
     };
 
     if (dataListRole) {
       fetchDataRole();
     }
-  }, [dataListRole]);
+
+    if (dataListTag) {
+      fetchDataTag();
+    }
+  }, [dataListTag, dataListRole]);
 
   const columns: TableProps<DataResDocument>["columns"] = [
     {
@@ -235,8 +255,10 @@ export default function DocumentsPage() {
   } = useDocument({
     query: {
       search: debounceSearch,
+      filter_type: getValuesFilter("filter_type") ?? "",
       status: (getValuesFilter("status") ?? [""]).join(","),
-      currentUserRole: getValuesFilter("currentUserRole"),
+      filter_tag: (getValuesFilter("filter_tag") ?? [""]).join(","),
+      latest_action_filter: (getValuesFilter("latest_action_filter") ?? [""]).join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: useOrderTableParams(tableParams),
@@ -271,27 +293,46 @@ export default function DocumentsPage() {
   const optionsStatus = [
     {
       label: "Uploaded",
-      value: "Uploaded",
+      value: "uploaded",
     },
     {
       label: "Updated",
-      value: "Updated",
+      value: "updated",
     },
     {
       label: "Partially Approved",
-      value: "Partially Approved",
+      value: "partially approved",
     },
     {
       label: "Fully Approved",
-      value: "Fully Approved",
+      value: "fully approved",
     },
     {
       label: "Partially Processed",
-      value: "Partially Processed",
+      value: "partially processed",
     },
     {
       label: "Fully Processed",
-      value: "Fully Processed",
+      value: "fully processed",
+    },
+  ];
+
+  const optionsLatestAction = [
+    {
+      label: "Pending",
+      value: "pending",
+    },
+    {
+      label: "Approved",
+      value: "approved",
+    },
+    {
+      label: "Rejected",
+      value: "rejected",
+    },
+    {
+      label: "Processed",
+      value: "processed",
     },
   ];
 
@@ -349,7 +390,7 @@ export default function DocumentsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(tableParams)]);
 
-  const isLoading = isPendingRole;
+  const isLoading = isPendingRole || isPendingTag;
 
   return (
     <div className="p-6">
@@ -486,56 +527,88 @@ export default function DocumentsPage() {
         }
       >
         <div>
-          <Text label="Updated at" className="mb-2 text-lg font-semibold text-black" />
-          <Controller
-            control={controlFilter}
-            name="date"
-            render={({ field: { onChange, value } }: any) => {
-              return (
-                <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
-              );
-            }}
-          />
-
-          <Text label="Status" className="mb-2 mt-4 text-lg font-semibold text-black" />
-
-          <div className="p-2 border border-black rounded-md mb-4">
+          <div className="mb-2">
+            <Text label="Updated at" className="mb-2 text-lg font-semibold text-black" />
             <Controller
               control={controlFilter}
-              name="status"
-              render={({ field: { onChange, value } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                      colorPrimaryBorder: "#2379AA",
-                      colorPrimaryHover: "#2379AA",
-                    },
-                  }}
-                >
-                  <Checkbox.Group value={value} onChange={onChange}>
-                    <div className="flex flex-col">
-                      {optionsStatus.map((item) => (
-                        <Checkbox key={item.value} value={item.label}>
-                          {item.label}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </Checkbox.Group>
-                </ConfigProvider>
+              name="date"
+              render={({ field: { onChange, value } }: any) => {
+                return (
+                  <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+                );
+              }}
+            />
+          </div>
+
+          <div className="mb-2">
+            <Controller
+              control={controlFilter}
+              name="filter_tag"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Select
+                  mode="multiple"
+                  name="filter_tag"
+                  onChange={onChange}
+                  options={dataTag}
+                  tokenSeparators={[","]}
+                  value={value}
+                  styleSelect={{ width: "100%" }}
+                  error={error}
+                  label="Tags"
+                  classNameLabel="block text-lg font-semibold text-black"
+                />
               )}
             />
           </div>
 
-          <Text label="Role" className="mb-2 text-lg font-semibold text-black" />
-
-          <div className="p-2 border border-black rounded-md mb-4">
+          <div className="mb-2">
             <Controller
               control={controlFilter}
-              name="currentUserRole"
+              name="status"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Select
-                  name="currentUserRole"
+                  name="status"
+                  mode="multiple"
+                  tokenSeparators={[","]}
+                  options={optionsStatus}
+                  onChange={onChange}
+                  value={value}
+                  error={error}
+                  styleSelect={{ width: "100%" }}
+                  label="Status"
+                  classNameLabel="block text-lg font-semibold text-black"
+                />
+              )}
+            />
+          </div>
+
+          <div className="mb-2">
+            <Controller
+              control={controlFilter}
+              name="latest_action_filter"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Select
+                  name="latest_action_filter"
+                  mode="multiple"
+                  tokenSeparators={[","]}
+                  options={optionsLatestAction}
+                  onChange={onChange}
+                  value={value}
+                  styleSelect={{ width: "100%" }}
+                  label="Latest action"
+                  classNameLabel="block text-lg font-semibold text-black"
+                />
+              )}
+            />
+          </div>
+
+          <div className="mb-2">
+            <Controller
+              control={controlFilter}
+              name="filter_type"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Select
+                  name="filter_type"
                   options={dataRole}
                   onChange={onChange}
                   value={value}

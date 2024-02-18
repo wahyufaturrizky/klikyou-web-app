@@ -9,7 +9,7 @@ import { Key } from "react";
 import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export interface FormFilterValuesDocuments extends FormFilterValues {
-  currentUserRole: string;
+  latest_action_filter?: string[];
 }
 
 export interface MakersType {

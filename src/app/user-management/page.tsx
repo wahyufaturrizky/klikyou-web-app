@@ -374,7 +374,7 @@ export default function UserManagementPage() {
             columns={columns}
             dataSource={dataListUser}
             scroll={{ x: 1500 }}
-            loading={isPendingUserManagement}
+            loading={isPendingUserManagement || isPendingRole || isPendingUserTag}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
@@ -438,9 +438,6 @@ export default function UserManagementPage() {
           <div className="mb-2">
             <Controller
               control={controlFilter}
-              rules={{
-                required: "tags is required",
-              }}
               name="filter_tag"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Select
@@ -451,7 +448,6 @@ export default function UserManagementPage() {
                   tokenSeparators={[","]}
                   value={value}
                   styleSelect={{ width: "100%" }}
-                  required
                   error={error}
                   label="Tags"
                   classNameLabel="block text-lg font-semibold text-black"
@@ -463,9 +459,6 @@ export default function UserManagementPage() {
           <div className="mb-2">
             <Controller
               control={controlFilter}
-              rules={{
-                required: "role is required",
-              }}
               name="filter_type"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Select
@@ -474,7 +467,6 @@ export default function UserManagementPage() {
                   onChange={onChange}
                   value={value}
                   styleSelect={{ width: "100%" }}
-                  required
                   label="Role"
                   classNameLabel="block text-lg font-semibold text-black"
                 />

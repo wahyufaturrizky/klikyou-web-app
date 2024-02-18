@@ -2,6 +2,7 @@
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
+import Select from "@/components/Select";
 import Text from "@/components/Text";
 import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
@@ -11,32 +12,35 @@ import {
   ApproveRejectProcessModal,
   FormApproveRejectProcessValues,
   FormFilterValues,
+  TagType,
 } from "@/interface/common";
 import { DataResDocument, DocumentTagsType } from "@/interface/documents.interface";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import { useDocument, useDocumentApproveRejectProcess } from "@/services/document/useDocument";
 import { DownloadIcon, FilterIcon, PeopleCheckIcon, SearchIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
 import {
   Button as ButtonAntd,
-  Checkbox,
   ConfigProvider,
   DatePicker,
   Modal,
   Table,
+  TablePaginationConfig,
   TableProps,
   Upload,
-  message,
   UploadFile,
-  TablePaginationConfig,
+  message,
 } from "antd";
-import Link from "next/link";
-import { Key, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { DefaultOptionType } from "antd/es/cascader";
 import { FilterValue } from "antd/es/table/interface";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 export default function ToDoPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -69,10 +73,26 @@ export default function ToDoPage() {
     defaultValues: {
       search: "",
       date: "",
-      status: [],
-      role: [],
+      filter_approval: [],
     },
   });
+
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+
+  useEffect(() => {
+    const fetchDataTag = () => {
+      setDataTag(
+        dataListTag.data.data.data.map((itemTag: TagType) => ({
+          label: itemTag.name,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    if (dataListTag) {
+      fetchDataTag();
+    }
+  }, [dataListTag]);
 
   const {
     control: controlApproveRejectEdit,
@@ -215,8 +235,7 @@ export default function ToDoPage() {
     action: "receival",
     query: {
       search: debounceSearch,
-      status: (getValuesFilter("status") ?? [""]).join(","),
-      role: (getValuesFilter("role") ?? [""]).join(","),
+      filter_tag: (getValuesFilter("filter_tag") ?? [""]).join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: useOrderTableParams(tableParams),
@@ -248,52 +267,6 @@ export default function ToDoPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataDocument]);
-
-  const optionsStatus = [
-    {
-      label: "Uploaded",
-      value: "Uploaded",
-    },
-    {
-      label: "Updated",
-      value: "Updated",
-    },
-    {
-      label: "Partially Approved",
-      value: "Partially Approved",
-    },
-    {
-      label: "Fully Approved",
-      value: "Fully Approved",
-    },
-    {
-      label: "Partially Processed",
-      value: "Partially Processed",
-    },
-    {
-      label: "Fully Processed",
-      value: "Fully Processed",
-    },
-  ];
-
-  const optionsRole = [
-    {
-      label: "Owner",
-      value: "Owner",
-    },
-    {
-      label: "Collaborator",
-      value: "Collaborator",
-    },
-    {
-      label: "Authorizer",
-      value: "Authorizer",
-    },
-    {
-      label: "Recipient",
-      value: "Recipient",
-    },
-  ];
 
   const onSubmitFilter = (data: FormFilterValues) => {
     refetchDocument();
@@ -388,7 +361,7 @@ export default function ToDoPage() {
           <Table
             columns={columns}
             dataSource={dataListDocument}
-            loading={isPendingDocument}
+            loading={isPendingDocument || isPendingTag}
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowKey={(record) => record.id}
@@ -435,73 +408,36 @@ export default function ToDoPage() {
         }
       >
         <div>
-          <Text label="Updated at" className="mb-2 text-lg font-semibold text-black" />
-          <Controller
-            control={controlFilter}
-            name="date"
-            render={({ field: { onChange, value } }: any) => {
-              return (
-                <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
-              );
-            }}
-          />
-
-          <Text label="Status" className="mb-2 mt-4 text-lg font-semibold text-black" />
-
-          <div className="p-2 border border-black rounded-md mb-4">
+          <div className="mb-2">
+            <Text label="Updated at" className="mb-2 text-lg font-semibold text-black" />
             <Controller
               control={controlFilter}
-              name="status"
-              render={({ field: { onChange, value } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                      colorPrimaryBorder: "#2379AA",
-                      colorPrimaryHover: "#2379AA",
-                    },
-                  }}
-                >
-                  <Checkbox.Group value={value} onChange={onChange}>
-                    <div className="flex flex-col">
-                      {optionsStatus.map((item) => (
-                        <Checkbox key={item.value} value={item.label}>
-                          {item.label}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </Checkbox.Group>
-                </ConfigProvider>
-              )}
+              name="date"
+              render={({ field: { onChange, value } }: any) => {
+                return (
+                  <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+                );
+              }}
             />
           </div>
 
-          <Text label="Role" className="mb-2 text-lg font-semibold text-black" />
-
-          <div className="p-2 border border-black rounded-md mb-4">
+          <div className="mb-2">
             <Controller
               control={controlFilter}
-              name="role"
-              render={({ field: { onChange, value } }) => (
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#0AADE0",
-                      colorPrimaryBorder: "#2379AA",
-                      colorPrimaryHover: "#2379AA",
-                    },
-                  }}
-                >
-                  <Checkbox.Group value={value} onChange={onChange}>
-                    <div className="flex flex-col">
-                      {optionsRole.map((item) => (
-                        <Checkbox key={item.value} value={item.label}>
-                          {item.label}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </Checkbox.Group>
-                </ConfigProvider>
+              name="filter_tag"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Select
+                  mode="multiple"
+                  name="filter_tag"
+                  onChange={onChange}
+                  options={dataTag}
+                  tokenSeparators={[","]}
+                  value={value}
+                  styleSelect={{ width: "100%" }}
+                  error={error}
+                  label="Tags"
+                  classNameLabel="block text-lg font-semibold text-black"
+                />
               )}
             />
           </div>
