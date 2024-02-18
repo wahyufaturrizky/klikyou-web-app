@@ -4,14 +4,12 @@ export const UseBgColorAction = (val: string) => {
       return "bg-red";
     } else if (val?.includes("Approved")) {
       return "bg-green";
-    } else if (val?.includes("Updated")) {
+    } else if (val?.includes("Updated") || val?.includes("update")) {
       return "bg-warn";
-    } else if (val?.includes("Uploaded")) {
-      return "bg-link";
-    } else if (val?.includes("upload")) {
-      return "bg-link";
-    } else if (val?.includes("pending")) {
+    } else if (val?.includes("Uploaded") || val?.includes("upload") || val?.includes("pending")) {
       return "bg-link";
     }
+  } else {
+    return "";
   }
 };

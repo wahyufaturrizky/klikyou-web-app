@@ -690,6 +690,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                         "document_collaborator_id",
                         "latestApproval",
                         "document_note",
+                        "action",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -772,6 +773,7 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                         "latestApproval",
                         "document_note",
                         "document_authorizer_id",
+                        "action",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -1127,39 +1129,48 @@ export default function ViewEditDocumentPage({ params }: { params: { id: string 
                 required: "Document name is required",
               }}
               name="document_path"
-              render={({ field: { onChange } }) => {
+              render={({ field: { onChange }, fieldState: { error } }) => {
                 return (
-                  <ConfigProvider
-                    theme={{
-                      token: {
-                        colorPrimary: "#0AADE0",
-                      },
-                    }}
-                  >
-                    <Upload
-                      multiple={false}
-                      maxCount={1}
-                      fileList={fileList}
-                      name="document_path"
-                      headers={{
-                        authorization: "authorization-text",
-                      }}
-                      onChange={(info) => {
-                        setFileList(info.fileList);
-                        if (info.file.status !== "uploading") {
-                          console.log(info.file, info.fileList);
-                        }
-                        if (info.file.status === "done") {
-                          onChange(info);
-                          message.success(`${info.file.name} file uploaded successfully`);
-                        } else if (info.file.status === "error") {
-                          message.error(`${info.file.name} file upload failed.`);
-                        }
+                  <div>
+                    <ConfigProvider
+                      theme={{
+                        token: {
+                          colorPrimary: "#0AADE0",
+                        },
                       }}
                     >
-                      <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
-                    </Upload>
-                  </ConfigProvider>
+                      <Upload
+                        multiple={false}
+                        maxCount={1}
+                        fileList={fileList}
+                        name="document_path"
+                        headers={{
+                          authorization: "authorization-text",
+                        }}
+                        onChange={(info) => {
+                          setFileList(info.fileList);
+                          if (info.file.status !== "uploading") {
+                            console.log(info.file, info.fileList);
+                          }
+                          if (info.file.status === "done") {
+                            onChange(info);
+                            message.success(`${info.file.name} file uploaded successfully`);
+                          } else if (info.file.status === "error") {
+                            message.error(`${info.file.name} file upload failed.`);
+                          }
+                        }}
+                      >
+                        <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
+                      </Upload>
+                    </ConfigProvider>
+
+                    {error && (
+                      <Text
+                        className="text-[#EB5757] font-roboto mt-2 font-bold text-sm"
+                        label={String(error.message)}
+                      />
+                    )}
+                  </div>
                 );
               }}
             />

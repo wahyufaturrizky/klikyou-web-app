@@ -14,5 +14,7 @@ export const UseBgColorStatus = (val: string) => {
     } else if (val?.includes("Fully Processed")) {
       return "bg-primary-purple";
     }
+  } else {
+    return "";
   }
 };

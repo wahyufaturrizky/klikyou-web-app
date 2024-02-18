@@ -668,6 +668,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "document_collaborator_id",
                         "latestApproval",
                         "document_note",
+                        "action",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -738,6 +739,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "latestApproval",
                         "document_note",
                         "document_authorizer_id",
+                        "action",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
