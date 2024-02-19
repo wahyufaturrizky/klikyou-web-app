@@ -327,7 +327,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       render: (text: string) => {
         return (
           <div
-            onClick={() => window.open(text, "_blank")}
+            onClick={() => text && window.open(text, "_blank")}
             className="flex items-center gap-2 cursor-pointer"
           >
             <DownloadIcon
@@ -350,7 +350,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       render: (text: string) => {
         return (
           <div
-            onClick={() => window.open(text, "_blank")}
+            onClick={() => text && window.open(text, "_blank")}
             className="flex items-center gap-2 cursor-pointer"
           >
             <FileIcon
