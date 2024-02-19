@@ -664,12 +664,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                       : getValues("document_path")}
                   </Link>
                 </div>
-
-                <Text label="Note" className="text-xl font-semibold text-black" />
-                <Text
-                  label={getValues("document_note")}
-                  className="text-base font-normal text-black"
-                />
               </div>
 
               <div className="w-1/2">
