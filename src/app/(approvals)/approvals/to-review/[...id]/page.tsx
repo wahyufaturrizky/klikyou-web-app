@@ -639,7 +639,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                     className="mb-2 text-lg font-semibold text-black"
                   />
                   <Link rel="noopener noreferrer" target="_blank" href={getValues("document_path")}>
-                    {getValues("document_path")}
+                    {getValues("document_path")?.file?.name
+                      ? getValues("document_path")?.file?.name
+                      : getValues("document_path")}
                   </Link>
                 </div>
 

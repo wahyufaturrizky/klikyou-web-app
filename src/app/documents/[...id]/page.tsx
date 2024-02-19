@@ -517,7 +517,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "document_path",
                         "document_note",
                         "action",
-                        "document_path",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -582,7 +581,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "status",
                         "document_tag_id",
                         "document_note",
-                        "document_path",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -693,7 +691,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "latestApproval",
                         "document_note",
                         "action",
-                        "document_path",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -777,7 +774,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "document_note",
                         "document_authorizer_id",
                         "action",
-                        "document_path",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
