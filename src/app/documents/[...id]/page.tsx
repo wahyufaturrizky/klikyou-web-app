@@ -75,6 +75,12 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     data: null,
   });
 
+  const [stateViewNoteAndFileVersionModal, setStateViewNoteAndFileVersionModal] =
+    useState<EditDocumentsModal>({
+      open: false,
+      data: null,
+    });
+
   const [stateEditRecipientAndProcessModal, setStateEditRecipientAndProcessModal] =
     useState<EditDocumentsModal>({
       open: false,
@@ -345,10 +351,16 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       title: "Note",
       dataIndex: "supportingDocumentNote",
       key: "supportingDocumentNote",
-      render: (text: string) => {
+      render: (text: string, record: DataTypeActionHistory) => {
         return (
           <div className="flex items-center gap-2 cursor-pointer">
             <OpenIcon
+              onClick={() =>
+                setStateViewNoteAndFileVersionModal({
+                  open: true,
+                  data: record,
+                })
+              }
               style={{
                 height: 32,
                 width: 32,
@@ -1217,6 +1229,57 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                 />
               )}
             />
+          </div>
+        </div>
+      </Modal>
+
+      {/* Notes and file version history */}
+      <Modal
+        title="Note detail"
+        open={stateViewNoteAndFileVersionModal.open}
+        onCancel={() => {
+          setStateViewNoteAndFileVersionModal({
+            open: false,
+            data: null,
+          });
+        }}
+        footer={
+          <div className="flex justify-end items-center">
+            <div className="flex gap-4 items-center">
+              <Button
+                type="button"
+                onClick={() => {
+                  setStateViewNoteAndFileVersionModal({
+                    open: false,
+                    data: null,
+                  });
+                }}
+                label="Cancel"
+                className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              />
+            </div>
+          </div>
+        }
+      >
+        <div>
+          <div className="mb-6">
+            <Text label="Note" className="text-xl font-semibold text-black" />
+            <Text
+              label={stateViewNoteAndFileVersionModal?.data?.supportingDocumentNote}
+              className="text-base font-normal text-black"
+            />
+          </div>
+
+          <div className="mb-6">
+            <Text label="Supporting files" className="mb-2 text-lg font-semibold text-black" />
+
+            <Link
+              rel="noopener noreferrer"
+              target="_blank"
+              href={stateViewNoteAndFileVersionModal?.data?.supportingDocumentPath || ""}
+            >
+              {stateViewNoteAndFileVersionModal?.data?.supportingDocumentPath}
+            </Link>
           </div>
         </div>
       </Modal>

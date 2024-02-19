@@ -13,13 +13,14 @@ import {
   DocumentTagsType,
   FormDocumentValues,
   UserListType,
+  EditDocumentsModal,
 } from "@/interface/documents.interface";
 import { ColumnsType } from "@/interface/user-management.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import { useDocumentById } from "@/services/document/useDocument";
 import { useUserList } from "@/services/user-list/useUserList";
 import { BackIcon, DownloadIcon, FileIcon, OpenIcon, ProtectIcon } from "@/style/icon";
-import { ConfigProvider, Spin, Table, TableProps, message } from "antd";
+import { ConfigProvider, Spin, Table, TableProps, message, Modal } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -33,6 +34,11 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const { id } = params;
 
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [stateViewNoteAndFileVersionModal, setStateViewNoteAndFileVersionModal] =
+    useState<EditDocumentsModal>({
+      open: false,
+      data: null,
+    });
   const [dataInfo, setDataInfo] = useState<DataInfoDocumentType[]>([]);
   const [dataLogHistory, setDataLogHistory] = useState<DataTypeActionHistory[]>([]);
 
@@ -234,7 +240,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       title: "Note",
       dataIndex: "supportingDocumentNote",
       key: "supportingDocumentNote",
-      render: (text: string) => {
+      render: (text: string, record: DataTypeActionHistory) => {
         return (
           <div className="flex items-center gap-2 cursor-pointer">
             <OpenIcon
@@ -243,6 +249,12 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                 width: 32,
                 color: "#2166E9",
               }}
+              onClick={() =>
+                setStateViewNoteAndFileVersionModal({
+                  open: true,
+                  data: record,
+                })
+              }
             />
 
             <Text label={text} className="text-base font-normal text-black" />
@@ -740,6 +752,57 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
           </ConfigProvider>
         </div>
       </div>
+
+      {/* Notes and file version history */}
+      <Modal
+        title="Note detail"
+        open={stateViewNoteAndFileVersionModal.open}
+        onCancel={() => {
+          setStateViewNoteAndFileVersionModal({
+            open: false,
+            data: null,
+          });
+        }}
+        footer={
+          <div className="flex justify-end items-center">
+            <div className="flex gap-4 items-center">
+              <Button
+                type="button"
+                onClick={() => {
+                  setStateViewNoteAndFileVersionModal({
+                    open: false,
+                    data: null,
+                  });
+                }}
+                label="Cancel"
+                className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              />
+            </div>
+          </div>
+        }
+      >
+        <div>
+          <div className="mb-6">
+            <Text label="Note" className="text-xl font-semibold text-black" />
+            <Text
+              label={stateViewNoteAndFileVersionModal?.data?.supportingDocumentNote}
+              className="text-base font-normal text-black"
+            />
+          </div>
+
+          <div className="mb-6">
+            <Text label="Supporting files" className="mb-2 text-lg font-semibold text-black" />
+
+            <Link
+              rel="noopener noreferrer"
+              target="_blank"
+              href={stateViewNoteAndFileVersionModal?.data?.supportingDocumentPath || ""}
+            >
+              {stateViewNoteAndFileVersionModal?.data?.supportingDocumentPath}
+            </Link>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

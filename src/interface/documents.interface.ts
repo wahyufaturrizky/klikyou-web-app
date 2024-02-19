@@ -141,7 +141,7 @@ export interface DataInfoType {
 
 export interface EditDocumentsModal {
   open: boolean;
-  data?: null;
+  data?: any;
 }
 
 interface CreatedByDocumentType {
