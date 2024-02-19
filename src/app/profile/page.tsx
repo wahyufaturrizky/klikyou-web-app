@@ -82,7 +82,7 @@ export default function ProfilePage() {
       setValue("avatar_path", dataRaw?.avatarPath);
       setValue("first_name", dataRaw?.firstName);
       setValue("last_name", dataRaw?.lastName);
-      setValue("tags", JSON.parse(dataRaw?.tags));
+      setValue("tags", dataRaw?.tags);
       setValue("role_id", dataRaw?.role.id);
       setValue("username", dataRaw?.username);
       setValue("email", dataRaw?.email);
@@ -118,7 +118,7 @@ export default function ProfilePage() {
               width={32}
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px]"
+              className="h-[32px] w-[32px] rounded-full object-cover"
             />
             <Text label={text} className="text-base font-normal text-black" />
           </div>
@@ -143,7 +143,7 @@ export default function ProfilePage() {
               width={32}
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px]"
+              className="h-[32px] w-[32px] rounded-full object-cover"
             />
             <Text label={text} className="text-base font-normal text-black" />
           </div>
@@ -254,7 +254,7 @@ export default function ProfilePage() {
                                 width={100}
                                 height={100}
                                 alt="logo-klikyou"
-                                className="h-[100px] w-[100px] rounded-full"
+                                className="h-[100px] w-[100px] rounded-full object-cover"
                               />
                             ) : (
                               uploadButton
@@ -277,7 +277,7 @@ export default function ProfilePage() {
                       priority={true}
                       height={100}
                       alt="logo-klikyou"
-                      className="h-[100px] w-[100px] rounded-full"
+                      className="h-[100px] w-[100px] rounded-full object-cover"
                     />
                   )}
                 </div>

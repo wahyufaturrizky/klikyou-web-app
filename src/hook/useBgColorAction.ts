@@ -7,7 +7,7 @@ export const UseBgColorAction = (val: string) => {
     } else if (val?.includes("Updated") || val?.includes("update")) {
       return "bg-warn";
     } else if (val?.includes("Uploaded") || val?.includes("upload") || val?.includes("pending")) {
-      return "bg-link";
+      return "bg-gray-dark";
     }
   } else {
     return "";

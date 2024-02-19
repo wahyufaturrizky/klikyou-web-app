@@ -196,7 +196,7 @@ export default function AddProfilePage() {
                               width={100}
                               height={100}
                               alt="logo-klikyou"
-                              className="h-[100px] w-[100px] rounded-full"
+                              className="h-[100px] w-[100px] rounded-full object-cover"
                             />
                           ) : (
                             uploadButton

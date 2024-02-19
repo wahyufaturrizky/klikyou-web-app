@@ -108,7 +108,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
             height={139}
             priority
             alt="logo-klikyou"
-            className="mx-auto h-auto w-[270px]"
+            className="mx-auto h-auto w-[270px] object-cover"
           />
 
           <Text
@@ -207,7 +207,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                       height={48}
                       priority
                       alt="placeholder"
-                      className="w-auto h-auto rounded-full"
+                      className="w-auto h-auto rounded-full object-cover"
                     />
 
                     <div>

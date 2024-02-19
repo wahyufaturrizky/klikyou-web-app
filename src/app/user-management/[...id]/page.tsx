@@ -114,7 +114,7 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
               priority
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px] rounded-full"
+              className="h-[32px] w-[32px] rounded-full object-cover"
             />
             <Text label={text} className="text-base font-normal text-black" />
           </div>
@@ -140,7 +140,7 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
               priority
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px] rounded-full"
+              className="h-[32px] w-[32px] rounded-full object-cover"
             />
             <Text label={text} className="text-base font-normal text-black" />
           </div>
@@ -228,7 +228,7 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
       setValue("avatar_path", avatarPath);
       setValue("first_name", firstName);
       setValue("last_name", lastName);
-      setValue("tags", JSON.parse(tags));
+      setValue("tags", tags);
       setValue("role_id", role.id);
       setValue("username", username);
       setValue("email", email);
@@ -363,7 +363,7 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
                                 width={100}
                                 height={100}
                                 alt="logo-klikyou"
-                                className="h-[100px] w-[100px] rounded-full"
+                                className="h-[100px] w-[100px] rounded-full object-cover"
                               />
                             ) : (
                               uploadButton
@@ -385,7 +385,7 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
                       width={100}
                       height={100}
                       alt="logo-klikyou"
-                      className="h-[100px] w-[100px] rounded-full"
+                      className="h-[100px] w-[100px] rounded-full object-cover"
                     />
                   )}
                 </div>

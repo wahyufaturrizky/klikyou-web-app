@@ -208,7 +208,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               height={32}
               alt="logo-klikyou"
               priority
-              className="h-[32px] w-[32px] rounded-full"
+              className="h-[32px] w-[32px] rounded-full object-cover"
             />
             <Text label={text.username} className="text-base font-normal text-black" />
           </div>
@@ -317,7 +317,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               width={32}
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px] rounded-full"
+              className="h-[32px] w-[32px] rounded-full object-cover"
               priority
             />
             <Text label={text} className="text-base font-normal text-black" />
@@ -343,7 +343,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               width={32}
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px] rounded-full"
+              className="h-[32px] w-[32px] rounded-full object-cover"
               priority
             />
             <Text label={text} className="text-base font-normal text-black" />

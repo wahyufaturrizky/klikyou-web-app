@@ -129,7 +129,7 @@ export default function UserManagementPage() {
               width={32}
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px] rounded-full"
+              className="h-[32px] w-[32px] rounded-full object-cover"
             />
             <Link href={`/user-management/view/${id}`}>
               <Text label={`${firstName} ${lastName}`} className="text-base font-normal" />

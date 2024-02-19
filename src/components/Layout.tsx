@@ -1,15 +1,17 @@
 "use client";
 import { LayoutInterface, MenuItem } from "@/interface/Layout";
 
-import { DataAuthType } from "@/interface/login.interface";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import { NotificationType } from "@/interface/notification.interface";
 import { CompanyProfileType } from "@/interface/settings.interface";
+import { DataUserManagementType } from "@/interface/user-management.interface";
 import { useLogOut } from "@/services/auth/useAuth";
 import {
   useNotification,
-  useNotificationMarkReadAll,
   useNotificationById,
+  useNotificationMarkReadAll,
 } from "@/services/notification/useNotification";
+import { useProfile } from "@/services/profile/useProfile";
 import {
   ApprovalsIcon,
   BackIcon,
@@ -42,7 +44,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
-import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
@@ -54,7 +55,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
   const { lg, xl, xxl, xs } = screens;
 
   const router = useRouter();
-  const [userProfile, setUserProfile] = useState<DataAuthType>();
+  const [userProfile, setUserProfile] = useState<DataUserManagementType>();
   const [companyProfile, setCompanyProfile] = useState<CompanyProfileType>();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -65,17 +66,17 @@ const Layout = ({ ...props }: LayoutInterface) => {
   const [openKeys, setOpenKeys] = useState<string[] | undefined>();
   const [notifId, setNotifId] = useState<string>();
 
+  const { data: dataProfile, isPending: isPendingProfile } = useProfile();
+
   useEffect(() => {
     const handleFetchUserProfile = () => {
-      const rawUserProfile: string | null = localStorage.getItem("user_profile");
-
-      const dataUserProfile = JSON.parse(rawUserProfile ?? "{}");
-
-      setUserProfile(dataUserProfile);
+      setUserProfile(dataProfile?.data?.data);
     };
 
-    handleFetchUserProfile();
-  }, []);
+    if (dataProfile) {
+      handleFetchUserProfile();
+    }
+  }, [dataProfile]);
 
   useEffect(() => {
     const handleGetCurrentMenu = () => {
@@ -460,18 +461,25 @@ const Layout = ({ ...props }: LayoutInterface) => {
                 <Dropdown menu={{ items: itemsProfile }} trigger={["click"]}>
                   <div className="flex items-center gap-2 cursor-pointer">
                     <ImageNext
-                      src={"/placeholder-avatar-header.svg"}
+                      src={userProfile?.avatarPath ?? "/placeholder-profile.png"}
                       width={32}
                       height={32}
                       alt="placeholder-avatar-header"
-                      className="mx-auto h-auto w-auto"
+                      className="h-[32px] w-[32px] rounded-full object-cover"
                     />
                     <div>
                       <Text
                         className="text-black font-normal text-lg"
-                        label={userProfile?.username ?? ""}
+                        label={
+                          isPendingProfile
+                            ? "Loading..."
+                            : userProfile?.firstName + " " + userProfile?.lastName
+                        }
                       />
-                      <Text className="text-primary-gray font-bold text-xs" label="Super Admin" />
+                      <Text
+                        className="text-primary-gray font-bold text-xs"
+                        label={String(userProfile?.role?.levelName)}
+                      />
                     </div>
                   </div>
                 </Dropdown>

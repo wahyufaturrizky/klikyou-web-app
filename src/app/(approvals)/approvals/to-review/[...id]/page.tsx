@@ -230,7 +230,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
   const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =
     useDocumentApproveRejectProcess({
-      id: stateApproveAndRejectModal.data?.id,
+      id: id[1],
       action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
       options: {
         onSuccess: () => {
@@ -266,7 +266,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               height={32}
               alt="logo-klikyou"
               priority
-              className="h-[32px] w-[32px] rounded-full"
+              className="h-[32px] w-[32px] rounded-full object-cover"
             />
             <Text label={text.username} className="text-base font-normal text-black" />
           </div>
@@ -375,7 +375,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               width={32}
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px] rounded-full"
+              className="h-[32px] w-[32px] rounded-full object-cover"
               priority
             />
             <Text label={text} className="text-base font-normal text-black" />
@@ -401,7 +401,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               width={32}
               height={32}
               alt="logo-klikyou"
-              className="h-[32px] w-[32px] rounded-full"
+              className="h-[32px] w-[32px] rounded-full object-cover"
               priority
             />
             <Text label={text} className="text-base font-normal text-black" />
@@ -894,7 +894,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
               <Button
                 type="button"
-                label="Approve"
+                label={stateApproveAndRejectModal.type === "approve" ? "Approve" : "Reject"}
                 disabled={isPendingApproveRejectProcess}
                 loading={isPendingApproveRejectProcess}
                 onClick={handleSubmitApproveRejectEdit(onSubmitApproveRejectEdit)}
@@ -918,8 +918,10 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                   )
                 }
                 className={`${
-                  stateApproveAndRejectModal.type === "approve" ? "bg-green" : "bg-red"
-                } gap-2 text-white flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
+                  stateApproveAndRejectModal.type === "approve"
+                    ? "bg-green hover:bg-green/70 active:bg-green/90"
+                    : "bg-red hover:bg-red/70 active:bg-red/90"
+                } gap-2 text-white flex border justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
               />
             </div>
           </div>
