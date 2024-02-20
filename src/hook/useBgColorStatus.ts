@@ -5,6 +5,8 @@ export const UseBgColorStatus = (val: string) => {
     } else if (
       val?.includes("Waiting Approval") ||
       val?.includes("uploaded") ||
+      val?.includes("upload") ||
+      val?.includes("update") ||
       val?.includes("updated")
     ) {
       return "bg-gray-dark";

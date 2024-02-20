@@ -81,7 +81,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       type: "approve",
     });
 
-  const { setValue, watch, getValues } = useForm<FormDocumentValues>({
+  const { setValue, getValues } = useForm<FormDocumentValues>({
     defaultValues: {
       document_name: "",
       memoId: "",
@@ -192,9 +192,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
       setDataInfo([
         {
-          createdBy: createdBy?.username,
+          createdBy: `${createdBy?.firstName} ${createdBy?.lastName}`,
           createdAt: createdBy?.createdAt,
-          updatedBy: updatedBy?.username,
+          updatedBy: updatedBy ? `${updatedBy?.firstName} ${updatedBy?.lastName}` : "",
           updatedAt: updatedBy?.updatedAt,
           id: id,
           createdByAvatarPath: createdBy?.avatarPath,
@@ -274,7 +274,10 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               priority
               className="h-[32px] w-[32px] rounded-full object-cover"
             />
-            <Text label={text.username} className="text-base font-normal text-black" />
+            <Text
+              label={`${text.firstName} ${text.lastName}`}
+              className="text-base font-normal text-black"
+            />
           </div>
         );
       },
@@ -508,7 +511,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex gap-4">
               <div className="w-1/2">
-                {Object.keys(watch())
+                {Object.keys(getValues())
                   .filter(
                     (filtering) =>
                       ![
@@ -532,7 +535,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                       document_tag_id: "Tags",
                     };
 
-                    const valueMap: any = watch();
+                    const valueMap: any = getValues();
 
                     return (
                       <div className="mb-6" key={mapping}>
@@ -572,7 +575,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               </div>
 
               <div className="w-1/2">
-                {Object.keys(watch())
+                {Object.keys(getValues())
                   .filter(
                     (filtering) =>
                       ![
@@ -597,7 +600,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                       action: "Latest action",
                     };
 
-                    const valueMap: any = watch();
+                    const valueMap: any = getValues();
 
                     return (
                       <div className="mb-6" key={mapping}>
@@ -659,7 +662,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               </div>
 
               <div className="w-1/2">
-                {Object.keys(watch())
+                {Object.keys(getValues())
                   .filter(
                     (filtering) =>
                       ![
@@ -684,7 +687,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                       document_authorizer_id: "Authorizers",
                     };
 
-                    const valueMap: any = watch();
+                    const valueMap: any = getValues();
 
                     return (
                       <div className="mb-6" key={mapping}>
@@ -730,7 +733,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex gap-4">
               <div className="w-1/2">
-                {Object.keys(watch())
+                {Object.keys(getValues())
                   .filter(
                     (filtering) =>
                       ![
@@ -755,7 +758,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                       document_recipient_id: "Recipients",
                     };
 
-                    const valueMap: any = watch();
+                    const valueMap: any = getValues();
 
                     return (
                       <div className="mb-6" key={mapping}>
@@ -1013,9 +1016,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
             <Controller
               control={controlApproveRejectEdit}
-              rules={{
-                required: "Document is required",
-              }}
               name="supporting_document_path"
               render={({ field: { onChange }, fieldState: { error } }) => (
                 <div>

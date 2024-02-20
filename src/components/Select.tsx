@@ -14,6 +14,11 @@ const Select = ({
   options,
   styleSelect,
   tokenSeparators,
+  filterOption,
+  onSearch,
+  onBlur,
+  notFoundContent,
+  onFocus,
 }: SelectInterface) => {
   return (
     <div className="relative">
@@ -36,6 +41,11 @@ const Select = ({
             mode={mode}
             style={styleSelect}
             onChange={onChange}
+            onSearch={onSearch}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            notFoundContent={notFoundContent}
+            filterOption={filterOption}
             tokenSeparators={tokenSeparators}
             options={options}
             value={value}

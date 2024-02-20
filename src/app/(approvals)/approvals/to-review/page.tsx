@@ -697,9 +697,6 @@ export default function ToReviewPage() {
 
             <Controller
               control={controlApproveRejectEdit}
-              rules={{
-                required: "Document is required",
-              }}
               name="supporting_document_path"
               render={({ field: { onChange }, fieldState: { error } }) => {
                 return (

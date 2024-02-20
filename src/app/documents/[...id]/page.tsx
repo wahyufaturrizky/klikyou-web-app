@@ -50,6 +50,7 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import { UseBgColorAction } from "@/hook/useBgColorAction";
+import useDebounce from "@/hook/useDebounce";
 
 export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();
@@ -58,12 +59,17 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
   const [dataInfo, setDataInfo] = useState<DataInfoDocumentType[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+  const [searchTagDocument, setSearchTagDocument] = useState<string>("");
+
   const [dataLogHistory, setDataLogHistory] = useState<DataTypeActionHistory[]>([]);
 
   const [dataCollaborator, setDataCollaborator] = useState<DefaultOptionType[]>([]);
   const [dataAuthorizer, setDataAuthorizer] = useState<DefaultOptionType[]>([]);
   const [dataRecipient, setDataRecipient] = useState<DefaultOptionType[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
+
+  const debounceSearchTagDocument = useDebounce(searchTagDocument, 800);
 
   const [stateEditDocumentInfoModal, setStateEditDocumentInfoModal] = useState<EditDocumentsModal>({
     open: false,
@@ -87,7 +93,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       data: null,
     });
 
-  const { control, handleSubmit, setValue, watch, getValues } = useForm<FormDocumentValues>({
+  const { control, handleSubmit, setValue, getValues } = useForm<FormDocumentValues>({
     defaultValues: {
       document_name: "",
       memoId: "",
@@ -106,7 +112,11 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     },
   });
 
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags({
+    query: {
+      search: debounceSearchTagDocument,
+    },
+  });
   const { data: dataListUserList, isPending: isPendingUserList } = useUserList();
 
   useEffect(() => {
@@ -185,6 +195,8 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     delete data.id;
     delete data.action;
 
+    setSearchTagDocument("");
+
     const {
       document_name,
       document_number,
@@ -257,9 +269,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
       setDataInfo([
         {
-          createdBy: createdBy?.username,
+          createdBy: `${createdBy?.firstName} ${createdBy?.lastName}`,
           createdAt: createdBy?.createdAt,
-          updatedBy: updatedBy?.username,
+          updatedBy: updatedBy ? `${updatedBy?.firstName} ${updatedBy?.lastName}` : "",
           updatedAt: updatedBy?.updatedAt,
           id: id,
           createdByAvatarPath: createdBy?.avatarPath,
@@ -315,7 +327,10 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               priority
               className="h-[32px] w-[32px] rounded-full object-cover"
             />
-            <Text label={text.username} className="text-base font-normal text-black" />
+            <Text
+              label={`${text.firstName} ${text.lastName}`}
+              className="text-base font-normal text-black"
+            />
           </div>
         );
       },
@@ -325,24 +340,12 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       dataIndex: "action",
       key: "action",
       render: (text: string) => {
-        let bgColorAction = "";
-
-        if (text?.includes("Rejected")) {
-          bgColorAction = "bg-red";
-        } else if (text?.includes("Approved")) {
-          bgColorAction = "bg-green";
-        } else if (text?.includes("Updated")) {
-          bgColorAction = "bg-warn";
-        } else if (text?.includes("Uploaded")) {
-          bgColorAction = "bg-link";
-        } else if (text?.includes("pending")) {
-          bgColorAction = "bg-link";
-        }
-
         return (
           <Text
             label={text}
-            className={`text-base inline-block font-normal text-white py-1 px-2 rounded-full ${bgColorAction}`}
+            className={`text-base inline-block font-normal text-white py-1 px-2 rounded-full ${UseBgColorAction(
+              text
+            )}`}
           />
         );
       },
@@ -482,7 +485,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     },
   ];
 
-  const isLoading = isPendingDocument || isPendingTag || isPendingUserList;
+  const isLoading = isPendingDocument || isPendingUserList;
 
   return (
     <div className="p-6">
@@ -516,7 +519,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex gap-4">
               <div className="w-1/2">
-                {Object.keys(watch())
+                {Object.keys(getValues())
                   .filter(
                     (filtering) =>
                       ![
@@ -540,7 +543,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                       document_tag_id: "Tags",
                     };
 
-                    const valueMap: any = watch();
+                    const valueMap: any = getValues();
 
                     return (
                       <div className="mb-6" key={mapping}>
@@ -580,7 +583,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               </div>
 
               <div className="w-1/2">
-                {Object.keys(watch())
+                {Object.keys(getValues())
                   .filter(
                     (filtering) =>
                       ![
@@ -605,7 +608,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                       action: "Latest action",
                     };
 
-                    const valueMap: any = watch();
+                    const valueMap: any = getValues();
 
                     return (
                       <div className="mb-6" key={mapping}>
@@ -679,7 +682,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               </div>
 
               <div className="w-1/2">
-                {Object.keys(watch())
+                {Object.keys(getValues())
                   .filter(
                     (filtering) =>
                       ![
@@ -704,7 +707,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                       document_authorizer_id: "Authorizers",
                     };
 
-                    const valueMap: any = watch();
+                    const valueMap: any = getValues();
 
                     return (
                       <div className="mb-6" key={mapping}>
@@ -762,7 +765,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex gap-4">
               <div className="w-1/2">
-                {Object.keys(watch())
+                {Object.keys(getValues())
                   .filter(
                     (filtering) =>
                       ![
@@ -787,7 +790,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                       document_recipient_id: "Recipients",
                     };
 
-                    const valueMap: any = watch();
+                    const valueMap: any = getValues();
 
                     return (
                       <div className="mb-6" key={mapping}>
@@ -906,6 +909,8 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
         title="Edit document info"
         open={stateEditDocumentInfoModal.open}
         onCancel={() => {
+          refetchDocumentId();
+          setSearchTagDocument("");
           setStateEditDocumentInfoModal({
             open: false,
             data: null,
@@ -917,6 +922,8 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               <Button
                 type="button"
                 onClick={() => {
+                  refetchDocumentId();
+                  setSearchTagDocument("");
                   setStateEditDocumentInfoModal({
                     open: false,
                     data: null,
@@ -968,7 +975,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
             <Controller
               control={control}
               rules={{
-                required: "Tag name is required",
+                required: "Document number is required",
               }}
               name="document_number"
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
@@ -1052,8 +1059,14 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                 <Select
                   mode="multiple"
                   name="document_tag_id"
+                  onBlur={() => {
+                    setSearchTagDocument("");
+                  }}
                   onChange={onChange}
+                  onSearch={(val: string) => setSearchTagDocument(val)}
                   tokenSeparators={[","]}
+                  notFoundContent={isPendingTag ? <Spin size="small" /> : null}
+                  filterOption={false}
                   value={value}
                   styleSelect={{ width: "100%" }}
                   required
@@ -1076,6 +1089,8 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Select
                   mode="multiple"
+                  notFoundContent={isPendingTag ? <Spin size="small" /> : null}
+                  filterOption={false}
                   name="document_collaborator_id"
                   onChange={onChange}
                   options={dataCollaborator}

@@ -199,7 +199,7 @@ export default function ToDoPage() {
                   }}
                 />
               }
-              className="flex gap-2 justify-center items-center rounded-md bg-transparent px-6 py-1.5 text-lg font-semibold text-[#B0039E]"
+              className="flex gap-2 justify-center items-center rounded-md bg-transparent px-6 py-1.5 text-lg font-semibold text-primary-purple"
             />
           </div>
         );
@@ -523,9 +523,6 @@ export default function ToDoPage() {
 
             <Controller
               control={controlApproveRejectEdit}
-              rules={{
-                required: "Document is required",
-              }}
               name="supporting_document_path"
               render={({ field: { onChange }, fieldState: { error } }) => (
                 <div>

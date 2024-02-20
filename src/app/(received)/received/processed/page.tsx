@@ -488,9 +488,6 @@ export default function ProcessedPage() {
 
             <Controller
               control={controlApproveRejectEdit}
-              rules={{
-                required: "Document is required",
-              }}
               name="supporting_document_path"
               render={({ field: { onChange }, fieldState: { error } }) => (
                 <div>
