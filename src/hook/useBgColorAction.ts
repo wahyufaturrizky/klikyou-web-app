@@ -2,12 +2,16 @@ export const UseBgColorAction = (val: string) => {
   if (typeof val === "string") {
     if (val?.includes("Rejected")) {
       return "bg-red";
-    } else if (val?.includes("Approved") || val?.includes("Fully approved")) {
+    } else if (
+      val?.includes("Approved") ||
+      val?.includes("Fully approved") ||
+      val?.includes("approved")
+    ) {
       return "bg-green";
     } else if (val?.includes("Partially approved")) {
       return "bg-link";
-    } else if (val?.includes("Partially processed")) {
-      return "bg-brand-dark";
+    } else if (val === "processed" || val?.includes("Partially processed")) {
+      return "bg-secondary-blue";
     } else if (val?.includes("Fully processed")) {
       return "bg-primary-purple";
     } else if (
