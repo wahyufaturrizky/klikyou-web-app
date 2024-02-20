@@ -1,6 +1,6 @@
 export const UseBgColorAction = (val: string) => {
   if (typeof val === "string") {
-    if (val?.includes("Rejected")) {
+    if (val?.includes("Rejected") || val?.includes("rejected")) {
       return "bg-red";
     } else if (
       val?.includes("Approved") ||

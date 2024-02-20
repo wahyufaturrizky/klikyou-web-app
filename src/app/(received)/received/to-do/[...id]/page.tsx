@@ -302,19 +302,21 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       key: "supportingDocumentNote",
       render: (text: string, record: DataTypeActionHistory) => {
         return (
-          <div className="flex items-center gap-2 cursor-pointer">
+          <div
+            onClick={() =>
+              setStateViewNoteAndFileVersionModal({
+                open: true,
+                data: record,
+              })
+            }
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <OpenIcon
               style={{
                 height: 32,
                 width: 32,
                 color: "#2166E9",
               }}
-              onClick={() =>
-                setStateViewNoteAndFileVersionModal({
-                  open: true,
-                  data: record,
-                })
-              }
             />
 
             <Text label={text} className="text-base font-normal text-black" />
@@ -944,7 +946,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                     }}
                   />
                 }
-                className="flex gap-2 justify-center items-center rounded-md bg-primary-purple px-6 py-1.5 text-lg font-semibold text-white hover:bg-white/70 active:bg-white/90"
+                className="flex gap-2 justify-center items-center rounded-md bg-primary-purple px-6 py-1.5 text-lg font-semibold text-white hover:bg-primary-purple/70 active:bg-primary-purple/90"
               />
             </div>
           </div>
