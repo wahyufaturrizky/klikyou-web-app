@@ -211,7 +211,7 @@ export default function ProcessedPage() {
       orderBy: useOrderTableParams(tableParams),
       updated_at_start: getValuesFilter("date")[0],
       updated_at_end: getValuesFilter("date")[1],
-      history: 0,
+      history: 1,
     },
   });
 
