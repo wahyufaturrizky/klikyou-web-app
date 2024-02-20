@@ -18,6 +18,7 @@ import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import useDebounce from "@/hook/useDebounce";
 
 type FormProfileValues = {
   avatar_path: string;
@@ -47,6 +48,9 @@ export default function AddProfilePage() {
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
   const [dataUserTag, setDataUserTag] = useState<DefaultOptionType[]>([]);
 
+  const [searchUserTag, setSearchUserTag] = useState<string>("");
+  const [searchRole, setSearchRole] = useState<string>("");
+
   const { control, handleSubmit } = useForm<FormProfileValues>({
     defaultValues: {
       avatar_path: "",
@@ -61,8 +65,20 @@ export default function AddProfilePage() {
     },
   });
 
-  const { data: dataListRole, isPending: isPendingRole } = useRole();
-  const { data: dataListUserTag, isPending: isPendingUserTag } = useUserTags();
+  const debounceSearchUserTag = useDebounce(searchUserTag, 800);
+  const debounceSearchRole = useDebounce(searchRole, 800);
+
+  const { data: dataListRole, isPending: isPendingRole } = useRole({
+    query: {
+      search: debounceSearchRole,
+    },
+  });
+
+  const { data: dataListUserTag, isPending: isPendingUserTag } = useUserTags({
+    query: {
+      search: debounceSearchUserTag,
+    },
+  });
 
   useEffect(() => {
     const fetchDataRole = () => {
@@ -287,6 +303,12 @@ export default function AddProfilePage() {
                           error={error}
                           label="Tags"
                           classNameLabel="block text-lg font-semibold text-black"
+                          onBlur={() => {
+                            setSearchUserTag("");
+                          }}
+                          onSearch={(val: string) => setSearchUserTag(val)}
+                          notFoundContent={isPendingUserTag ? <Spin size="small" /> : null}
+                          filterOption={false}
                         />
                       )}
                     />
@@ -309,6 +331,12 @@ export default function AddProfilePage() {
                           required
                           label="Role"
                           classNameLabel="block text-lg font-semibold text-black"
+                          onBlur={() => {
+                            setSearchRole("");
+                          }}
+                          onSearch={(val: string) => setSearchRole(val)}
+                          notFoundContent={isPendingRole ? <Spin size="small" /> : null}
+                          filterOption={false}
                         />
                       )}
                     />
