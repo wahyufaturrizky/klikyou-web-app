@@ -159,9 +159,14 @@ export default function ToDoPage() {
       title: "Latest document",
       dataIndex: "documentPath",
       key: "documentPath",
-      render: () => {
+      render: (text: string) => {
         return (
-          <div className="gap-2 flex items-center cursor-pointer">
+          <Link
+            rel="noopener noreferrer"
+            target="_blank"
+            className="gap-2 flex items-center cursor-pointer"
+            href={text || ""}
+          >
             <DownloadIcon
               style={{
                 height: 32,
@@ -170,7 +175,7 @@ export default function ToDoPage() {
               }}
             />
             <Text label="Download" className="text-base font-normal text-link" />
-          </div>
+          </Link>
         );
       },
     },
