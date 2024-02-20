@@ -513,7 +513,7 @@ export default function ProcessedPage() {
                         }
                         if (info.file.status === "done") {
                           message.success(`${info.file.name} file uploaded successfully`);
-                          onChange(JSON.stringify(info));
+                          onChange(info);
                         } else if (info.file.status === "error") {
                           message.error(`${info.file.name} file upload failed.`);
                         }
