@@ -114,12 +114,14 @@ export default function AddProfilePage() {
     useCreateUserManagement({
       options: {
         onSuccess: (res: any) => {
-          messageApi.open({
-            type: "success",
-            content: "Success create user",
-          });
+          if (res.status === 200) {
+            messageApi.open({
+              type: "success",
+              content: "Success create user",
+            });
 
-          router.back();
+            router.back();
+          }
         },
         onError: () => {
           messageApi.open({
@@ -155,12 +157,9 @@ export default function AddProfilePage() {
     </button>
   );
 
-  const isLoading = isPendingRole || isPendingUserTag;
-
   return (
     <div className="p-6">
       {contextHolder}
-      {isLoading && <Spin fullscreen />}
       <div className="flex gap-4 items-center">
         <BackIcon
           style={{ color: "#2379AA", height: 24, width: 24 }}
@@ -171,7 +170,7 @@ export default function AddProfilePage() {
 
       <div className="gap-6 flex">
         <div className="w-1/2">
-          <Text label="User info" className="mt-6 text-xl font-bold text-black" />
+          <Text label="User info asd" className="mt-6 text-xl font-bold text-black" />
 
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="flex">
@@ -182,6 +181,9 @@ export default function AddProfilePage() {
                   <Controller
                     control={control}
                     name="avatar_path"
+                    rules={{
+                      required: "Avatar is required",
+                    }}
                     render={({ field: { onChange, value }, fieldState: { error } }) => (
                       <div>
                         <Upload

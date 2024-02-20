@@ -12,6 +12,15 @@ export type FormUserTagsValues = {
   document_type: string;
 };
 
+export interface MasterUserTagType {
+  id: number;
+  userId: number;
+  masterUserTagId: number;
+  createdAt: string;
+  updatedAt: string;
+  masterUserTag: DataUserTags;
+}
+
 export interface DeleteUserTagsModal {
   open: boolean;
   type: string;

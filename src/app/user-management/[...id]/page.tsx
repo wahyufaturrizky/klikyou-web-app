@@ -12,7 +12,7 @@ import {
   DataInfoUserManagementType,
   DeleteUserManagementModal,
 } from "@/interface/user-management.interface";
-import { DataUserTags } from "@/interface/user-tag.interface";
+import { DataUserTags, MasterUserTagType } from "@/interface/user-tag.interface";
 import { useRole } from "@/services/role/useRole";
 import {
   useDeleteUserManagement,
@@ -29,6 +29,7 @@ import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import useDebounce from "@/hook/useDebounce";
 
 export default function ViewEditProfile({ params }: Readonly<{ params: { id: string } }>) {
   const { id } = params;
@@ -44,6 +45,9 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
   const [isEdit, setIsEdit] = useState<boolean>(id[0] !== "view");
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
+  const [searchSearchUserTag, setSearchSearchUserTag] = useState<string>("");
+  const [searchRole, setSearchRole] = useState<string>("");
+
   const [isShowDelete, setIsShowDelete] = useState<DeleteUserManagementModal>({
     open: false,
     type: "selection",
@@ -52,6 +56,9 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
       selectedRowKeys: [],
     },
   });
+
+  const debounceSearchUserTag = useDebounce(searchSearchUserTag, 800);
+  const debounceSearchRole = useDebounce(searchRole, 800);
 
   const { watch, control, handleSubmit, getValues, setValue } = useForm<FormProfileValues>({
     defaultValues: {
@@ -67,8 +74,17 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
     },
   });
 
-  const { data: dataListRole, isPending: isPendingrole } = useRole();
-  const { data: dataListUserTag, isPending: isPendingUserTag } = useUserTags();
+  const { data: dataListRole, isPending: isPendingRole } = useRole({
+    query: {
+      search: debounceSearchRole,
+    },
+  });
+
+  const { data: dataListUserTag, isPending: isPendingUserTag } = useUserTags({
+    query: {
+      search: debounceSearchUserTag,
+    },
+  });
 
   useEffect(() => {
     const fetchDatarole = () => {
@@ -204,7 +220,7 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
         avatarPath,
         firstName,
         lastName,
-        tags,
+        userTag,
         role,
         username,
         email,
@@ -228,7 +244,10 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
       setValue("avatar_path", avatarPath);
       setValue("first_name", firstName);
       setValue("last_name", lastName);
-      setValue("tags", tags);
+      setValue(
+        "tags",
+        userTag.map((itemUserTag: MasterUserTagType) => itemUserTag.masterUserTagId)
+      );
       setValue("role_id", role?.id);
       setValue("username", username);
       setValue("email", email);
@@ -258,15 +277,12 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
     });
 
   const renderConfirmationText = (type: any, data: any) => {
-    switch (type) {
-      case "single":
-        return `Are you sure to delete document ${data?.data?.data?.email} ?`;
-      default:
-        break;
+    if (type === "single") {
+      return `Are you sure to delete document ${data?.data?.data?.email} ?`;
     }
   };
 
-  const isLoading = isPendingUserManagement || isPendingrole || isPendingUserTag;
+  const isLoading = isPendingUserManagement;
 
   return (
     <div className="p-6">
@@ -332,6 +348,9 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
                     <Controller
                       control={control}
                       name="avatar_path"
+                      rules={{
+                        required: "Avatar is required",
+                      }}
                       render={({ field: { onChange, value }, fieldState: { error } }) => (
                         <div>
                           <Upload
@@ -464,6 +483,12 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
                             error={error}
                             label="Tags"
                             classNameLabel="block text-lg font-semibold text-black"
+                            notFoundContent={isPendingUserTag ? <Spin size="small" /> : null}
+                            filterOption={false}
+                            onBlur={() => {
+                              setSearchSearchUserTag("");
+                            }}
+                            onSearch={(val: string) => setSearchSearchUserTag(val)}
                           />
                         )}
                       />
@@ -486,6 +511,12 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
                             required
                             label="Role"
                             classNameLabel="block text-lg font-semibold text-black"
+                            onBlur={() => {
+                              setSearchRole("");
+                            }}
+                            onSearch={(val: string) => setSearchRole(val)}
+                            notFoundContent={isPendingRole ? <Spin size="small" /> : null}
+                            filterOption={false}
                           />
                         )}
                       />
@@ -513,7 +544,6 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
                         };
 
                         const valueMap: any = watch();
-                        console.log("@dataUserManagement", dataUserManagement);
 
                         return (
                           <div className="mb-6" key={mapping}>
