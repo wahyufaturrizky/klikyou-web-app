@@ -229,7 +229,7 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
       setValue("first_name", firstName);
       setValue("last_name", lastName);
       setValue("tags", tags);
-      setValue("role_id", role.id);
+      setValue("role_id", role?.id);
       setValue("username", username);
       setValue("email", email);
     }

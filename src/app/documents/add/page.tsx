@@ -16,6 +16,7 @@ import { DefaultOptionType } from "antd/es/cascader";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import useDebounce from "@/hook/useDebounce";
 
 export default function AddDocumentPage() {
   const router = useRouter();
@@ -26,6 +27,19 @@ export default function AddDocumentPage() {
   const [dataAuthorizer, setDataAuthorizer] = useState<DefaultOptionType[]>([]);
   const [dataRecipient, setDataRecipient] = useState<DefaultOptionType[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+  const [searchTagDocument, setSearchTagDocument] = useState<string>("");
+  const [searchCollaboratorDocument, setSearchCollaboratorDocument] = useState<string>("");
+  const [searchSearchRecipientDocumentDocument, setSearchSearchRecipientDocumentDocument] =
+    useState<string>("");
+  const [searchSearchAuthorizerDocumentDocument, setSearchSearchAuthorizerDocumentDocument] =
+    useState<string>("");
+
+  const debounceSearchTagDocument = useDebounce(searchTagDocument, 800);
+  const debounceSearchCollaboratorDocument = useDebounce(searchCollaboratorDocument, 800);
+  const debounceSearchRecipientDocument = useDebounce(searchSearchRecipientDocumentDocument, 800);
+  const debounceSearchAuthorizerDocument = useDebounce(searchSearchAuthorizerDocumentDocument, 800);
+
   const [messageApi, contextHolder] = message.useMessage();
 
   const { control, handleSubmit, setValue } = useForm<FormDocumentValues>({
@@ -56,8 +70,29 @@ export default function AddDocumentPage() {
     },
   });
 
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
-  const { data: dataListUserList, isPending: isPendingUserList } = useUserList();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags({
+    query: {
+      search: debounceSearchTagDocument,
+    },
+  });
+  const { data: dataListCollaboratorDocument, isPending: isPendingCollaboratorDocument } =
+    useUserList({
+      query: {
+        search: debounceSearchCollaboratorDocument,
+      },
+    });
+
+  const { data: dataRecipientList, isPending: isPendingRecipientList } = useUserList({
+    query: {
+      search: debounceSearchRecipientDocument,
+    },
+  });
+
+  const { data: dataListAuthorizer, isPending: isPendingAuthorizer } = useUserList({
+    query: {
+      search: debounceSearchAuthorizerDocument,
+    },
+  });
 
   useEffect(() => {
     const fetchDataTag = () => {
@@ -69,23 +104,27 @@ export default function AddDocumentPage() {
       );
     };
 
-    const fetchDataUserList = () => {
+    const fetchDataAuthorizerList = () => {
       setDataAuthorizer(
-        dataListUserList?.data?.data?.map((itemTag: UserListType) => ({
+        dataListAuthorizer?.data?.data.map((itemTag: UserListType) => ({
           label: itemTag.label,
           value: itemTag.id,
         }))
       );
+    };
 
-      setDataCollaborator(
-        dataListUserList?.data?.data?.map((itemTag: UserListType) => ({
-          label: itemTag.label,
-          value: itemTag.id,
-        }))
-      );
-
+    const fetchDataListRecipientDocument = () => {
       setDataRecipient(
-        dataListUserList?.data?.data?.map((itemTag: UserListType) => ({
+        dataRecipientList?.data?.data.map((itemTag: UserListType) => ({
+          label: itemTag.label,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    const fetchDataListCollaboratorDocument = () => {
+      setDataCollaborator(
+        dataListCollaboratorDocument?.data?.data.map((itemTag: UserListType) => ({
           label: itemTag.label,
           value: itemTag.id,
         }))
@@ -96,10 +135,18 @@ export default function AddDocumentPage() {
       fetchDataTag();
     }
 
-    if (dataListUserList) {
-      fetchDataUserList();
+    if (dataListCollaboratorDocument) {
+      fetchDataListCollaboratorDocument();
     }
-  }, [dataListTag, dataListUserList]);
+
+    if (dataRecipientList) {
+      fetchDataListRecipientDocument();
+    }
+
+    if (dataListAuthorizer) {
+      fetchDataAuthorizerList();
+    }
+  }, [dataListTag, dataRecipientList, dataListCollaboratorDocument, dataListAuthorizer]);
 
   const onSubmit = (data: FormDocumentValues) => {
     const {
@@ -131,11 +178,8 @@ export default function AddDocumentPage() {
     createDocument(formdata);
   };
 
-  const isLoading = isPendingTag || isPendingUserList;
-
   return (
     <div className="p-6">
-      {isLoading && <Spin fullscreen />}
       {contextHolder}
       <div className="flex gap-4 items-center">
         <BackIcon
@@ -223,6 +267,12 @@ export default function AddDocumentPage() {
                           error={error}
                           label="Tags"
                           classNameLabel="block text-lg font-semibold text-black"
+                          onBlur={() => {
+                            setSearchTagDocument("");
+                          }}
+                          onSearch={(val: string) => setSearchTagDocument(val)}
+                          notFoundContent={isPendingTag ? <Spin size="small" /> : null}
+                          filterOption={false}
                         />
                       )}
                     />
@@ -306,6 +356,14 @@ export default function AddDocumentPage() {
                           error={error}
                           label="Collaborators"
                           classNameLabel="block text-lg font-semibold text-black"
+                          notFoundContent={
+                            isPendingCollaboratorDocument ? <Spin size="small" /> : null
+                          }
+                          filterOption={false}
+                          onBlur={() => {
+                            setSearchCollaboratorDocument("");
+                          }}
+                          onSearch={(val: string) => setSearchCollaboratorDocument(val)}
                         />
                       )}
                     />
@@ -417,6 +475,12 @@ export default function AddDocumentPage() {
                           error={error}
                           label="Authorizers"
                           classNameLabel="block text-lg font-semibold text-black"
+                          notFoundContent={isPendingAuthorizer ? <Spin size="small" /> : null}
+                          filterOption={false}
+                          onBlur={() => {
+                            setSearchSearchAuthorizerDocumentDocument("");
+                          }}
+                          onSearch={(val: string) => setSearchSearchAuthorizerDocumentDocument(val)}
                         />
                       )}
                     />
@@ -451,6 +515,12 @@ export default function AddDocumentPage() {
                         error={error}
                         label="Recipients"
                         classNameLabel="block text-lg font-semibold text-black"
+                        notFoundContent={isPendingRecipientList ? <Spin size="small" /> : null}
+                        filterOption={false}
+                        onBlur={() => {
+                          setSearchSearchRecipientDocumentDocument("");
+                        }}
+                        onSearch={(val: string) => setSearchSearchRecipientDocumentDocument(val)}
                       />
                     )}
                   />

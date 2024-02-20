@@ -61,6 +61,11 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const [searchTagDocument, setSearchTagDocument] = useState<string>("");
+  const [searchCollaboratorDocument, setSearchCollaboratorDocument] = useState<string>("");
+  const [searchSearchRecipientDocumentDocument, setSearchSearchRecipientDocumentDocument] =
+    useState<string>("");
+  const [searchSearchAuthorizerDocumentDocument, setSearchSearchAuthorizerDocumentDocument] =
+    useState<string>("");
 
   const [dataLogHistory, setDataLogHistory] = useState<DataTypeActionHistory[]>([]);
 
@@ -70,6 +75,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const [messageApi, contextHolder] = message.useMessage();
 
   const debounceSearchTagDocument = useDebounce(searchTagDocument, 800);
+  const debounceSearchCollaboratorDocument = useDebounce(searchCollaboratorDocument, 800);
+  const debounceSearchRecipientDocument = useDebounce(searchSearchRecipientDocumentDocument, 800);
+  const debounceSearchAuthorizerDocument = useDebounce(searchSearchAuthorizerDocumentDocument, 800);
 
   const [stateEditDocumentInfoModal, setStateEditDocumentInfoModal] = useState<EditDocumentsModal>({
     open: false,
@@ -117,7 +125,24 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       search: debounceSearchTagDocument,
     },
   });
-  const { data: dataListUserList, isPending: isPendingUserList } = useUserList();
+  const { data: dataListCollaboratorDocument, isPending: isPendingCollaboratorDocument } =
+    useUserList({
+      query: {
+        search: debounceSearchCollaboratorDocument,
+      },
+    });
+
+  const { data: dataRecipientList, isPending: isPendingRecipientList } = useUserList({
+    query: {
+      search: debounceSearchRecipientDocument,
+    },
+  });
+
+  const { data: dataListAuthorizer, isPending: isPendingAuthorizer } = useUserList({
+    query: {
+      search: debounceSearchAuthorizerDocument,
+    },
+  });
 
   useEffect(() => {
     const fetchDataTag = () => {
@@ -129,23 +154,27 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       );
     };
 
-    const fetchDataUserList = () => {
+    const fetchDataAuthorizerList = () => {
       setDataAuthorizer(
-        dataListUserList?.data?.data.map((itemTag: UserListType) => ({
+        dataListAuthorizer?.data?.data.map((itemTag: UserListType) => ({
           label: itemTag.label,
           value: itemTag.id,
         }))
       );
+    };
 
-      setDataCollaborator(
-        dataListUserList?.data?.data.map((itemTag: UserListType) => ({
-          label: itemTag.label,
-          value: itemTag.id,
-        }))
-      );
-
+    const fetchDataListRecipientDocument = () => {
       setDataRecipient(
-        dataListUserList?.data?.data.map((itemTag: UserListType) => ({
+        dataRecipientList?.data?.data.map((itemTag: UserListType) => ({
+          label: itemTag.label,
+          value: itemTag.id,
+        }))
+      );
+    };
+
+    const fetchDataListCollaboratorDocument = () => {
+      setDataCollaborator(
+        dataListCollaboratorDocument?.data?.data.map((itemTag: UserListType) => ({
           label: itemTag.label,
           value: itemTag.id,
         }))
@@ -156,16 +185,28 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       fetchDataTag();
     }
 
-    if (dataListUserList) {
-      fetchDataUserList();
+    if (dataListCollaboratorDocument) {
+      fetchDataListCollaboratorDocument();
     }
-  }, [dataListTag, dataListUserList]);
+
+    if (dataRecipientList) {
+      fetchDataListRecipientDocument();
+    }
+
+    if (dataListAuthorizer) {
+      fetchDataAuthorizerList();
+    }
+  }, [dataListTag, dataRecipientList, dataListCollaboratorDocument, dataListAuthorizer]);
 
   const { mutate: updateDocument, isPending: isPendingUpdateDocument } = useUpdateDocument({
     id: id[1],
     options: {
       onSuccess: () => {
         refetchDocumentId();
+        setSearchTagDocument("");
+        setSearchCollaboratorDocument("");
+        setSearchSearchRecipientDocumentDocument("");
+        setSearchSearchAuthorizerDocumentDocument("");
 
         messageApi.open({
           type: "success",
@@ -194,8 +235,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     delete data.status;
     delete data.id;
     delete data.action;
-
-    setSearchTagDocument("");
 
     const {
       document_name,
@@ -233,6 +272,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     data: dataDocument,
     isPending: isPendingDocument,
     refetch: refetchDocumentId,
+    isRefetching: isRefetchingDocumentId,
   } = useDocumentById({
     id: id[1],
     options: {
@@ -485,7 +525,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     },
   ];
 
-  const isLoading = isPendingDocument || isPendingUserList;
+  const isLoading = isPendingDocument || isRefetchingDocumentId;
 
   return (
     <div className="p-6">
@@ -911,6 +951,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
         onCancel={() => {
           refetchDocumentId();
           setSearchTagDocument("");
+          setSearchCollaboratorDocument("");
           setStateEditDocumentInfoModal({
             open: false,
             data: null,
@@ -924,6 +965,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                 onClick={() => {
                   refetchDocumentId();
                   setSearchTagDocument("");
+                  setSearchCollaboratorDocument("");
                   setStateEditDocumentInfoModal({
                     open: false,
                     data: null,
@@ -1089,8 +1131,12 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Select
                   mode="multiple"
-                  notFoundContent={isPendingTag ? <Spin size="small" /> : null}
+                  notFoundContent={isPendingCollaboratorDocument ? <Spin size="small" /> : null}
                   filterOption={false}
+                  onBlur={() => {
+                    setSearchCollaboratorDocument("");
+                  }}
+                  onSearch={(val: string) => setSearchCollaboratorDocument(val)}
                   name="document_collaborator_id"
                   onChange={onChange}
                   options={dataCollaborator}
@@ -1114,6 +1160,8 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
         title="Update file and authorizers"
         open={stateEditFileAndAuthModal.open}
         onCancel={() => {
+          refetchDocumentId();
+          setSearchSearchAuthorizerDocumentDocument("");
           setStateEditFileAndAuthModal({
             open: false,
             data: null,
@@ -1129,6 +1177,10 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                     open: false,
                     data: null,
                   });
+
+                  setSearchSearchAuthorizerDocumentDocument("");
+
+                  refetchDocumentId();
                 }}
                 label="Cancel"
                 className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -1221,6 +1273,12 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                   error={error}
                   label="Authorizers"
                   classNameLabel="block text-xl font-semibold text-black"
+                  notFoundContent={isPendingAuthorizer ? <Spin size="small" /> : null}
+                  filterOption={false}
+                  onBlur={() => {
+                    setSearchSearchAuthorizerDocumentDocument("");
+                  }}
+                  onSearch={(val: string) => setSearchSearchAuthorizerDocumentDocument(val)}
                 />
               )}
             />
@@ -1309,6 +1367,10 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
             open: false,
             data: null,
           });
+
+          refetchDocumentId();
+
+          setSearchSearchRecipientDocumentDocument("");
         }}
         footer={
           <div className="flex justify-end items-center">
@@ -1320,6 +1382,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                     open: false,
                     data: null,
                   });
+                  refetchDocumentId();
+
+                  setSearchSearchRecipientDocumentDocument("");
                 }}
                 label="Cancel"
                 className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -1358,6 +1423,12 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                   error={error}
                   label="Recipients"
                   classNameLabel="block text-xl font-semibold text-black"
+                  notFoundContent={isPendingRecipientList ? <Spin size="small" /> : null}
+                  filterOption={false}
+                  onBlur={() => {
+                    setSearchSearchRecipientDocumentDocument("");
+                  }}
+                  onSearch={(val: string) => setSearchSearchRecipientDocumentDocument(val)}
                 />
               )}
             />
