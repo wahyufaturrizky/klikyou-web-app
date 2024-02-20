@@ -4,10 +4,10 @@ export const UseBgColorStatus = (val: string) => {
       return "bg-link";
     } else if (
       val?.includes("Waiting Approval") ||
-      val?.includes("uploaded") ||
+      val?.includes("Uploaded") ||
       val?.includes("upload") ||
       val?.includes("update") ||
-      val?.includes("updated")
+      val?.includes("Updated")
     ) {
       return "bg-gray-dark";
     } else if (val?.includes("Fully approved")) {
