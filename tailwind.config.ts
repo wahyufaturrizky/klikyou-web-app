@@ -20,6 +20,7 @@ const config: Config = {
         "primary-gray": "#9CB1C6",
         "primary-purple": "#B0039E",
         "gray-dark": "#455C72",
+        "brand-dark": "#2379AA",
         link: "#2166E9",
         warn: "#FFB800",
       },
