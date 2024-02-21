@@ -67,7 +67,7 @@ export default function UserManagementPage() {
       search: "",
       date: "",
       filter_tag: [],
-      filter_type: "",
+      filter_type: [],
     },
   });
 
@@ -209,7 +209,7 @@ export default function UserManagementPage() {
   } = useUserManagement({
     query: {
       search: debounceSearch,
-      filter_type: getValuesFilter("filter_type") || "",
+      filter_type: (getValuesFilter("filter_type") ?? [""]).join(","),
       filter_tag: (getValuesFilter("filter_tag") ?? [""]).join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
@@ -462,6 +462,8 @@ export default function UserManagementPage() {
               name="filter_type"
               render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Select
+                  mode="multiple"
+                  tokenSeparators={[","]}
                   name="filter_type"
                   options={dataRole}
                   onChange={onChange}

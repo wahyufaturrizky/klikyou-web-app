@@ -50,7 +50,7 @@ export type FormFilterValues = {
   filter_approval?: string[];
   role?: string[];
   filter_tag?: string[];
-  filter_type?: string;
+  filter_type?: string[];
 };
 
 export type FormApproveRejectProcessValues = {

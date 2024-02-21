@@ -74,7 +74,7 @@ export default function DocumentsPage() {
     defaultValues: {
       search: "",
       date: "",
-      filter_type: "",
+      filter_type: [],
       status: [],
       filter_tag: [],
       latest_action_filter: [],
@@ -255,7 +255,7 @@ export default function DocumentsPage() {
   } = useDocument({
     query: {
       search: debounceSearch,
-      filter_type: getValuesFilter("filter_type") ?? "",
+      filter_type: (getValuesFilter("filter_type") ?? [""]).join(","),
       status: (getValuesFilter("status") ?? [""]).join(","),
       filter_tag: (getValuesFilter("filter_tag") ?? [""]).join(","),
       latest_action_filter: (getValuesFilter("latest_action_filter") ?? [""]).join(","),
@@ -609,8 +609,11 @@ export default function DocumentsPage() {
               render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Select
                   name="filter_type"
+                  mode="multiple"
+                  tokenSeparators={[","]}
                   options={dataRole}
                   onChange={onChange}
+                  error={error}
                   value={value}
                   styleSelect={{ width: "100%" }}
                   label="Role"
