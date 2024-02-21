@@ -160,6 +160,9 @@ export default function ToDoPage() {
       dataIndex: "documentPath",
       key: "documentPath",
       render: (text: string) => {
+        if (!text) {
+          return;
+        }
         return (
           <Link
             rel="noopener noreferrer"

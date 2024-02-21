@@ -161,6 +161,9 @@ export default function ProcessedPage() {
       dataIndex: "documentPath",
       key: "documentPath",
       render: (text: string) => {
+        if (!text) {
+          return;
+        }
         return (
           <Link
             rel="noopener noreferrer"

@@ -271,6 +271,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       dataIndex: "supportingDocumentPath",
       key: "supportingDocumentPath",
       render: (text: string) => {
+        if (!text) {
+          return;
+        }
         return (
           <div
             onClick={() => text && window.open(text, "_blank")}
@@ -294,6 +297,11 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       dataIndex: "versionHistoryDocumentPath",
       key: "versionHistoryDocumentPath",
       render: (text: string) => {
+        const fileName = text?.split("/").pop();
+        if (!text) {
+          return;
+        }
+
         return (
           <div
             onClick={() => text && window.open(text, "_blank")}
@@ -307,7 +315,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               }}
             />
 
-            <Text label={text} className="text-base font-normal text-link" />
+            <Text label={String(fileName)} className="text-base font-normal text-link" />
           </div>
         );
       },
