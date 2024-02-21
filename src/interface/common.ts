@@ -14,7 +14,7 @@ export interface ApproveRejectProcessModal {
 
 export interface QueryType {
   search: string;
-  status?: string;
+  filter_status?: string;
   role?: string;
   page?: number;
   limit?: number;
@@ -24,7 +24,7 @@ export interface QueryType {
   history?: number;
   filter_type?: string;
   filter_tag?: string;
-  latest_action_filter?: string;
+  filter_latest_action?: string;
   filter_approval?: string;
 }
 

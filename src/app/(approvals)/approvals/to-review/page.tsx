@@ -275,7 +275,7 @@ export default function ToReviewPage() {
     action: "approval",
     query: {
       search: debounceSearch,
-      status: (getValuesFilter("status") ?? [""]).join(","),
+      filter_status: (getValuesFilter("status") ?? [""]).join(","),
       filter_tag: (getValuesFilter("filter_tag") ?? [""]).join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,

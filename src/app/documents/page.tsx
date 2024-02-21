@@ -256,9 +256,9 @@ export default function DocumentsPage() {
     query: {
       search: debounceSearch,
       filter_type: (getValuesFilter("filter_type") ?? [""]).join(","),
-      status: (getValuesFilter("status") ?? [""]).join(","),
+      filter_status: (getValuesFilter("status") ?? [""]).join(","),
       filter_tag: (getValuesFilter("filter_tag") ?? [""]).join(","),
-      latest_action_filter: (getValuesFilter("latest_action_filter") ?? [""]).join(","),
+      filter_latest_action: (getValuesFilter("latest_action_filter") ?? [""]).join(","),
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: useOrderTableParams(tableParams),

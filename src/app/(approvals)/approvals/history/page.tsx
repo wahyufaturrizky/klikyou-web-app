@@ -254,7 +254,7 @@ export default function HistoryPage() {
     action: "approval",
     query: {
       search: debounceSearch,
-      status: (getValuesFilter("status") ?? [""]).join(","),
+      filter_status: (getValuesFilter("status") ?? [""]).join(","),
       filter_tag: (getValuesFilter("filter_tag") ?? [""]).join(","),
       filter_approval: (getValuesFilter("filter_approval") ?? [""]).join(","),
       page: tableParams.pagination?.current,
