@@ -232,9 +232,9 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
       setDataInfo([
         {
           createdBy: `${createBy?.user?.firstName} ${createBy?.user?.lastName}`,
-          createdAt: createBy?.user?.createdAt,
+          createdAt: createBy?.date,
           updatedBy: `${updatedBy?.user?.firstName} ${updatedBy?.user?.lastName}`,
-          updatedAt: updatedBy?.user?.updatedAt,
+          updatedAt: updatedBy?.date,
           id: id,
           createdByAvatarPath: createBy?.user?.avatarPath,
           updatedByAvatarPath: updatedBy?.user?.avatarPath,

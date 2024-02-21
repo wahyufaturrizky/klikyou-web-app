@@ -2,8 +2,10 @@
 import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
 import Text from "@/components/Text";
+import { UseBgColorAction } from "@/hook/useBgColorAction";
+import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
-import { FormApproveRejectProcessValues, TagType, UserType } from "@/interface/common";
+import { TagType, UserType } from "@/interface/common";
 import {
   DataInfoDocumentType,
   DataTypeActionHistory,
@@ -11,23 +13,21 @@ import {
   DocumentCollaboratorsType,
   DocumentRecipientsType,
   DocumentTagsType,
+  EditDocumentsModal,
   FormDocumentValues,
   UserListType,
-  EditDocumentsModal,
 } from "@/interface/documents.interface";
 import { ColumnsType } from "@/interface/user-management.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import { useDocumentById } from "@/services/document/useDocument";
 import { useUserList } from "@/services/user-list/useUserList";
 import { BackIcon, DownloadIcon, FileIcon, OpenIcon, ProtectIcon } from "@/style/icon";
-import { ConfigProvider, Spin, Table, TableProps, message, Modal } from "antd";
+import { ConfigProvider, Modal, Spin, Table, TableProps } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { UseBgColorStatus } from "@/hook/useBgColorStatus";
-import { UseBgColorAction } from "@/hook/useBgColorAction";
 
 export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();
@@ -45,7 +45,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const [dataCollaborator, setDataCollaborator] = useState<DefaultOptionType[]>([]);
   const [dataAuthorizer, setDataAuthorizer] = useState<DefaultOptionType[]>([]);
   const [dataRecipient, setDataRecipient] = useState<DefaultOptionType[]>([]);
-  const [messageApi, contextHolder] = message.useMessage();
 
   const { setValue, getValues } = useForm<FormDocumentValues>({
     defaultValues: {
@@ -63,17 +62,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       document_authorizer_id: [],
       document_recipient_id: [],
       document_note: "",
-    },
-  });
-
-  const {
-    control: controlApproveRejectEdit,
-    handleSubmit: handleSubmitApproveRejectEdit,
-    reset: resetApproveRejectEdit,
-  } = useForm<FormApproveRejectProcessValues>({
-    defaultValues: {
-      supporting_document_note: "",
-      supporting_document_path: null,
     },
   });
 
@@ -381,7 +369,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   return (
     <div className="p-6">
       {isLoading && <Spin fullscreen />}
-      {contextHolder}
 
       <div className="flex gap-4 items-center">
         <BackIcon
