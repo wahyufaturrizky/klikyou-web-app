@@ -19,7 +19,8 @@ export const UseBgColorAction = (val: string) => {
       val?.includes("upload") ||
       val?.includes("pending") ||
       val?.includes("Updated") ||
-      val?.includes("update")
+      val?.includes("update") ||
+      val?.includes("Waiting Approval")
     ) {
       return "bg-gray-dark";
     }
