@@ -329,7 +329,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       setValue("text_remarks", textRemarks);
       setValue("numeric_remarks", numericRemarks);
       setValue("document_path", documentPath);
-      setValue("document_note", documentNote);
       setValue("status", status);
       setValue(
         "document_tag_id",
