@@ -140,6 +140,8 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
         createdBy,
         updatedBy,
         memoId,
+        createdAt,
+        updatedAt,
       } = rawData;
 
       setDataLogHistory(documentLogs);
@@ -147,9 +149,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       setDataInfo([
         {
           createdBy: `${createdBy?.firstName} ${createdBy?.lastName}`,
-          createdAt: createdBy?.createdAt,
+          createdAt: createdAt,
           updatedBy: updatedBy ? `${updatedBy?.firstName} ${updatedBy?.lastName}` : "",
-          updatedAt: updatedBy?.updatedAt,
+          updatedAt: updatedAt,
           id: id,
           createdByAvatarPath: createdBy?.avatarPath,
           updatedByAvatarPath: updatedBy?.avatarPath,
