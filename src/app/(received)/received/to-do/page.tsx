@@ -30,6 +30,7 @@ import {
   Upload,
   UploadFile,
   message,
+  Spin,
 } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import { FilterValue } from "antd/es/table/interface";
@@ -41,6 +42,10 @@ export default function ToDoPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+
+  const [searchTagDocument, setSearchTagDocument] = useState<string>("");
+
+  const debounceSearchTagDocument = useDebounce(searchTagDocument, 800);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -77,7 +82,11 @@ export default function ToDoPage() {
     },
   });
 
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags({
+    query: {
+      search: debounceSearchTagDocument,
+    },
+  });
 
   useEffect(() => {
     const fetchDataTag = () => {
@@ -444,6 +453,12 @@ export default function ToDoPage() {
                   error={error}
                   label="Tags"
                   classNameLabel="block text-lg font-semibold text-black"
+                  onBlur={() => {
+                    setSearchTagDocument("");
+                  }}
+                  onSearch={(val: string) => setSearchTagDocument(val)}
+                  notFoundContent={isPendingTag ? <Spin size="small" /> : null}
+                  filterOption={false}
                 />
               )}
             />

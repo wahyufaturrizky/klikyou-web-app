@@ -40,6 +40,7 @@ import {
   Upload,
   UploadFile,
   message,
+  Spin,
 } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import { FilterValue } from "antd/es/table/interface";
@@ -52,6 +53,10 @@ export default function HistoryPage() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+
+  const [searchTagDocument, setSearchTagDocument] = useState<string>("");
+
+  const debounceSearchTagDocument = useDebounce(searchTagDocument, 800);
 
   const [isShowDelete, setIsShowDelete] = useState<DeleteDocumentModal>({
     open: false,
@@ -98,7 +103,11 @@ export default function HistoryPage() {
     },
   });
 
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags({
+    query: {
+      search: debounceSearchTagDocument,
+    },
+  });
 
   useEffect(() => {
     const fetchDataTag = () => {
@@ -552,6 +561,11 @@ export default function HistoryPage() {
                   error={error}
                   label="Tags"
                   classNameLabel="block text-lg font-semibold text-black"
+                  onBlur={() => {
+                    setSearchTagDocument("");
+                  }}
+                  onSearch={(val: string) => setSearchTagDocument(val)}
+                  notFoundContent={isPendingTag ? <Spin size="small" /> : null}
                 />
               )}
             />

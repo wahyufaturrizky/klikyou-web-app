@@ -31,6 +31,7 @@ import {
   Upload,
   UploadFile,
   message,
+  Spin,
 } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import { FilterValue } from "antd/es/table/interface";
@@ -43,7 +44,11 @@ export default function ToReviewPage() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
+  const [searchTagDocument, setSearchTagDocument] = useState<string>("");
+
   const [messageApi, contextHolder] = message.useMessage();
+
+  const debounceSearchTagDocument = useDebounce(searchTagDocument, 800);
 
   const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
     useState<ApproveRejectProcessModal>({
@@ -81,7 +86,11 @@ export default function ToReviewPage() {
     },
   });
 
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags({
+    query: {
+      search: debounceSearchTagDocument,
+    },
+  });
 
   useEffect(() => {
     const fetchDataTag = () => {
@@ -573,6 +582,11 @@ export default function ToReviewPage() {
                   error={error}
                   label="Tags"
                   classNameLabel="block text-lg font-semibold text-black"
+                  onBlur={() => {
+                    setSearchTagDocument("");
+                  }}
+                  onSearch={(val: string) => setSearchTagDocument(val)}
+                  notFoundContent={isPendingTag ? <Spin size="small" /> : null}
                 />
               )}
             />

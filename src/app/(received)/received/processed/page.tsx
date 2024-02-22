@@ -29,6 +29,7 @@ import {
   Upload,
   UploadFile,
   message,
+  Spin,
 } from "antd";
 import { FilterValue } from "antd/es/table/interface";
 import Link from "next/link";
@@ -43,7 +44,11 @@ export default function ProcessedPage() {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
+  const [searchTagDocument, setSearchTagDocument] = useState<string>("");
+
   const [messageApi, contextHolder] = message.useMessage();
+
+  const debounceSearchTagDocument = useDebounce(searchTagDocument, 800);
 
   const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
     useState<ApproveRejectProcessModal>({
@@ -78,7 +83,11 @@ export default function ProcessedPage() {
     },
   });
 
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags({
+    query: {
+      search: debounceSearchTagDocument,
+    },
+  });
 
   useEffect(() => {
     const fetchDataTag = () => {
@@ -415,6 +424,12 @@ export default function ProcessedPage() {
                   error={error}
                   label="Tags"
                   classNameLabel="block text-lg font-semibold text-black"
+                  onBlur={() => {
+                    setSearchTagDocument("");
+                  }}
+                  onSearch={(val: string) => setSearchTagDocument(val)}
+                  notFoundContent={isPendingTag ? <Spin size="small" /> : null}
+                  filterOption={false}
                 />
               )}
             />

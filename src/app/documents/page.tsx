@@ -43,6 +43,12 @@ export default function DocumentsPage() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
+  const [searchTagDocument, setSearchTagDocument] = useState<string>("");
+  const [searchRole, setSearchRole] = useState<string>("");
+
+  const debounceSearchTagDocument = useDebounce(searchTagDocument, 800);
+  const debounceSearchRole = useDebounce(searchRole, 800);
+
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
   const [isShowDelete, setIsShowDelete] = useState<DeleteDocumentModal>({
     open: false,
@@ -81,8 +87,17 @@ export default function DocumentsPage() {
     },
   });
 
-  const { data: dataListRole, isPending: isPendingRole } = useRole();
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListRole, isPending: isPendingRole } = useRole({
+    query: {
+      search: debounceSearchRole,
+    },
+  });
+
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags({
+    query: {
+      search: debounceSearchTagDocument,
+    },
+  });
 
   useEffect(() => {
     const fetchDataTag = () => {
@@ -556,6 +571,12 @@ export default function DocumentsPage() {
                   error={error}
                   label="Tags"
                   classNameLabel="block text-lg font-semibold text-black"
+                  onBlur={() => {
+                    setSearchTagDocument("");
+                  }}
+                  onSearch={(val: string) => setSearchTagDocument(val)}
+                  notFoundContent={isPendingTag ? <Spin size="small" /> : null}
+                  filterOption={false}
                 />
               )}
             />
@@ -618,6 +639,12 @@ export default function DocumentsPage() {
                   styleSelect={{ width: "100%" }}
                   label="Role"
                   classNameLabel="block text-lg font-semibold text-black"
+                  onBlur={() => {
+                    setSearchRole("");
+                  }}
+                  onSearch={(val: string) => setSearchRole(val)}
+                  notFoundContent={isPendingRole ? <Spin size="small" /> : null}
+                  filterOption={false}
                 />
               )}
             />

@@ -18,7 +18,7 @@ import {
   useUserManagement,
 } from "@/services/user-management/useUserManagement";
 import { FilterIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/style/icon";
-import { ConfigProvider, DatePicker, Modal, Table, TablePaginationConfig } from "antd";
+import { ConfigProvider, DatePicker, Modal, Table, TablePaginationConfig, Spin } from "antd";
 import { FilterValue } from "antd/es/table/interface";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -35,7 +35,17 @@ export default function UserManagementPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
+
+  const [searchRole, setSearchRole] = useState<string>("");
+
+  const debounceSearchRole = useDebounce(searchRole, 800);
+
   const [dataUserTag, setDataUserTag] = useState<DefaultOptionType[]>([]);
+
+  const [searchSearchUserTag, setSearchSearchUserTag] = useState<string>("");
+
+  const debounceSearchUserTag = useDebounce(searchSearchUserTag, 800);
+
   const [isShowDelete, setIsShowDelete] = useState<DeleteUserManagementModal>({
     open: false,
     type: "selection",
@@ -71,8 +81,17 @@ export default function UserManagementPage() {
     },
   });
 
-  const { data: dataListRole, isPending: isPendingRole } = useRole();
-  const { data: dataListUserTag, isPending: isPendingUserTag } = useUserTags();
+  const { data: dataListRole, isPending: isPendingRole } = useRole({
+    query: {
+      search: debounceSearchRole,
+    },
+  });
+
+  const { data: dataListUserTag, isPending: isPendingUserTag } = useUserTags({
+    query: {
+      search: debounceSearchUserTag,
+    },
+  });
 
   useEffect(() => {
     const fetchDataRole = () => {
@@ -451,6 +470,12 @@ export default function UserManagementPage() {
                   error={error}
                   label="Tags"
                   classNameLabel="block text-lg font-semibold text-black"
+                  notFoundContent={isPendingUserTag ? <Spin size="small" /> : null}
+                  filterOption={false}
+                  onBlur={() => {
+                    setSearchSearchUserTag("");
+                  }}
+                  onSearch={(val: string) => setSearchSearchUserTag(val)}
                 />
               )}
             />
@@ -471,6 +496,12 @@ export default function UserManagementPage() {
                   styleSelect={{ width: "100%" }}
                   label="Role"
                   classNameLabel="block text-lg font-semibold text-black"
+                  onBlur={() => {
+                    setSearchRole("");
+                  }}
+                  onSearch={(val: string) => setSearchRole(val)}
+                  notFoundContent={isPendingRole ? <Spin size="small" /> : null}
+                  filterOption={false}
                 />
               )}
             />

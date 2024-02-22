@@ -18,11 +18,16 @@ import { DefaultOptionType } from "antd/es/cascader";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import useDebounce from "@/hook/useDebounce";
 
 export default function ProfilePage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+
+  const [searchRole, setSearchRole] = useState<string>("");
+  const debounceSearchRole = useDebounce(searchRole, 800);
+
   const [avatarPathRaw, setAvatarPathRaw] = useState<UploadChangeParam<UploadFile<any>>>();
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
 
@@ -44,7 +49,12 @@ export default function ProfilePage() {
 
   const { data: dataProfile, refetch: refetchProfile, isPending: isPendingProfile } = useProfile();
 
-  const { data: dataListRole, isPending: isPendingRole } = useRole();
+  const { data: dataListRole, isPending: isPendingRole } = useRole({
+    query: {
+      search: debounceSearchRole,
+    },
+  });
+
   const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
 
   useEffect(() => {
@@ -378,6 +388,12 @@ export default function ProfilePage() {
                               required
                               label="Role"
                               classNameLabel="block text-xl font-semibold text-black"
+                              onBlur={() => {
+                                setSearchRole("");
+                              }}
+                              onSearch={(val: string) => setSearchRole(val)}
+                              notFoundContent={isPendingRole ? <Spin size="small" /> : null}
+                              filterOption={false}
                             />
                           );
                         }}
