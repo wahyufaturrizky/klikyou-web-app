@@ -549,7 +549,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                   <Link rel="noopener noreferrer" target="_blank" href={getValues("document_path")}>
                     {getValues("document_path")?.file?.name
                       ? getValues("document_path")?.file?.name
-                      : getValues("document_path")}
+                      : getValues("document_path")?.split("/").pop()}
                   </Link>
                 </div>
               </div>
@@ -809,7 +809,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               target="_blank"
               href={stateViewNoteAndFileVersionModal?.data?.supportingDocumentPath || ""}
             >
-              {stateViewNoteAndFileVersionModal?.data?.supportingDocumentPath}
+              {stateViewNoteAndFileVersionModal?.data?.supportingDocumentPath?.split("/").pop()}
             </Link>
           </div>
         </div>
