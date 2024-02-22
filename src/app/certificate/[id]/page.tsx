@@ -235,12 +235,12 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
             </div>
 
             <Text
-              label="Adalah benar dan tercatat  dalam audit trail kami"
+              label="Adalah benar dan tercatat dalam audit trail kami"
               className="text-xl text-center font-bold text-black"
             />
 
             <Text
-              label="Adalah benar dan tercatat  dalam audit trail kami"
+              label="That is true and recorded in our audit trail"
               className="text-base text-center font-light italic text-black"
             />
 
