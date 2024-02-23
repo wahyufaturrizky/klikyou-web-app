@@ -264,8 +264,8 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       title: "ID",
       dataIndex: "id",
       key: "id",
-      render: (text: string) => {
-        return <Text label={text} className="text-base font-normal text-black" />;
+      render: (text: string, record: DataTypeActionHistory, index: number) => {
+        return <Text label={String(index + 1)} className="text-base font-normal text-black" />;
       },
     },
     {
