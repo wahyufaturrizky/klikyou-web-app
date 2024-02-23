@@ -194,7 +194,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     {
       title: "ID",
       dataIndex: "id",
-      sorter: (a, b) => a.id - b.id,
       key: "id",
       render: (text: string) => {
         return <Text label={text} className="text-base font-normal text-black" />;
