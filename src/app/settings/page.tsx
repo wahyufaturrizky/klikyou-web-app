@@ -76,8 +76,6 @@ export default function SettingsPage() {
     if (dataSettings) {
       const { data } = dataSettings.data;
 
-      localStorage.setItem("company_profile", JSON.stringify(data));
-
       setValue("company_image_path", data.companyImagePath);
       setValue("company_name", data.companyName);
       setValue("company_address", data.companyAddress);

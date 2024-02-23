@@ -11,6 +11,7 @@ import { CheckIcon, FileIcon, RejectIcon, StopwatchIcon } from "@/style/icon";
 import { ConfigProvider, DatePicker, Grid, Spin, Table, TableProps } from "antd";
 import { useEffect, useState } from "react";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
+import { useSettings } from "@/services/settings/useSettings";
 
 const { useBreakpoint } = Grid;
 
@@ -22,15 +23,17 @@ export default function DashboardPage() {
   const [companyProfile, setCompanyProfile] = useState<CompanyProfileType>();
   const [dataRawDashboard, setDataRawDashboard] = useState<DataRawDashboardType>();
 
+  const { data: dataSettings, isPending: isPendingSettings } = useSettings();
+
   useEffect(() => {
     const handleFetchCompanyProfile = () => {
-      const rawCompanyProfile = localStorage.getItem("company_profile");
-
-      setCompanyProfile(JSON.parse(rawCompanyProfile ?? "{}"));
+      setCompanyProfile(dataSettings?.data?.data);
     };
 
-    handleFetchCompanyProfile();
-  }, []);
+    if (dataSettings) {
+      handleFetchCompanyProfile();
+    }
+  }, [dataSettings]);
 
   const columnsProcessTime: TableProps<ShortestLongestProcessTimeType>["columns"] = [
     {
@@ -167,16 +170,18 @@ export default function DashboardPage() {
     },
   ];
 
+  const isLoading = isPendingDashboard || isPendingSettings;
+
   return (
     <div>
-      {isPendingDashboard && <Spin fullscreen />}
+      {isLoading && <Spin fullscreen />}
       <div
         className={`${
           xxl || xl || lg ? "h-[343px] justify-center" : "h-[100px]"
         } bg-img-login bg-bottom flex flex-col items-start p-6`}
       >
         <Text
-          label={`👋 Hello, ${companyProfile?.companyName || ""}`}
+          label={`👋 Hello, ${companyProfile?.companyName ?? ""}`}
           className="text-center text-xl font-normal text-white"
         />
       </div>

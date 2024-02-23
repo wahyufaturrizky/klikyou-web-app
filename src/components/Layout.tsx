@@ -44,6 +44,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
+import { useSettings } from "@/services/settings/useSettings";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
@@ -284,15 +285,17 @@ const Layout = ({ ...props }: LayoutInterface) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const { data: dataSettings, isPending: isPendingSettings } = useSettings();
+
   useEffect(() => {
     const handleFetchCompanyProfile = () => {
-      const rawCompanyProfile = localStorage.getItem("company_profile");
-
-      setCompanyProfile(JSON.parse(rawCompanyProfile ?? "{}"));
+      setCompanyProfile(dataSettings?.data?.data);
     };
 
-    handleFetchCompanyProfile();
-  }, []);
+    if (dataSettings) {
+      handleFetchCompanyProfile();
+    }
+  }, [dataSettings]);
 
   const onClickMenu: MenuProps["onClick"] = (e) => {
     setCurrentMenu(e.key);
@@ -362,7 +365,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
       >
         <LayoutAntd hasSider>
           <Sider
-            trigger={!(lg || xl || xxl) && null}
+            trigger={!(lg ?? xl ?? xxl) && null}
             collapsible
             collapsed={collapsed}
             onCollapse={(value) => {
@@ -430,7 +433,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
                   className={`${
                     xxl || xl || lg ? "text-xl" : "text-xs"
                   } text-black font-bold border-l-2 border-primary-gray pl-4`}
-                  label={companyProfile?.companyName || ""}
+                  label={isPendingSettings ? "Loading..." : companyProfile?.companyName ?? ""}
                 />
               </div>
 
