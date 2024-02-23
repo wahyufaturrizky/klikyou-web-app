@@ -79,10 +79,7 @@ export default function Home() {
             className="mx-auto h-auto w-[270px]"
           />
 
-          <Text
-            label="👋 Hello, PT Sempurna Tech"
-            className="mt-10 text-center text-xl font-normal text-white"
-          />
+          <Text label="👋 Welcome" className="mt-10 text-center text-xl font-normal text-white" />
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm bg-white rounded-md p-6">
