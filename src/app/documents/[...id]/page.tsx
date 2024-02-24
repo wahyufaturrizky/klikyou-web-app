@@ -279,7 +279,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     refetch: refetchDocumentId,
     isRefetching: isRefetchingDocumentId,
   } = useDocumentById({
-    id: id[1],
+    id: Number(id[1]),
     options: {
       refetchOnWindowFocus: false,
     },

@@ -159,7 +159,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   }, [dataListTag, dataListUserList]);
 
   const { data: dataDocument, isPending: isPendingDocument } = useDocumentById({
-    id: id[1],
+    id: Number(id[1]),
     options: {
       refetchOnWindowFocus: false,
     },
