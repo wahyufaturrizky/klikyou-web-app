@@ -1,18 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
+import { UseMutationResult, useMutation } from "@tanstack/react-query";
 import { client } from "../client";
+import { FormLoginValues } from "@/interface/login.interface";
 
-function useRegister({ options }: any) {
-  return useMutation({
-    mutationFn: (reqBody: any) =>
-      client("/register", {
-        method: "POST",
-        data: reqBody,
-      }),
-    ...options,
-  }) as any;
-}
-
-function useSignIn({ options }: any) {
+function useSignIn({ options }: { options: any }) {
   return useMutation({
     mutationFn: (reqBody) =>
       client("/auth/login", {
@@ -20,7 +10,7 @@ function useSignIn({ options }: any) {
         data: reqBody,
       }),
     ...options,
-  }) as any;
+  }) as UseMutationResult<FormLoginValues, Error>;
 }
 
 function useLogOut({ options }: any) {
@@ -31,7 +21,7 @@ function useLogOut({ options }: any) {
         data: reqBody,
       }),
     ...options,
-  }) as any;
+  }) as UseMutationResult<{ email: string }, Error>;
 }
 
-export { useRegister, useSignIn, useLogOut };
+export { useSignIn, useLogOut };

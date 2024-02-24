@@ -10,7 +10,7 @@ const fetchDocument = async ({
   query: any;
   action?: "receival" | "approval" | "";
 }) => {
-  return client(`/documents${action ? `/${action}` : ""}`, {
+  return client(action ? `/documents${action}` : "/documents", {
     params: {
       ...query,
     },

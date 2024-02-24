@@ -1,5 +1,4 @@
-import { CommonResponseType, DataStatusMessageResponseType, MetaType } from "@/interface/common";
-import { DataResDocument } from "@/interface/documents.interface";
+import { CommonResponseType, DataStatusMessageResponseType } from "@/interface/common";
 export type FormLoginValues = {
   email: string;
   password: string;
