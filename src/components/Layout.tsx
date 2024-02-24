@@ -511,6 +511,8 @@ const Layout = ({ ...props }: LayoutInterface) => {
                   key={itemNotif.id}
                   className="py-2 px-3.5 cursor-pointer hover:bg-primary-gray/10 active:bg-primary-gray/20"
                   onClick={() => {
+                    router.push(`/documents/view/${itemNotif.documentId}`);
+
                     setNotifId(String(itemNotif.id));
 
                     setTimeout(() => refetchNotificationById(), 700);
