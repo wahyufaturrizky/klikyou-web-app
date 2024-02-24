@@ -19,8 +19,6 @@ import {
   Table,
   TablePaginationConfig,
   TableProps,
-  UploadFile,
-  message,
 } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import { FilterValue } from "antd/es/table/interface";
@@ -31,12 +29,9 @@ import { Controller, useForm } from "react-hook-form";
 export default function ProcessedPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
   const [searchTagDocument, setSearchTagDocument] = useState<string>("");
-
-  const [messageApi, contextHolder] = message.useMessage();
 
   const debounceSearchTagDocument = useDebounce(searchTagDocument, 800);
 
@@ -256,7 +251,6 @@ export default function ProcessedPage() {
 
   return (
     <div className="p-6">
-      {contextHolder}
       <div className="flex justify-end items-center">
         <div className="flex gap-4 items-center">
           <Button

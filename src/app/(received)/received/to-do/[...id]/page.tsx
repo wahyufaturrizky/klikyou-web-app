@@ -66,6 +66,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     });
   const [dataInfo, setDataInfo] = useState<DataInfoDocumentType[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+  const [isUploadFile, setIsUploadFile] = useState<boolean>(false);
+
   const [dataLogHistory, setDataLogHistory] = useState<DataTypeActionHistory[]>([]);
 
   const [dataCollaborator, setDataCollaborator] = useState<DefaultOptionType[]>([]);
@@ -951,10 +954,12 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
               <Button
                 type="button"
-                disabled={isPendingApproveRejectProcess}
-                loading={isPendingApproveRejectProcess}
+                disabled={isPendingApproveRejectProcess || isUploadFile}
+                loading={isPendingApproveRejectProcess || isUploadFile}
                 onClick={handleSubmitApproveRejectEdit(onSubmitApproveRejectEdit)}
-                label="Mark as Processed"
+                label={
+                  isPendingApproveRejectProcess || isUploadFile ? "Loading..." : "Mark as Processed"
+                }
                 icon={
                   <PeopleCheckIcon
                     style={{
@@ -1018,6 +1023,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         authorization: "authorization-text",
                       }}
                       onChange={(info) => {
+                        setIsUploadFile(true);
                         setFileList(info.fileList);
                         if (info.file.status !== "uploading") {
                           console.log(info.file, info.fileList);
@@ -1025,8 +1031,12 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         if (info.file.status === "done") {
                           message.success(`${info.file.name} file uploaded successfully`);
                           onChange(info);
+
+                          setIsUploadFile(false);
                         } else if (info.file.status === "error") {
                           message.error(`${info.file.name} file upload failed.`);
+
+                          setIsUploadFile(false);
                         }
                       }}
                     >

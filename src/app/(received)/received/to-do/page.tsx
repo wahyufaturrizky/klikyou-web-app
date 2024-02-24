@@ -24,13 +24,13 @@ import {
   ConfigProvider,
   DatePicker,
   Modal,
+  Spin,
   Table,
   TablePaginationConfig,
   TableProps,
   Upload,
   UploadFile,
   message,
-  Spin,
 } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import { FilterValue } from "antd/es/table/interface";
@@ -42,6 +42,8 @@ export default function ToDoPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+
+  const [isUploadFile, setIsUploadFile] = useState<boolean>(false);
 
   const [searchTagDocument, setSearchTagDocument] = useState<string>("");
 
@@ -498,10 +500,12 @@ export default function ToDoPage() {
 
               <Button
                 type="button"
-                disabled={isPendingApproveRejectProcess}
-                loading={isPendingApproveRejectProcess}
+                disabled={isPendingApproveRejectProcess || isUploadFile}
+                loading={isPendingApproveRejectProcess || isUploadFile}
                 onClick={handleSubmitApproveRejectEdit(onSubmitApproveRejectEdit)}
-                label="Mark as Processed"
+                label={
+                  isPendingApproveRejectProcess || isUploadFile ? "Loading..." : "Mark as Processed"
+                }
                 icon={
                   <PeopleCheckIcon
                     style={{
@@ -565,6 +569,7 @@ export default function ToDoPage() {
                         authorization: "authorization-text",
                       }}
                       onChange={(info) => {
+                        setIsUploadFile(true);
                         setFileList(info.fileList);
                         if (info.file.status !== "uploading") {
                           console.log(info.file, info.fileList);
@@ -572,8 +577,10 @@ export default function ToDoPage() {
                         if (info.file.status === "done") {
                           message.success(`${info.file.name} file uploaded successfully`);
                           onChange(info);
+                          setIsUploadFile(false);
                         } else if (info.file.status === "error") {
                           message.error(`${info.file.name} file upload failed.`);
+                          setIsUploadFile(false);
                         }
                       }}
                     >

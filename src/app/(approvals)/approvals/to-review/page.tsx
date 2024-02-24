@@ -61,6 +61,8 @@ export default function ToReviewPage() {
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
+  const [isUploadFile, setIsUploadFile] = useState<boolean>(false);
+
   const [tableParams, setTableParams] = useState<{
     pagination: TablePaginationConfig;
   }>({
@@ -650,8 +652,8 @@ export default function ToReviewPage() {
               <Button
                 type="button"
                 label={stateApproveAndRejectModal.type === "approve" ? "Approve" : "Reject"}
-                disabled={isPendingApproveRejectProcess}
-                loading={isPendingApproveRejectProcess}
+                disabled={isPendingApproveRejectProcess || isUploadFile}
+                loading={isPendingApproveRejectProcess || isUploadFile}
                 onClick={handleSubmitApproveRejectEdit(onSubmitApproveRejectEdit)}
                 icon={
                   stateApproveAndRejectModal.type === "approve" ? (
@@ -731,6 +733,7 @@ export default function ToReviewPage() {
                           authorization: "authorization-text",
                         }}
                         onChange={(info) => {
+                          setIsUploadFile(true);
                           setFileList(info.fileList);
                           if (info.file.status !== "uploading") {
                             console.log(info.file, info.fileList);
@@ -738,8 +741,11 @@ export default function ToReviewPage() {
                           if (info.file.status === "done") {
                             message.success(`${info.file.name} file uploaded successfully`);
                             onChange(info);
+
+                            setIsUploadFile(false);
                           } else if (info.file.status === "error") {
                             message.error(`${info.file.name} file upload failed.`);
+                            setIsUploadFile(false);
                           }
                         }}
                       >

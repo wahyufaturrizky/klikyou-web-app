@@ -60,6 +60,8 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const [dataInfo, setDataInfo] = useState<DataInfoDocumentType[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
+  const [isUploadFile, setIsUploadFile] = useState<boolean>(false);
+
   const [searchTagDocument, setSearchTagDocument] = useState<string>("");
   const [searchCollaboratorDocument, setSearchCollaboratorDocument] = useState<string>("");
   const [searchSearchRecipientDocumentDocument, setSearchSearchRecipientDocumentDocument] =
@@ -1208,9 +1210,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               <Button
                 type="button"
                 onClick={handleSubmit(onSubmit)}
-                label="Yes"
-                loading={isPendingUpdateDocument}
-                disabled={isPendingUpdateDocument}
+                label={isPendingUpdateDocument || isUploadFile ? "Loading..." : "Yes"}
+                loading={isPendingUpdateDocument || isUploadFile}
+                disabled={isPendingUpdateDocument || isUploadFile}
                 className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               />
             </div>
@@ -1244,6 +1246,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                           authorization: "authorization-text",
                         }}
                         onChange={(info) => {
+                          setIsUploadFile(true);
                           setFileList(info?.fileList);
                           if (info.file.status !== "uploading") {
                             console.log(info.file, info.fileList);
@@ -1251,8 +1254,12 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                           if (info.file.status === "done") {
                             onChange(info);
                             message.success(`${info.file.name} file uploaded successfully`);
+
+                            setIsUploadFile(false);
                           } else if (info.file.status === "error") {
                             message.error(`${info.file.name} file upload failed.`);
+
+                            setIsUploadFile(false);
                           }
                         }}
                       >

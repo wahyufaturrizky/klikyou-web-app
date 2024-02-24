@@ -23,6 +23,8 @@ export default function AddDocumentPage() {
 
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
+  const [isUploadFile, setIsUploadFile] = useState<boolean>(false);
+
   const [dataCollaborator, setDataCollaborator] = useState<DefaultOptionType[]>([]);
   const [dataAuthorizer, setDataAuthorizer] = useState<DefaultOptionType[]>([]);
   const [dataRecipient, setDataRecipient] = useState<DefaultOptionType[]>([]);
@@ -403,6 +405,7 @@ export default function AddDocumentPage() {
                               name="document_path"
                               headers={{ authorization: "authorization-text" }}
                               onChange={(info) => {
+                                setIsUploadFile(true);
                                 setFileList(info.fileList);
 
                                 if (info.file.status !== "uploading") {
@@ -411,8 +414,10 @@ export default function AddDocumentPage() {
                                 if (info.file.status === "done") {
                                   message.success(`${info.file.name} file uploaded successfully`);
                                   onChange(info);
+                                  setIsUploadFile(false);
                                 } else if (info.file.status === "error") {
                                   message.error(`${info.file.name} file upload failed.`);
+                                  setIsUploadFile(false);
                                 }
                               }}
                             >
@@ -541,8 +546,8 @@ export default function AddDocumentPage() {
 
         <Button
           type="button"
-          loading={isPendingCreateDocument}
-          disabled={isPendingCreateDocument}
+          loading={isPendingCreateDocument || isUploadFile}
+          disabled={isPendingCreateDocument || isUploadFile}
           onClick={handleSubmit(onSubmit)}
           label="Save"
           className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
