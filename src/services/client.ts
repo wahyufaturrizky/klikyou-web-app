@@ -34,6 +34,7 @@ export async function client(
     })
     .catch((e: any) => {
       console.log(e);
+      message.error(e?.response?.data?.message);
     });
 }
 

@@ -291,10 +291,10 @@ export default function UserManagementPage() {
       return data.selectedRowKeys.length > 1
         ? `Are you sure to delete ${data.selectedRowKeys.length} items ?`
         : `Are you sure to delete document ${
-            data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.name
+            data?.data?.find((el: any) => el.key === data?.selectedRowKeys[0])?.email
           } ?`;
     } else {
-      return `Are you sure to delete document ${data?.name} ?`;
+      return `Are you sure to delete document ${data?.email} ?`;
     }
   };
 

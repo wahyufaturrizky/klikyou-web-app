@@ -241,7 +241,7 @@ export default function DocumentsPage() {
       title: "Updated At",
       dataIndex: "updatedAt",
       sorter: true,
-      width: 150,
+      width: 180,
       key: "updatedAt",
       render: (text: Date) => UseConvertDateFormat(text),
     },
@@ -389,15 +389,17 @@ export default function DocumentsPage() {
   const { mutate: deleteDocument, isPending: isPendingDeleteDocument }: any = useDeleteBulkDocument(
     {
       options: {
-        onSuccess: () => {
-          messageApi.open({
-            type: "success",
-            content: "Delete document success",
-          });
+        onSuccess: (res: any) => {
+          if (res.status === 200) {
+            messageApi.open({
+              type: "success",
+              content: "Delete document success",
+            });
 
-          refetchDocument();
-          resetIsShowDelete();
-          setSelectedRowKeys([]);
+            refetchDocument();
+            resetIsShowDelete();
+            setSelectedRowKeys([]);
+          }
         },
       },
     }
