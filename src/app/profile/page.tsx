@@ -23,6 +23,9 @@ import useDebounce from "@/hook/useDebounce";
 export default function ProfilePage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
+
+  const [isUploadFile, setIsUploadFile] = useState<boolean>(false);
+
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
   const [searchRole, setSearchRole] = useState<string>("");
@@ -244,12 +247,14 @@ export default function ProfilePage() {
                             showUploadList={false}
                             beforeUpload={beforeUpload}
                             onChange={(info) => {
+                              setLoadingImageAvatar(true);
                               setAvatarPathRaw(info);
                               if (info.file.status === "uploading") {
-                                setLoadingImageAvatar(true);
-                                return;
+                                console.log(info.file, info.fileList);
                               }
                               if (info.file.status === "done") {
+                                message.success(`${info.file.name} file uploaded successfully`);
+
                                 // Get this url from response in real world.
                                 getBase64(info.file.originFileObj as FileType, (url) => {
                                   setLoadingImageAvatar(false);
@@ -605,9 +610,9 @@ export default function ProfilePage() {
           <Button
             type="button"
             onClick={handleSubmit(onSubmit)}
-            loading={isPendingCreateUserManagement}
-            disabled={isPendingCreateUserManagement}
-            label="Save"
+            loading={isPendingCreateUserManagement || loadingImageAvatar}
+            disabled={isPendingCreateUserManagement || loadingImageAvatar}
+            label={isPendingCreateUserManagement || loadingImageAvatar ? "Loading..." : "Save"}
             className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           />
         </div>

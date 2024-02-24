@@ -394,7 +394,7 @@ export default function ToReviewPage() {
 
     let formdata = new FormData();
 
-    formdata.append("note", supporting_document_note);
+    formdata.append("supporting_document_note", supporting_document_note);
     formdata.append("supporting_document_path", supporting_document_path?.file.originFileObj);
 
     updateApproveRejectProcess(formdata);

@@ -549,7 +549,7 @@ export default function AddDocumentPage() {
           loading={isPendingCreateDocument || isUploadFile}
           disabled={isPendingCreateDocument || isUploadFile}
           onClick={handleSubmit(onSubmit)}
-          label="Save"
+          label={isPendingCreateDocument || isUploadFile ? "Loading..." : "Save"}
           className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         />
       </div>
