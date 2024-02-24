@@ -108,9 +108,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       document_name: "",
       memoId: "",
       document_number: "",
-      id: "",
+      id: 0,
       text_remarks: "",
-      numeric_remarks: "",
+      numeric_remarks: 0,
       status: "",
       document_tag_id: [],
       action: "",
@@ -257,7 +257,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     formdata.append("document_number", document_number || "");
     formdata.append("text_remarks", text_remarks || "");
     formdata.append("document_note", document_note || "");
-    formdata.append("numeric_remarks", numeric_remarks || "");
+    formdata.append("numeric_remarks", String(numeric_remarks));
     formdata.append(
       "document_path",
       document_path?.file?.originFileObj ? document_path.file.originFileObj : document_path
@@ -325,33 +325,29 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       setValue("document_name", documentName);
       setValue("memoId", memoId);
       setValue("action", action);
-      setValue("id", String(id));
+      setValue("id", id);
       setValue("document_number", documentNumber);
       setValue("text_remarks", textRemarks);
-      setValue("numeric_remarks", String(numericRemarks));
+      setValue("numeric_remarks", numericRemarks);
       setValue("document_path", documentPath);
       setValue("status", status);
       setValue(
         "document_tag_id",
-        documentTags.map((itemTag: DocumentTagsType) => String(itemTag.masterDocumentTagId))
+        documentTags.map((itemTag: DocumentTagsType) => itemTag.masterDocumentTagId)
       );
       setValue(
         "document_collaborator_id",
-        documentCollaborators.map((itemCollaborator: DocumentCollaboratorsType) =>
-          String(itemCollaborator.userId)
+        documentCollaborators.map(
+          (itemCollaborator: DocumentCollaboratorsType) => itemCollaborator.userId
         )
       );
       setValue(
         "document_authorizer_id",
-        documentAuthorizers.map((itemAuthorizer: DocumentAuthorizersType) =>
-          String(itemAuthorizer.userId)
-        )
+        documentAuthorizers.map((itemAuthorizer: DocumentAuthorizersType) => itemAuthorizer.userId)
       );
       setValue(
         "document_recipient_id",
-        documentRecipients.map((itemRecipient: DocumentRecipientsType) =>
-          String(itemRecipient.userId)
-        )
+        documentRecipients.map((itemRecipient: DocumentRecipientsType) => itemRecipient.userId)
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1086,6 +1082,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                   classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                   classNameLabel="block text-xl font-semibold text-black"
                   label="Text remarks"
+                  required
                 />
               )}
             />
@@ -1114,6 +1111,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                   classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
                   classNameLabel="block text-xl font-semibold text-black"
                   label="Numeric remarks"
+                  required
                 />
               )}
             />

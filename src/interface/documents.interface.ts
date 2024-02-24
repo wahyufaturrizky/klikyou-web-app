@@ -98,15 +98,15 @@ export type FormDocumentValues = {
   document_number: string;
   memoId: string;
   text_remarks: string;
-  numeric_remarks: string;
-  document_tag_id: string[];
-  document_collaborator_id: string[];
+  numeric_remarks: number;
+  document_tag_id: number[];
+  document_collaborator_id: number[];
   document_path: any;
-  document_authorizer_id: string[];
-  document_recipient_id: string[];
+  document_authorizer_id: number[];
+  document_recipient_id: number[];
   document_note: string;
   status?: string;
-  id?: string;
+  id?: number;
   action?: string;
 };
 

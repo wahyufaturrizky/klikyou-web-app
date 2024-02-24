@@ -48,12 +48,12 @@ export default function AddDocumentPage() {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const { control, handleSubmit, setValue } = useForm<FormDocumentValues>({
+  const { control, handleSubmit } = useForm<FormDocumentValues>({
     defaultValues: {
       document_name: "",
       document_number: "",
       text_remarks: "",
-      numeric_remarks: "",
+      numeric_remarks: 0,
       document_tag_id: [],
       document_collaborator_id: [],
       document_path: "",
@@ -176,7 +176,7 @@ export default function AddDocumentPage() {
     formdata.append("document_number", document_number);
     formdata.append("text_remarks", text_remarks);
     formdata.append("document_note", document_note);
-    formdata.append("numeric_remarks", numeric_remarks);
+    formdata.append("numeric_remarks", String(numeric_remarks));
     formdata.append("document_path", document_path.file.originFileObj);
     formdata.append("document_tag_id", document_tag_id.join(","));
     formdata.append("document_collaborator_id", document_collaborator_id.join(","));
