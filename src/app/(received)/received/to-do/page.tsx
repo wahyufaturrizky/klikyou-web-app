@@ -324,7 +324,7 @@ export default function ToDoPage() {
     formdata.append("note", supporting_document_note);
     formdata.append("supporting_document_path", supporting_document_path?.file.originFileObj);
 
-    updateApproveRejectProcess(data);
+    updateApproveRejectProcess(formdata);
   };
 
   return (

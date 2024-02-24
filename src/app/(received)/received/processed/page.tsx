@@ -1,42 +1,32 @@
 "use client";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
-import InputTextArea from "@/components/InputTextArea";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
-import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
-import {
-  ApproveRejectProcessModal,
-  FormApproveRejectProcessValues,
-  FormFilterValues,
-  TagType,
-} from "@/interface/common";
+import { FormApproveRejectProcessValues, FormFilterValues, TagType } from "@/interface/common";
 import { DataResDocument, DocumentTagsType } from "@/interface/documents.interface";
-import { useDocument, useDocumentApproveRejectProcess } from "@/services/document/useDocument";
+import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
+import { useDocument } from "@/services/document/useDocument";
 import { DownloadIcon, FilterIcon, SearchIcon } from "@/style/icon";
-import { UploadOutlined } from "@ant-design/icons";
 import {
-  Button as ButtonAntd,
   ConfigProvider,
   DatePicker,
   Modal,
+  Spin,
   Table,
   TablePaginationConfig,
   TableProps,
-  Upload,
   UploadFile,
   message,
-  Spin,
 } from "antd";
+import { DefaultOptionType } from "antd/es/cascader";
 import { FilterValue } from "antd/es/table/interface";
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { DefaultOptionType } from "antd/es/cascader";
-import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 
 export default function ProcessedPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
@@ -49,13 +39,6 @@ export default function ProcessedPage() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const debounceSearchTagDocument = useDebounce(searchTagDocument, 800);
-
-  const [stateApproveAndRejectModal, setStateApproveAndRejectModal] =
-    useState<ApproveRejectProcessModal>({
-      open: false,
-      data: null,
-      type: "approve",
-    });
 
   const [dataListDocument, setDataListDocument] = useState<DataResDocument[]>([]);
 
@@ -271,32 +254,6 @@ export default function ProcessedPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(tableParams)]);
 
-  const { mutate: updateApproveRejectProcess, isPending: isPendingApproveRejectProcess } =
-    useDocumentApproveRejectProcess({
-      id: stateApproveAndRejectModal.data?.id,
-      action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
-      options: {
-        onSuccess: () => {
-          messageApi.open({
-            type: "success",
-            content: "Success update review",
-          });
-
-          resetApproveRejectEdit();
-          refetchProcessed();
-          setStateApproveAndRejectModal({
-            data: null,
-            open: false,
-            type: "",
-          });
-        },
-      },
-    });
-
-  const onSubmitApproveRejectEdit = (data: FormApproveRejectProcessValues) => {
-    updateApproveRejectProcess(data);
-  };
-
   return (
     <div className="p-6">
       {contextHolder}
@@ -431,127 +388,6 @@ export default function ProcessedPage() {
                   notFoundContent={isPendingTag ? <Spin size="small" /> : null}
                   filterOption={false}
                 />
-              )}
-            />
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
-        title={`${
-          stateApproveAndRejectModal.type === "approve" ? "Approve" : "Reject"
-        } document tag`}
-        open={stateApproveAndRejectModal.open}
-        onCancel={() => {
-          resetApproveRejectEdit();
-          setStateApproveAndRejectModal({
-            open: false,
-            data: null,
-            type: "",
-          });
-        }}
-        footer={
-          <div className="flex justify-end items-center">
-            <div className="flex gap-4 items-center">
-              <Button
-                type="button"
-                disabled={isPendingApproveRejectProcess}
-                loading={isPendingApproveRejectProcess}
-                onClick={() => {
-                  resetApproveRejectEdit();
-                  setStateApproveAndRejectModal({
-                    open: false,
-                    data: null,
-                    type: "",
-                  });
-                }}
-                label="Cancel"
-                className="flex border border-primary-blue justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-primary-blue shadow-sm hover:bg-white/70 active:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              />
-
-              <Button
-                type="button"
-                disabled={isPendingApproveRejectProcess}
-                loading={isPendingApproveRejectProcess}
-                onClick={handleSubmitApproveRejectEdit(onSubmitApproveRejectEdit)}
-                label="Yes"
-                className="flex justify-center items-center rounded-md bg-primary-blue px-6 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              />
-            </div>
-          </div>
-        }
-      >
-        <div>
-          <div className="mb-6">
-            <Controller
-              control={controlApproveRejectEdit}
-              name="supporting_document_note"
-              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                <InputTextArea
-                  onChange={onChange}
-                  error={error}
-                  onBlur={onBlur}
-                  value={value}
-                  name="supporting_document_note"
-                  placeholder="Enter note"
-                  classNameInput="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-blue sm:text-sm"
-                  classNameLabel="block text-xl font-semibold text-black"
-                  label="Note"
-                />
-              )}
-            />
-          </div>
-
-          <div>
-            <Text
-              label="Upload supporting files"
-              className="mb-2 text-lg font-semibold text-black"
-            />
-
-            <Controller
-              control={controlApproveRejectEdit}
-              name="supporting_document_path"
-              render={({ field: { onChange }, fieldState: { error } }) => (
-                <div>
-                  <ConfigProvider
-                    theme={{
-                      token: {
-                        colorPrimary: "#0AADE0",
-                      },
-                    }}
-                  >
-                    <Upload
-                      multiple={false}
-                      maxCount={1}
-                      fileList={fileList}
-                      name="supporting_document_path"
-                      headers={{
-                        authorization: "authorization-text",
-                      }}
-                      onChange={(info) => {
-                        setFileList(info.fileList);
-                        if (info.file.status !== "uploading") {
-                          console.log(info.file, info.fileList);
-                        }
-                        if (info.file.status === "done") {
-                          message.success(`${info.file.name} file uploaded successfully`);
-                          onChange(info);
-                        } else if (info.file.status === "error") {
-                          message.error(`${info.file.name} file upload failed.`);
-                        }
-                      }}
-                    >
-                      <ButtonAntd type="primary" icon={<UploadOutlined />}></ButtonAntd>
-                    </Upload>
-                  </ConfigProvider>
-
-                  {error && (
-                    <Text
-                      className="text-[#EB5757] font-roboto mt-2 font-bold text-sm"
-                      label={String(error.message)}
-                    />
-                  )}
-                </div>
               )}
             />
           </div>
