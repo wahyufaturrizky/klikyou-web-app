@@ -29,6 +29,7 @@ import { useUserTags } from "@/services/user-tags/useUserTags";
 import { DataUserTags } from "@/interface/user-tag.interface";
 import { DefaultOptionType } from "antd/es/cascader";
 import Select from "@/components/Select";
+import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
 
 export default function UserManagementPage() {
   const router = useRouter();
@@ -233,8 +234,8 @@ export default function UserManagementPage() {
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: useOrderTableParams(tableParams),
-      updated_at_start: getValuesFilter("date")[0],
-      updated_at_end: getValuesFilter("date")[1],
+      updated_at_start: useDateRangeFormat(getValuesFilter("date")[0] as any),
+      updated_at_end: useDateRangeFormat(getValuesFilter("date")[1] as any),
     },
   });
 

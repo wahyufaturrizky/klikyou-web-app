@@ -31,6 +31,7 @@ import { FilterValue } from "antd/es/table/interface";
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
 
 export default function HistoryPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
@@ -243,8 +244,8 @@ export default function HistoryPage() {
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: useOrderTableParams(tableParams),
-      updated_at_start: getValuesFilter("date")[0],
-      updated_at_end: getValuesFilter("date")[1],
+      updated_at_start: useDateRangeFormat(getValuesFilter("date")[0] as any),
+      updated_at_end: useDateRangeFormat(getValuesFilter("date")[1] as any),
       history: 1,
     },
   });
