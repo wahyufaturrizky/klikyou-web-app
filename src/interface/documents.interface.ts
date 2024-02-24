@@ -98,7 +98,7 @@ export type FormDocumentValues = {
   document_number: string;
   memoId: string;
   text_remarks: string;
-  numeric_remarks: number;
+  numeric_remarks?: number;
   document_tag_id: number[];
   document_collaborator_id: number[];
   document_path: any;

@@ -53,7 +53,7 @@ export default function AddDocumentPage() {
       document_name: "",
       document_number: "",
       text_remarks: "",
-      numeric_remarks: 0,
+      numeric_remarks: undefined,
       document_tag_id: [],
       document_collaborator_id: [],
       document_path: "",
@@ -394,6 +394,9 @@ export default function AddDocumentPage() {
                   <Controller
                     control={control}
                     name="document_path"
+                    rules={{
+                      required: "document is required",
+                    }}
                     render={({ field: { onChange }, fieldState: { error } }) => {
                       return (
                         <div>
