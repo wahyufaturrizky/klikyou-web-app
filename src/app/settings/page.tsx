@@ -117,10 +117,10 @@ export default function SettingsPage() {
                           showUploadList={false}
                           beforeUpload={beforeUpload}
                           onChange={(info) => {
+                            setLoadingImageAvatar(true);
                             setAvatarPathRaw(info);
                             if (info.file.status === "uploading") {
-                              setLoadingImageAvatar(true);
-                              return;
+                              console.log(info.file, info.fileList);
                             }
                             if (info.file.status === "done") {
                               // Get this url from response in real world.
@@ -293,9 +293,9 @@ export default function SettingsPage() {
         <Button
           type="button"
           onClick={handleSubmit(onSubmit)}
-          label="Update"
-          disabled={isPendingCreateUserManagement}
-          loading={isPendingCreateUserManagement}
+          label={isPendingCreateUserManagement || loadingImageAvatar ? "Loading..." : "Update"}
+          disabled={isPendingCreateUserManagement || loadingImageAvatar}
+          loading={isPendingCreateUserManagement || loadingImageAvatar}
           className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         />
       </div>

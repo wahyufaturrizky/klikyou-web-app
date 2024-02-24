@@ -194,10 +194,10 @@ export default function AddProfilePage() {
                           showUploadList={false}
                           beforeUpload={beforeUpload}
                           onChange={(info) => {
+                            setLoadingImageAvatar(true);
                             setAvatarPathRaw(info);
                             if (info.file.status === "uploading") {
-                              setLoadingImageAvatar(true);
-                              return;
+                              console.log(info.file, info.fileList);
                             }
                             if (info.file.status === "done") {
                               // Get this url from response in real world.
@@ -481,10 +481,10 @@ export default function AddProfilePage() {
 
         <Button
           type="button"
-          loading={isPendingCreateUserManagement}
-          disabled={isPendingCreateUserManagement}
+          loading={isPendingCreateUserManagement || loadingImageAvatar}
+          disabled={isPendingCreateUserManagement || loadingImageAvatar}
           onClick={handleSubmit(onSubmit)}
-          label="Save"
+          label={isPendingCreateUserManagement || loadingImageAvatar ? "Loading..." : "Save"}
           className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         />
       </div>

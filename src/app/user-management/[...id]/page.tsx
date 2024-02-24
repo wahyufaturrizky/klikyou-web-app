@@ -361,11 +361,11 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
                             showUploadList={false}
                             beforeUpload={beforeUpload}
                             onChange={(info) => {
+                              setLoadingImageAvatar(true);
                               setAvatarPathRaw(info);
 
                               if (info.file.status === "uploading") {
-                                setLoadingImageAvatar(true);
-                                return;
+                                console.log(info.file, info.fileList);
                               }
                               if (info.file.status === "done") {
                                 // Get this url from response in real world.
@@ -733,10 +733,10 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
 
           <Button
             type="button"
-            loading={isPendingUpdateUserManagement}
-            disabled={isPendingUpdateUserManagement}
+            loading={isPendingUpdateUserManagement || loadingImageAvatar}
+            disabled={isPendingUpdateUserManagement || loadingImageAvatar}
             onClick={handleSubmit(onSubmit)}
-            label="Save"
+            label={isPendingUpdateUserManagement || loadingImageAvatar ? "Loading..." : "Save"}
             className="flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm bg-primary-blue hover:bg-primary-blue/70 active:bg-primary-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           />
         </div>
