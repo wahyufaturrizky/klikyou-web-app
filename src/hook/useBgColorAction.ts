@@ -8,20 +8,19 @@ export const UseBgColorAction = (val: string) => {
       val?.includes("approved")
     ) {
       return "bg-green";
-    } else if (val?.includes("Partially approved")) {
-      return "bg-link";
-    } else if (val === "processed" || val?.includes("Partially processed")) {
-      return "bg-secondary-blue";
-    } else if (val?.includes("Fully processed")) {
-      return "bg-primary-purple";
     } else if (
       val?.includes("Uploaded") ||
       val?.includes("upload") ||
-      val?.includes("pending") ||
-      val?.includes("Updated") ||
-      val?.includes("update") ||
-      val?.includes("Waiting Approval")
+      val?.includes("Partially approved")
     ) {
+      return "bg-link";
+    } else if (val === "processed" || val?.includes("Partially processed")) {
+      return "bg-secondary-blue";
+    } else if (val?.includes("Updated") || val?.includes("update")) {
+      return "bg-warn";
+    } else if (val?.includes("Fully processed")) {
+      return "bg-primary-purple";
+    } else if (val?.includes("pending") || val?.includes("Waiting Approval")) {
       return "bg-gray-dark";
     }
   } else {

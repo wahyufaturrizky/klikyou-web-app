@@ -192,11 +192,16 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
   const columnsLogHistory: TableProps<DataTypeActionHistory>["columns"] = [
     {
-      title: "ID",
+      title: "#",
       dataIndex: "id",
       key: "id",
       render: (text: string, record: DataTypeActionHistory, index: number) => {
-        return <Text label={String(index + 1)} className="text-base font-normal text-black" />;
+        return (
+          <Text
+            label={String(dataLogHistory.length - index)}
+            className="text-base font-normal text-black"
+          />
+        );
       },
     },
     {
