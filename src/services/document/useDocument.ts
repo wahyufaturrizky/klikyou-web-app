@@ -37,7 +37,7 @@ const useDocument = ({
   });
 };
 
-const fetchDocumentById = async ({ id }: { id: string }) => {
+const fetchDocumentById = async ({ id }: { id?: number }) => {
   return client(`/documents/${id}`).then((data) => data);
 };
 
@@ -45,8 +45,8 @@ const useDocumentById = ({
   id,
   options,
 }: {
-  id: string;
-  options: any;
+  id?: number;
+  options?: any;
 }): UseQueryResult<DataResponseDocumentByIdType, Error> => {
   return useQuery({
     queryKey: ["documents", id],

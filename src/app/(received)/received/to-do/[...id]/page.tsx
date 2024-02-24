@@ -88,9 +88,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       document_name: "",
       memoId: "",
       document_number: "",
-      id: "",
+      id: undefined,
       text_remarks: "",
-      numeric_remarks: "",
+      numeric_remarks: undefined,
       status: "",
       document_tag_id: [],
       action: "",
@@ -159,7 +159,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   }, [dataListTag, dataListUserList]);
 
   const { data: dataDocument, isPending: isPendingDocument } = useDocumentById({
-    id: id[1],
+    id: Number(id[1]),
     options: {
       refetchOnWindowFocus: false,
     },

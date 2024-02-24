@@ -23,9 +23,9 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       document_name: "",
       document_number: "",
       memoId: "",
-      id: "",
+      id: undefined,
       text_remarks: "",
-      numeric_remarks: "",
+      numeric_remarks: undefined,
       status: "",
       document_tag_id: [],
       action: "",
@@ -38,7 +38,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   });
 
   const { data: dataDocument, isPending: isPendingDocument } = useDocumentById({
-    id: id,
+    id: Number(id),
   });
 
   useEffect(() => {
