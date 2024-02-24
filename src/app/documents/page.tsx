@@ -195,6 +195,7 @@ export default function DocumentsPage() {
       title: "Status",
       dataIndex: "status",
       sorter: true,
+      width: 250,
       key: "status",
       render: (text: string) => {
         return (
@@ -240,6 +241,7 @@ export default function DocumentsPage() {
       title: "Updated At",
       dataIndex: "updatedAt",
       sorter: true,
+      width: 150,
       key: "updatedAt",
       render: (text: Date) => UseConvertDateFormat(text),
     },
