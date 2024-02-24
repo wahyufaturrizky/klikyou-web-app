@@ -17,6 +17,7 @@ import {
   EditDocumentsModal,
   FormDocumentValues,
   UserListType,
+  ResUpdateDocumentType,
 } from "@/interface/documents.interface";
 import { ColumnsType } from "@/interface/user-management.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
@@ -203,32 +204,34 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const { mutate: updateDocument, isPending: isPendingUpdateDocument } = useUpdateDocument({
     id: id[1],
     options: {
-      onSuccess: () => {
-        refetchDocumentId();
-        setSearchTagDocument("");
-        setSearchCollaboratorDocument("");
-        setSearchSearchRecipientDocumentDocument("");
-        setSearchSearchAuthorizerDocumentDocument("");
+      onSuccess: (res: ResUpdateDocumentType) => {
+        if (res.status === 200) {
+          refetchDocumentId();
+          setSearchTagDocument("");
+          setSearchCollaboratorDocument("");
+          setSearchSearchRecipientDocumentDocument("");
+          setSearchSearchAuthorizerDocumentDocument("");
 
-        messageApi.open({
-          type: "success",
-          content: "Update document success",
-        });
+          messageApi.open({
+            type: "success",
+            content: "Update document success",
+          });
 
-        setStateEditDocumentInfoModal({
-          open: false,
-          data: null,
-        });
+          setStateEditDocumentInfoModal({
+            open: false,
+            data: null,
+          });
 
-        setStateEditFileAndAuthModal({
-          open: false,
-          data: null,
-        });
+          setStateEditFileAndAuthModal({
+            open: false,
+            data: null,
+          });
 
-        setStateEditRecipientAndProcessModal({
-          open: false,
-          data: null,
-        });
+          setStateEditRecipientAndProcessModal({
+            open: false,
+            data: null,
+          });
+        }
       },
     },
   });

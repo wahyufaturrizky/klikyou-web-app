@@ -203,22 +203,32 @@ export interface DataResponseDocumentByIdType extends CommonResponseType {
   data: DataMessageDocumentByIdType;
 }
 
+interface DataResCreateUpdateDocumentType {
+  userId: number;
+  memoId: string;
+  documentName: string;
+  documentNumber: string;
+  textRemarks: string;
+  numericRemarks: string;
+  documentPath: string;
+  documentNote: string;
+  createdAt: string;
+  updatedAt: string;
+  id: number;
+}
+
 interface DataResRawCreateDocument extends DataStatusMessageResponseType {
-  data: {
-    userId: number;
-    memoId: string;
-    documentName: string;
-    documentNumber: string;
-    textRemarks: string;
-    numericRemarks: string;
-    documentPath: string;
-    documentNote: string;
-    createdAt: string;
-    updatedAt: string;
-    id: number;
-  };
+  data: DataResCreateUpdateDocumentType;
 }
 
 export interface ResCreateDocumentType extends CommonResponseType {
   data: DataResRawCreateDocument;
+}
+
+interface DataResRawUpdateDocument extends DataStatusMessageResponseType {
+  data: DataResCreateUpdateDocumentType;
+}
+
+export interface ResUpdateDocumentType extends CommonResponseType {
+  data: DataResRawUpdateDocument;
 }
