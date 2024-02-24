@@ -7,6 +7,7 @@ import {
 } from "@/interface/common";
 import { Key } from "react";
 import { DataDocumentTags } from "@/interface/documents-tag.interface";
+import { DataRawDashboardType } from "@/interface/dashboard.interface";
 
 export interface FormFilterValuesDocuments extends FormFilterValues {
   latest_action_filter?: string[];
@@ -144,7 +145,7 @@ export interface EditDocumentsModal {
   data?: any;
 }
 
-interface CreatedByDocumentType {
+interface CreatedAndUpdateByDocumentType {
   id: number;
   roleId: number;
   avatarPath: string;
@@ -172,10 +173,15 @@ export interface DataResDocument {
   createdAt: string;
   updatedByUserId: null;
   updatedAt: string;
-  createdBy: CreatedByDocumentType;
+  createdBy: CreatedAndUpdateByDocumentType;
   documentTags: DocumentTagsType[];
   currentUserRole: string;
   status: string;
+  documentCollaborators: DocumentCollaboratorsType[];
+  documentAuthorizers: DocumentAuthorizersType[];
+  documentRecipients: DocumentRecipientsType[];
+  documentLogs: DocumentLogType[];
+  updatedBy: CreatedAndUpdateByDocumentType;
 }
 
 interface DataMessageStatusType extends DataStatusMessageResponseType {
@@ -185,6 +191,34 @@ interface DataMessageStatusType extends DataStatusMessageResponseType {
   };
 }
 
+interface DataMessageDocumentByIdType extends DataStatusMessageResponseType {
+  data: DataResDocument;
+}
+
 export interface DataResponseDocumentType extends CommonResponseType {
   data: DataMessageStatusType;
+}
+
+export interface DataResponseDocumentByIdType extends CommonResponseType {
+  data: DataMessageDocumentByIdType;
+}
+
+interface DataResRawCreateDocument extends DataStatusMessageResponseType {
+  data: {
+    userId: number;
+    memoId: string;
+    documentName: string;
+    documentNumber: string;
+    textRemarks: string;
+    numericRemarks: string;
+    documentPath: string;
+    documentNote: string;
+    createdAt: string;
+    updatedAt: string;
+    id: number;
+  };
+}
+
+export interface ResCreateDocumentType extends CommonResponseType {
+  data: DataResRawCreateDocument;
 }

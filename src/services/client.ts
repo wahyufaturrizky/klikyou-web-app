@@ -1,4 +1,5 @@
 import axios from "axios";
+import { message } from "antd";
 
 export async function client(
   endpoint: string | string[],
@@ -69,5 +70,7 @@ export async function clientFormData(
     })
     .catch((e: any) => {
       console.log(e);
+
+      message.error(e?.response?.data?.message);
     });
 }

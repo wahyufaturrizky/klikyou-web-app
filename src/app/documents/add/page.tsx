@@ -5,7 +5,11 @@ import InputTextArea from "@/components/InputTextArea";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import { TagType } from "@/interface/common";
-import { FormDocumentValues, UserListType } from "@/interface/documents.interface";
+import {
+  FormDocumentValues,
+  ResCreateDocumentType,
+  UserListType,
+} from "@/interface/documents.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import { useCreateDocument } from "@/services/document/useDocument";
 import { useUserList } from "@/services/user-list/useUserList";
@@ -61,13 +65,15 @@ export default function AddDocumentPage() {
 
   const { mutate: createDocument, isPending: isPendingCreateDocument } = useCreateDocument({
     options: {
-      onSuccess: () => {
-        messageApi.open({
-          type: "success",
-          content: "Create document success",
-        });
+      onSuccess: (res: ResCreateDocumentType) => {
+        if (res.status === 200) {
+          messageApi.open({
+            type: "success",
+            content: res.data.message,
+          });
 
-        router.back();
+          router.back();
+        }
       },
     },
   });

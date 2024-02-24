@@ -1,13 +1,17 @@
 import { QueryType } from "@/interface/common";
-import { DataResponseDocumentType } from "@/interface/documents.interface";
-import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
+import {
+  DataResponseDocumentType,
+  DataResponseDocumentByIdType,
+  FormDocumentValues,
+} from "@/interface/documents.interface";
+import { useMutation, UseMutationResult, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { client, clientFormData } from "../client";
 
 const fetchDocument = async ({
-  query = {},
+  query,
   action,
 }: {
-  query: any;
+  query?: QueryType;
   action?: "receival" | "approval" | "";
 }) => {
   return client(action ? `/documents${action}` : "/documents", {
@@ -37,12 +41,18 @@ const fetchDocumentById = async ({ id }: { id: string }) => {
   return client(`/documents/${id}`).then((data) => data);
 };
 
-const useDocumentById = ({ id, options }: any) => {
+const useDocumentById = ({
+  id,
+  options,
+}: {
+  id: string;
+  options: any;
+}): UseQueryResult<DataResponseDocumentByIdType, Error> => {
   return useQuery({
     queryKey: ["documents", id],
     queryFn: () => fetchDocumentById({ id }),
     ...options,
-  }) as any;
+  });
 };
 
 function useCreateDocument({ options }: any) {
@@ -53,7 +63,7 @@ function useCreateDocument({ options }: any) {
         data: reqBody,
       }),
     ...options,
-  }) as any;
+  }) as UseMutationResult<FormDocumentValues, Error>;
 }
 
 function useUpdateDocument({ options, id }: any) {

@@ -297,7 +297,6 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
         documentAuthorizers,
         documentRecipients,
         documentPath,
-        documentNote,
         status,
         id,
         action,
@@ -326,29 +325,33 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       setValue("document_name", documentName);
       setValue("memoId", memoId);
       setValue("action", action);
-      setValue("id", id);
+      setValue("id", String(id));
       setValue("document_number", documentNumber);
       setValue("text_remarks", textRemarks);
-      setValue("numeric_remarks", numericRemarks);
+      setValue("numeric_remarks", String(numericRemarks));
       setValue("document_path", documentPath);
       setValue("status", status);
       setValue(
         "document_tag_id",
-        documentTags.map((itemTag: DocumentTagsType) => itemTag.masterDocumentTagId)
+        documentTags.map((itemTag: DocumentTagsType) => String(itemTag.masterDocumentTagId))
       );
       setValue(
         "document_collaborator_id",
-        documentCollaborators.map(
-          (itemCollaborator: DocumentCollaboratorsType) => itemCollaborator.userId
+        documentCollaborators.map((itemCollaborator: DocumentCollaboratorsType) =>
+          String(itemCollaborator.userId)
         )
       );
       setValue(
         "document_authorizer_id",
-        documentAuthorizers.map((itemAuthorizer: DocumentAuthorizersType) => itemAuthorizer.userId)
+        documentAuthorizers.map((itemAuthorizer: DocumentAuthorizersType) =>
+          String(itemAuthorizer.userId)
+        )
       );
       setValue(
         "document_recipient_id",
-        documentRecipients.map((itemRecipient: DocumentRecipientsType) => itemRecipient.userId)
+        documentRecipients.map((itemRecipient: DocumentRecipientsType) =>
+          String(itemRecipient.userId)
+        )
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
