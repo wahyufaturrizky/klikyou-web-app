@@ -651,7 +651,13 @@ export default function ToReviewPage() {
 
               <Button
                 type="button"
-                label={stateApproveAndRejectModal.type === "approve" ? "Approve" : "Reject"}
+                label={
+                  isPendingApproveRejectProcess || isUploadFile
+                    ? "Loading..."
+                    : stateApproveAndRejectModal.type === "approve"
+                    ? "Approve"
+                    : "Reject"
+                }
                 disabled={isPendingApproveRejectProcess || isUploadFile}
                 loading={isPendingApproveRejectProcess || isUploadFile}
                 onClick={handleSubmitApproveRejectEdit(onSubmitApproveRejectEdit)}
