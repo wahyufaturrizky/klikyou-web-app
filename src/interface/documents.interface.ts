@@ -1,13 +1,12 @@
 import {
-  FormFilterValues,
-  UserType,
-  DataStatusMessageResponseType,
-  MetaType,
   CommonResponseType,
+  DataStatusMessageResponseType,
+  FormFilterValues,
+  MetaType,
+  UserType,
 } from "@/interface/common";
-import { Key } from "react";
 import { DataDocumentTags } from "@/interface/documents-tag.interface";
-import { DataRawDashboardType } from "@/interface/dashboard.interface";
+import { Key } from "react";
 
 export interface FormFilterValuesDocuments extends FormFilterValues {
   latest_action_filter?: string[];
@@ -191,12 +190,12 @@ interface DataMessageStatusType extends DataStatusMessageResponseType {
   };
 }
 
-interface DataMessageDocumentByIdType extends DataStatusMessageResponseType {
-  data: DataResDocument;
-}
-
 export interface DataResponseDocumentType extends CommonResponseType {
   data: DataMessageStatusType;
+}
+
+interface DataMessageDocumentByIdType extends DataStatusMessageResponseType {
+  data: DataResDocument;
 }
 
 export interface DataResponseDocumentByIdType extends CommonResponseType {

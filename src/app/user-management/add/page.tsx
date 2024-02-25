@@ -19,18 +19,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import useDebounce from "@/hook/useDebounce";
-
-type FormProfileValues = {
-  avatar_path: string;
-  first_name: string;
-  last_name: string;
-  tags: string[];
-  role_id: string;
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword?: string;
-};
+import { FormProfileValues } from "@/interface/my-profile.interface";
 
 export default function AddProfilePage() {
   const router = useRouter();
@@ -49,7 +38,7 @@ export default function AddProfilePage() {
       first_name: "",
       last_name: "",
       tags: [],
-      role_id: "",
+      role_id: undefined,
       username: "",
       email: "",
       password: "",

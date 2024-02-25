@@ -25,6 +25,6 @@ interface DataResRawSettings extends DataStatusMessageResponseType {
   data: CompanyProfileType;
 }
 
-export interface ResUpdateDocumentType extends CommonResponseType {
+export interface ResSettingsType extends CommonResponseType {
   data: DataResRawSettings;
 }

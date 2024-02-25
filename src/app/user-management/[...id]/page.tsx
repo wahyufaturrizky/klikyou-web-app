@@ -5,14 +5,15 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
+import useDebounce from "@/hook/useDebounce";
 import { RoleType } from "@/interface/common";
-import { FormProfileValues } from "@/interface/my-profile.interface";
+import { FormProfileValues, UserTagMyProfile } from "@/interface/my-profile.interface";
 import {
   ColumnsType,
   DataInfoUserManagementType,
-  DeleteUserManagementModal,
+  DeleteUserManagementByIdModal,
 } from "@/interface/user-management.interface";
-import { DataUserTags, MasterUserTagType } from "@/interface/user-tag.interface";
+import { DataUserTags } from "@/interface/user-tag.interface";
 import { useRole } from "@/services/role/useRole";
 import {
   useDeleteUserManagement,
@@ -29,7 +30,6 @@ import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import useDebounce from "@/hook/useDebounce";
 
 export default function ViewEditProfile({ params }: Readonly<{ params: { id: string } }>) {
   const { id } = params;
@@ -48,13 +48,10 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
   const [searchSearchUserTag, setSearchSearchUserTag] = useState<string>("");
   const [searchRole, setSearchRole] = useState<string>("");
 
-  const [isShowDelete, setIsShowDelete] = useState<DeleteUserManagementModal>({
+  const [isShowDelete, setIsShowDelete] = useState<DeleteUserManagementByIdModal>({
     open: false,
     type: "selection",
-    data: {
-      data: null,
-      selectedRowKeys: [],
-    },
+    data: null,
   });
 
   const debounceSearchUserTag = useDebounce(searchSearchUserTag, 800);
@@ -173,7 +170,7 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
 
   const { mutate: updateUserManagement, isPending: isPendingUpdateUserManagement } =
     useUpdateUserManagement({
-      id: id[1],
+      id: Number(id[1]),
       options: {
         onSuccess: (res: any) => {
           if (res?.status === 200) {
@@ -207,7 +204,7 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
   };
 
   const { data: dataUserManagement, isPending: isPendingUserManagement } = useUserManagementById({
-    id: id[1],
+    id: Number(id[1]),
     options: {
       refetchOnWindowFocus: false,
     },
@@ -248,7 +245,7 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
       setValue("last_name", lastName);
       setValue(
         "tags",
-        userTag.map((itemUserTag: MasterUserTagType) => itemUserTag.masterUserTagId)
+        userTag.map((itemUserTag: UserTagMyProfile) => itemUserTag.masterUserTagId)
       );
       setValue("role_id", role?.id);
       setValue("username", username);

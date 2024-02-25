@@ -1,6 +1,12 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { UseMutationResult, UseQueryResult, useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client";
 import { clientFormData } from "@/services/client";
+import { QueryType } from "@/interface/common";
+import {
+  ResUserManagementType,
+  ResUserManagementTypeById,
+} from "@/interface/user-management.interface";
+import { FormProfileValues } from "@/interface/my-profile.interface";
 
 const fetchUserManagement = async ({ query = {} }) => {
   return client("/users", {
@@ -10,24 +16,36 @@ const fetchUserManagement = async ({ query = {} }) => {
   }).then((data) => data);
 };
 
-const useUserManagement = ({ query = {}, options }: any = {}) => {
+const useUserManagement = ({
+  query,
+  options,
+}: {
+  query?: QueryType;
+  options?: any;
+}): UseQueryResult<ResUserManagementType, Error> => {
   return useQuery({
     queryKey: ["user-management", query],
     queryFn: () => fetchUserManagement({ query }),
     ...options,
-  }) as any;
+  });
 };
 
-const fetchUserManagementById = async ({ id }: { id: string }) => {
+const fetchUserManagementById = async ({ id }: { id?: number }) => {
   return client(`/users/${id}`).then((data) => data);
 };
 
-const useUserManagementById = ({ id, options }: any) => {
+const useUserManagementById = ({
+  id,
+  options,
+}: {
+  id?: number;
+  options?: any;
+}): UseQueryResult<ResUserManagementTypeById, Error> => {
   return useQuery({
     queryKey: ["user-management", id],
     queryFn: () => fetchUserManagementById({ id }),
     ...options,
-  }) as any;
+  });
 };
 
 function useCreateUserManagement({ options }: any) {
@@ -38,10 +56,10 @@ function useCreateUserManagement({ options }: any) {
         data: reqBody,
       }),
     ...options,
-  }) as any;
+  }) as UseMutationResult<FormProfileValues, Error>;
 }
 
-function useUpdateUserManagement({ options, id }: any) {
+function useUpdateUserManagement({ options, id }: { options?: any; id?: number }) {
   return useMutation({
     mutationFn: (updates) =>
       clientFormData(`/users/${id}`, {
@@ -49,10 +67,10 @@ function useUpdateUserManagement({ options, id }: any) {
         data: updates,
       }),
     ...options,
-  }) as any;
+  }) as UseMutationResult<FormProfileValues, Error>;
 }
 
-function useDeleteUserManagement({ options }: any) {
+function useDeleteUserManagement({ options }: { options?: any }) {
   return useMutation({
     mutationFn: (updates: any) =>
       client(`/users/${updates.ids}`, {
@@ -62,7 +80,7 @@ function useDeleteUserManagement({ options }: any) {
   });
 }
 
-function useDeleteBulkUserManagement({ options }: any) {
+function useDeleteBulkUserManagement({ options }: { options?: any }) {
   return useMutation({
     mutationFn: (query: any) =>
       client(`/users?ids=${query.ids}`, {

@@ -1,3 +1,5 @@
+import { CommonResponseType, DataStatusMessageResponseType, MetaType } from "@/interface/common";
+import { DataPureMyprofileType } from "@/interface/my-profile.interface";
 import { TableProps } from "antd";
 import { Key } from "react";
 
@@ -19,31 +21,16 @@ export interface RoleResType {
   modules: ModuleRoleType[];
 }
 
-export interface DataUserManagementType {
-  id: string;
-  name: string;
-  email: string;
-  level: string;
-  firstName: string;
-  username: string;
-  roleId: number;
-  lastName: string;
-  role: RoleResType;
-  tags: string;
-  avatarPath: string;
-  updateAt: Date;
-}
-
 export interface DeleteUserManagementModal {
   open: boolean;
   type: string;
-  data: { data: DataUserManagementType[] | null; selectedRowKeys: Key[] } | null;
+  data: { data: DataPureMyprofileType[] | null; selectedRowKeys: Key[] } | null;
 }
 
-export interface DeleteUserManagementModal {
+export interface DeleteUserManagementByIdModal {
   open: boolean;
   type: string;
-  data: { data: DataUserManagementType[] | null; selectedRowKeys: Key[] } | null;
+  data?: ResUserManagementTypeById | null;
 }
 
 export interface DataType {
@@ -69,4 +56,23 @@ export interface DataInfoUserManagementType {
   id: number;
   createdByAvatarPath: string;
   updatedByAvatarPath: string;
+}
+
+interface DataResUserManagement extends DataStatusMessageResponseType {
+  data: {
+    meta: MetaType;
+    data: DataPureMyprofileType[];
+  };
+}
+
+export interface ResUserManagementType extends CommonResponseType {
+  data: DataResUserManagement;
+}
+
+interface DataResUserManagementById extends DataStatusMessageResponseType {
+  data: DataPureMyprofileType;
+}
+
+export interface ResUserManagementTypeById extends CommonResponseType {
+  data: DataResUserManagementById;
 }

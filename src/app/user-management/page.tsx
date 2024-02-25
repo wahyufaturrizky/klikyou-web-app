@@ -9,7 +9,6 @@ import { useOrderTableParams } from "@/hook/useOrderTableParams";
 import { FormFilterValues, RoleType } from "@/interface/common";
 import {
   ColumnsType,
-  DataUserManagementType,
   DeleteUserManagementModal,
   RoleResType,
 } from "@/interface/user-management.interface";
@@ -30,6 +29,7 @@ import { DataUserTags } from "@/interface/user-tag.interface";
 import { DefaultOptionType } from "antd/es/cascader";
 import Select from "@/components/Select";
 import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
+import { DataPureMyprofileType } from "@/interface/my-profile.interface";
 
 export default function UserManagementPage() {
   const router = useRouter();
@@ -55,7 +55,7 @@ export default function UserManagementPage() {
       selectedRowKeys: [],
     },
   });
-  const [dataListUser, setDataListUser] = useState<DataUserManagementType[]>([]);
+  const [dataListUser, setDataListUser] = useState<DataPureMyprofileType[]>([]);
 
   const [tableParams, setTableParams] = useState<{
     pagination: TablePaginationConfig;
@@ -124,7 +124,7 @@ export default function UserManagementPage() {
     }
   }, [dataListRole, dataListUserTag]);
 
-  const columns: ColumnsType<DataUserManagementType> = [
+  const columns: ColumnsType<DataPureMyprofileType> = [
     {
       title: "ID",
       dataIndex: "id",
@@ -139,7 +139,7 @@ export default function UserManagementPage() {
       dataIndex: "username",
       key: "username",
       sorter: true,
-      render: (text: string, record: DataUserManagementType) => {
+      render: (text: string, record: DataPureMyprofileType) => {
         const { avatarPath, firstName, lastName, id } = record;
         return (
           <div className="gap-2 flex items-center">
@@ -250,7 +250,7 @@ export default function UserManagementPage() {
       const { data: dataListTable, meta } = mainData;
 
       setDataListUser(
-        dataListTable?.map((item: DataUserManagementType) => ({
+        dataListTable?.map((item: DataPureMyprofileType) => ({
           ...item,
           key: item.id,
         }))

@@ -1,11 +1,12 @@
 import { CommonResponseType, DataStatusMessageResponseType } from "@/interface/common";
 import { CreatedAndUpdateByDocumentType } from "@/interface/documents.interface";
+
 export type FormProfileValues = {
   avatar_path: string;
   first_name: string;
   last_name: string;
-  tags: string[];
-  role_id: number;
+  tags: number[];
+  role_id?: number;
   username: string;
   email: string;
   password: string;
@@ -48,7 +49,7 @@ interface MasterUserTagType {
   updatedAt: string;
 }
 
-interface UserTagMyProfile {
+export interface UserTagMyProfile {
   id: number;
   userId: number;
   masterUserTagId: number;

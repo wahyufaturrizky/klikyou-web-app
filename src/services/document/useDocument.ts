@@ -77,9 +77,9 @@ function useUpdateDocument({ options, id }: any) {
   }) as any;
 }
 
-function useDeleteDocument({ options }: any) {
+function useDeleteDocument({ options }: { options?: any }) {
   return useMutation({
-    mutationFn: (updates: any) =>
+    mutationFn: (updates: { id: number }) =>
       client(`/documents/${updates.id}`, {
         method: "DELETE",
       }),
@@ -87,9 +87,9 @@ function useDeleteDocument({ options }: any) {
   });
 }
 
-function useDeleteBulkDocument({ options }: any) {
+function useDeleteBulkDocument({ options }: { options?: any }) {
   return useMutation({
-    mutationFn: (query: any) =>
+    mutationFn: (query: { ids: number }) =>
       client(`/documents?ids=${query.ids}`, {
         method: "DELETE",
       }),
