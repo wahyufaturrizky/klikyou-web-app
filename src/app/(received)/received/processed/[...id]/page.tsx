@@ -5,7 +5,8 @@ import Text from "@/components/Text";
 import { UseBgColorAction } from "@/hook/useBgColorAction";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
-import { TagType, UserType } from "@/interface/common";
+import { UserType } from "@/interface/common";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 import {
   DataInfoDocumentType,
   DataTypeActionHistory,
@@ -28,7 +29,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();

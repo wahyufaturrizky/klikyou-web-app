@@ -6,9 +6,11 @@ import Text from "@/components/Text";
 import { UseBgColorAction } from "@/hook/useBgColorAction";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
+import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
 import useDebounce from "@/hook/useDebounce";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
-import { FormApproveRejectProcessValues, FormFilterValues, TagType } from "@/interface/common";
+import { FormApproveRejectProcessValues, FormFilterValues } from "@/interface/common";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 import {
   DataResDocument,
   DeleteDocumentModal,
@@ -31,8 +33,6 @@ import { FilterValue } from "antd/es/table/interface";
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
-import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export default function HistoryPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);

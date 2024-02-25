@@ -4,9 +4,11 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
+import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
 import useDebounce from "@/hook/useDebounce";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
-import { FormApproveRejectProcessValues, FormFilterValues, TagType } from "@/interface/common";
+import { FormApproveRejectProcessValues, FormFilterValues } from "@/interface/common";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 import { DataResDocument, DocumentTagsType } from "@/interface/documents.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
 import { useDocument } from "@/services/document/useDocument";
@@ -25,8 +27,6 @@ import { FilterValue } from "antd/es/table/interface";
 import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
-import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export default function ProcessedPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);

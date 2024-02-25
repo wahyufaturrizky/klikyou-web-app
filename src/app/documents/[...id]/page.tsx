@@ -5,8 +5,12 @@ import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
+import { UseBgColorAction } from "@/hook/useBgColorAction";
+import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
-import { TagType, UserType } from "@/interface/common";
+import useDebounce from "@/hook/useDebounce";
+import { UserType } from "@/interface/common";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 import {
   DataInfoDocumentType,
   DataTypeActionHistory,
@@ -16,8 +20,8 @@ import {
   DocumentTagsType,
   EditDocumentsModal,
   FormDocumentValues,
-  UserListType,
   ResUpdateDocumentType,
+  UserListType,
 } from "@/interface/documents.interface";
 import { ColumnsType } from "@/interface/user-management.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
@@ -41,18 +45,14 @@ import {
   Table,
   TableProps,
   Upload,
-  message,
   UploadFile,
+  message,
 } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { UseBgColorStatus } from "@/hook/useBgColorStatus";
-import { UseBgColorAction } from "@/hook/useBgColorAction";
-import useDebounce from "@/hook/useDebounce";
-import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();
