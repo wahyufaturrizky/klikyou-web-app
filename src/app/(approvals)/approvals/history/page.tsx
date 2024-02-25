@@ -331,14 +331,16 @@ export default function HistoryPage() {
   const { mutate: deleteUserManagement, isPending: isPendingDeleteUserManagement }: any =
     useDeleteDocument({
       options: {
-        onSuccess: () => {
-          refetchDocument();
-          setIsShowDelete({
-            open: true,
-            type: "",
-            data: null,
-          });
-          setSelectedRowKeys([]);
+        onSuccess: (res: any) => {
+          if (res?.status === 200) {
+            refetchDocument();
+            setIsShowDelete({
+              open: true,
+              type: "",
+              data: null,
+            });
+            setSelectedRowKeys([]);
+          }
         },
       },
     });

@@ -242,15 +242,17 @@ export default function UserTagsPage() {
 
   const { mutate: deleteUserTags, isPending: isPendingDeleteUserTags }: any = useDeleteUserTags({
     options: {
-      onSuccess: () => {
-        messageApi.open({
-          type: "success",
-          content: "Success delete user tag",
-        });
+      onSuccess: (res: any) => {
+        if (res?.status) {
+          messageApi.open({
+            type: "success",
+            content: "Success delete user tag",
+          });
 
-        refetchUserTags();
-        resetIsShowDelete();
-        setSelectedRowKeys([]);
+          refetchUserTags();
+          resetIsShowDelete();
+          setSelectedRowKeys([]);
+        }
       },
     },
   });
@@ -262,19 +264,21 @@ export default function UserTagsPage() {
 
   const { mutate: createUserTags, isPending: isPendingCreateUserTags } = useCreateUserTags({
     options: {
-      onSuccess: () => {
-        messageApi.open({
-          type: "success",
-          content: "Success create user tag",
-        });
+      onSuccess: (res: any) => {
+        if (res?.status === 200) {
+          messageApi.open({
+            type: "success",
+            content: "Success create user tag",
+          });
 
-        resetAddAndEdit();
-        refetchUserTags();
-        setStateAddAndEditModal({
-          data: null,
-          open: false,
-          type: "",
-        });
+          resetAddAndEdit();
+          refetchUserTags();
+          setStateAddAndEditModal({
+            data: null,
+            open: false,
+            type: "",
+          });
+        }
       },
     },
   });
@@ -282,19 +286,21 @@ export default function UserTagsPage() {
   const { mutate: updateUserTags, isPending: isPendingUpdateUserTags } = useUpdateUserTags({
     id: stateAddAndEditModal.data?.id,
     options: {
-      onSuccess: () => {
-        messageApi.open({
-          type: "success",
-          content: "Success update user tag",
-        });
+      onSuccess: (res: any) => {
+        if (res?.status === 200) {
+          messageApi.open({
+            type: "success",
+            content: "Success update user tag",
+          });
 
-        resetAddAndEdit();
-        refetchUserTags();
-        setStateAddAndEditModal({
-          data: null,
-          open: false,
-          type: "",
-        });
+          resetAddAndEdit();
+          refetchUserTags();
+          setStateAddAndEditModal({
+            data: null,
+            open: false,
+            type: "",
+          });
+        }
       },
     },
   });

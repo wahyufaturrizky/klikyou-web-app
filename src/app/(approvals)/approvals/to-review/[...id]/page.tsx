@@ -243,21 +243,23 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       id: id[1],
       action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
       options: {
-        onSuccess: () => {
-          messageApi.open({
-            type: "success",
-            content: "Success " + stateApproveAndRejectModal.type,
-          });
+        onSuccess: (res: any) => {
+          if (res?.status === 200) {
+            messageApi.open({
+              type: "success",
+              content: "Success " + stateApproveAndRejectModal.type,
+            });
 
-          resetApproveRejectEdit();
+            resetApproveRejectEdit();
 
-          setStateApproveAndRejectModal({
-            data: null,
-            open: false,
-            type: "",
-          });
+            setStateApproveAndRejectModal({
+              data: null,
+              open: false,
+              type: "",
+            });
 
-          router.back();
+            router.back();
+          }
         },
       },
     });

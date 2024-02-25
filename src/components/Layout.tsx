@@ -243,9 +243,11 @@ const Layout = ({ ...props }: LayoutInterface) => {
 
   const { mutate: logOutUser, isPending: isPendingLogOutUser } = useLogOut({
     options: {
-      onSuccess: () => {
-        localStorage.removeItem("access_token");
-        router.push("/");
+      onSuccess: (res: any) => {
+        if (res?.status === 200) {
+          localStorage.removeItem("access_token");
+          router.push("/");
+        }
       },
     },
   });

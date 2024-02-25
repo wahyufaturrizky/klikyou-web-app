@@ -371,21 +371,23 @@ export default function ToReviewPage() {
       ids: selectedRowKeys.join(","),
       action: useActionApproveRejectProcess(stateApproveAndRejectModal.type),
       options: {
-        onSuccess: () => {
-          messageApi.open({
-            type: "success",
-            content: "Success " + stateApproveAndRejectModal.type,
-          });
+        onSuccess: (res: any) => {
+          if (res?.status === 200) {
+            messageApi.open({
+              type: "success",
+              content: "Success " + stateApproveAndRejectModal.type,
+            });
 
-          setFileList([]);
+            setFileList([]);
 
-          resetApproveRejectEdit();
-          refetchDocument();
-          setStateApproveAndRejectModal({
-            data: null,
-            open: false,
-            type: "",
-          });
+            resetApproveRejectEdit();
+            refetchDocument();
+            setStateApproveAndRejectModal({
+              data: null,
+              open: false,
+              type: "",
+            });
+          }
         },
       },
     });

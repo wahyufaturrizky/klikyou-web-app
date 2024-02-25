@@ -301,10 +301,12 @@ export default function UserManagementPage() {
   const { mutate: deleteUserManagement, isPending: isPendingDeleteUserManagement }: any =
     useDeleteBulkUserManagement({
       options: {
-        onSuccess: () => {
-          refetchDocumentUserManagement();
-          resetIsShowDelete();
-          setSelectedRowKeys([]);
+        onSuccess: (res: any) => {
+          if (res?.status === 200) {
+            refetchDocumentUserManagement();
+            resetIsShowDelete();
+            setSelectedRowKeys([]);
+          }
         },
       },
     });

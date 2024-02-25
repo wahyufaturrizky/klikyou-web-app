@@ -66,7 +66,7 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
       first_name: "",
       last_name: "",
       tags: [],
-      role_id: "",
+      role_id: 0,
       username: "",
       email: "",
       password: "",
@@ -175,12 +175,14 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
     useUpdateUserManagement({
       id: id[1],
       options: {
-        onSuccess: () => {
-          messageApi.open({
-            type: "success",
-            content: "Update document success",
-          });
-          router.back();
+        onSuccess: (res: any) => {
+          if (res?.status === 200) {
+            messageApi.open({
+              type: "success",
+              content: "Update document success",
+            });
+            router.back();
+          }
         },
       },
     });
@@ -265,13 +267,15 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
   const { mutate: deleteUserManagement, isPending: isPendingDeleteUserManagement }: any =
     useDeleteUserManagement({
       options: {
-        onSuccess: () => {
-          messageApi.open({
-            type: "success",
-            content: "Delete document success",
-            duration: 1,
-            onClose: () => router.back(),
-          });
+        onSuccess: (res: any) => {
+          if (res?.status === 200) {
+            messageApi.open({
+              type: "success",
+              content: "Delete document success",
+              duration: 1,
+              onClose: () => router.back(),
+            });
+          }
         },
       },
     });

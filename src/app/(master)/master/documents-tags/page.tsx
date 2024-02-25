@@ -243,15 +243,17 @@ export default function DocumentTagsPage() {
   const { mutate: deleteDocumentTags, isPending: isPendingDeleteDocumentTags }: any =
     useDeleteDocumentTags({
       options: {
-        onSuccess: () => {
-          messageApi.open({
-            type: "success",
-            content: "Success delete document tag",
-          });
+        onSuccess: (res: any) => {
+          if (res?.status === 200) {
+            messageApi.open({
+              type: "success",
+              content: "Success delete document tag",
+            });
 
-          refetchDocumentTags();
-          resetIsShowDelete();
-          setSelectedRowKeys([]);
+            refetchDocumentTags();
+            resetIsShowDelete();
+            setSelectedRowKeys([]);
+          }
         },
       },
     });
@@ -264,19 +266,21 @@ export default function DocumentTagsPage() {
   const { mutate: createDocumentTags, isPending: isPendingCreateDocumentTags } =
     useCreateDocumentTags({
       options: {
-        onSuccess: () => {
-          messageApi.open({
-            type: "success",
-            content: "Success create document tag",
-          });
+        onSuccess: (res: any) => {
+          if (res?.status) {
+            messageApi.open({
+              type: "success",
+              content: "Success create document tag",
+            });
 
-          resetAddAndEdit();
-          refetchDocumentTags();
-          setStateAddAndEditModal({
-            data: null,
-            open: false,
-            type: "",
-          });
+            resetAddAndEdit();
+            refetchDocumentTags();
+            setStateAddAndEditModal({
+              data: null,
+              open: false,
+              type: "",
+            });
+          }
         },
       },
     });
@@ -285,19 +289,21 @@ export default function DocumentTagsPage() {
     useUpdateDocumentTags({
       id: stateAddAndEditModal.data?.id,
       options: {
-        onSuccess: () => {
-          messageApi.open({
-            type: "success",
-            content: "Success update document tag",
-          });
+        onSuccess: (res: any) => {
+          if (res?.status === 200) {
+            messageApi.open({
+              type: "success",
+              content: "Success update document tag",
+            });
 
-          resetAddAndEdit();
-          refetchDocumentTags();
-          setStateAddAndEditModal({
-            data: null,
-            open: false,
-            type: "",
-          });
+            resetAddAndEdit();
+            refetchDocumentTags();
+            setStateAddAndEditModal({
+              data: null,
+              open: false,
+              type: "",
+            });
+          }
         },
       },
     });

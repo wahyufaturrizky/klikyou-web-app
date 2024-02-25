@@ -39,13 +39,15 @@ export default function SettingsPage() {
   const { mutate: createUserManagement, isPending: isPendingCreateUserManagement } =
     useCreateSettings({
       options: {
-        onSuccess: () => {
-          refetchSettings();
+        onSuccess: (res: any) => {
+          if (res?.status) {
+            refetchSettings();
 
-          messageApi.open({
-            type: "success",
-            content: "Success update settings",
-          });
+            messageApi.open({
+              type: "success",
+              content: "Success update settings",
+            });
+          }
         },
       },
     });
