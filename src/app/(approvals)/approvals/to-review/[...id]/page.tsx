@@ -1,14 +1,18 @@
 "use client";
 import Button from "@/components/Button";
 import ImageNext from "@/components/Image";
+import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
+import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
+import { UseBgColorAction } from "@/hook/useBgColorAction";
+import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import {
-  TagType,
-  UserType,
-  FormApproveRejectProcessValues,
   ApproveRejectProcessModal,
+  FormApproveRejectProcessValues,
+  UserType,
 } from "@/interface/common";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 import {
   DataInfoDocumentType,
   DataTypeActionHistory,
@@ -16,9 +20,9 @@ import {
   DocumentCollaboratorsType,
   DocumentRecipientsType,
   DocumentTagsType,
+  EditDocumentsModal,
   FormDocumentValues,
   UserListType,
-  EditDocumentsModal,
 } from "@/interface/documents.interface";
 import { ColumnsType } from "@/interface/user-management.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
@@ -33,28 +37,23 @@ import {
   ProtectIcon,
   RejectIcon,
 } from "@/style/icon";
+import { UploadOutlined } from "@ant-design/icons";
 import {
+  Button as ButtonAntd,
   ConfigProvider,
+  Modal,
   Spin,
   Table,
   TableProps,
-  message,
-  Button as ButtonAntd,
-  Modal,
   Upload,
   UploadFile,
+  message,
 } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import InputTextArea from "@/components/InputTextArea";
-import { UploadOutlined } from "@ant-design/icons";
-import { useActionApproveRejectProcess } from "@/hook/useActionApproveRejectProcess";
-import { UseBgColorStatus } from "@/hook/useBgColorStatus";
-import { UseBgColorAction } from "@/hook/useBgColorAction";
-import { DataDocumentTags } from "@/interface/documents-tag.interface";
+import { Controller, useForm } from "react-hook-form";
 
 export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();

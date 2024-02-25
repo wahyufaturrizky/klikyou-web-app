@@ -4,7 +4,8 @@ import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
-import { TagType } from "@/interface/common";
+import useDebounce from "@/hook/useDebounce";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 import {
   FormDocumentValues,
   ResCreateDocumentType,
@@ -15,13 +16,11 @@ import { useCreateDocument } from "@/services/document/useDocument";
 import { useUserList } from "@/services/user-list/useUserList";
 import { BackIcon } from "@/style/icon";
 import { UploadOutlined } from "@ant-design/icons";
-import { Button as ButtonAntd, ConfigProvider, Spin, Upload, message, UploadFile } from "antd";
+import { Button as ButtonAntd, ConfigProvider, Spin, Upload, UploadFile, message } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import useDebounce from "@/hook/useDebounce";
-import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export default function AddDocumentPage() {
   const router = useRouter();

@@ -6,7 +6,8 @@ import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import useDebounce from "@/hook/useDebounce";
-import { RoleType, TagType } from "@/interface/common";
+import { RoleType } from "@/interface/common";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 import {
   DataMyProfileType,
   FormProfileValues,
@@ -23,7 +24,6 @@ import { DefaultOptionType } from "antd/es/cascader";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export default function ProfilePage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);

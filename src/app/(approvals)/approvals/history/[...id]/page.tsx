@@ -5,7 +5,7 @@ import Text from "@/components/Text";
 import { UseBgColorAction } from "@/hook/useBgColorAction";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
-import { TagType, UserType } from "@/interface/common";
+import { UserType } from "@/interface/common";
 import { DataDocumentTags } from "@/interface/documents-tag.interface";
 import {
   DataInfoDocumentType,
