@@ -5,7 +5,7 @@ export type FormProfileValues = {
   avatar_path: string;
   first_name: string;
   last_name: string;
-  tags: number[];
+  tags: number[] | string[];
   role_id?: number;
   username: string;
   email: string;
