@@ -14,12 +14,14 @@ const fetchProfile = async ({ query }: { query?: QueryType }) => {
 const useProfile = ({
   query,
   options,
+  queryKey,
 }: {
   query?: QueryType;
   options?: any;
+  queryKey?: string;
 }): UseQueryResult<DataResponseMyProfileType, Error> => {
   return useQuery({
-    queryKey: ["profile", query],
+    queryKey: [queryKey, query],
     queryFn: () => fetchProfile({ query }),
     ...options,
   });

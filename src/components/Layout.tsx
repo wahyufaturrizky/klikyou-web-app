@@ -67,7 +67,9 @@ const Layout = ({ ...props }: LayoutInterface) => {
   const [openKeys, setOpenKeys] = useState<string[] | undefined>();
   const [notifId, setNotifId] = useState<string>();
 
-  const { data: dataProfile, isPending: isPendingProfile } = useProfile({});
+  const { data: dataProfile, isPending: isPendingProfile } = useProfile({
+    queryKey: "profile-layout",
+  });
 
   useEffect(() => {
     const handleFetchUserProfile = () => {
@@ -287,7 +289,9 @@ const Layout = ({ ...props }: LayoutInterface) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { data: dataSettings, isPending: isPendingSettings } = useSettings();
+  const { data: dataSettings, isPending: isPendingSettings } = useSettings({
+    queryKey: "settings-layout",
+  });
 
   useEffect(() => {
     const handleFetchCompanyProfile = () => {

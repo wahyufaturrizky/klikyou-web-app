@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client, clientFormData } from "../client";
+import { QueryType } from "@/interface/common";
 
 const fetchSettings = async ({ query = {} }) => {
   return client("/settings", {
@@ -9,9 +10,17 @@ const fetchSettings = async ({ query = {} }) => {
   }).then((data) => data);
 };
 
-const useSettings = ({ query = {}, options }: any = {}) => {
+const useSettings = ({
+  query,
+  options,
+  queryKey,
+}: {
+  query?: QueryType;
+  options?: any;
+  queryKey?: string;
+}) => {
   return useQuery({
-    queryKey: ["settings", query],
+    queryKey: [queryKey, query],
     queryFn: () => fetchSettings({ query }),
     ...options,
   }) as any;

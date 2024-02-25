@@ -57,7 +57,12 @@ export default function ProfilePage() {
     data: dataProfile,
     refetch: refetchProfile,
     isPending: isPendingProfile,
-  } = useProfile({});
+  } = useProfile({
+    queryKey: "profile",
+    options: {
+      refetchOnWindowFocus: false,
+    },
+  });
 
   const { data: dataListRole, isPending: isPendingRole } = useRole({
     query: {

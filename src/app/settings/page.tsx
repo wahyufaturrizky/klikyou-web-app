@@ -34,7 +34,12 @@ export default function SettingsPage() {
     data: dataSettings,
     refetch: refetchSettings,
     isPending: isPendingSettings,
-  } = useSettings();
+  } = useSettings({
+    queryKey: "settings",
+    options: {
+      refetchOnWindowFocus: false,
+    },
+  });
 
   const { mutate: createUserManagement, isPending: isPendingCreateUserManagement } =
     useCreateSettings({

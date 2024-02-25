@@ -23,7 +23,7 @@ export default function DashboardPage() {
   const [companyProfile, setCompanyProfile] = useState<CompanyProfileType>();
   const [dataRawDashboard, setDataRawDashboard] = useState<DataRawDashboardType>();
 
-  const { data: dataSettings, isPending: isPendingSettings } = useSettings();
+  const { data: dataSettings, isPending: isPendingSettings } = useSettings({});
 
   useEffect(() => {
     const handleFetchCompanyProfile = () => {
