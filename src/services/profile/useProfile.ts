@@ -25,9 +25,9 @@ const useProfile = ({
   });
 };
 
-function useUpdateProfile({ options }: any) {
+function useUpdateProfile({ options }: { options: any }) {
   return useMutation({
-    mutationFn: (reqBody: any) =>
+    mutationFn: (reqBody: FormProfileValues) =>
       clientFormData("/my-profile", {
         method: "POST",
         data: reqBody,
