@@ -38,11 +38,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export default function ToDoPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[] | undefined>([]);
 
   const [isUploadFile, setIsUploadFile] = useState<boolean>(false);
 
@@ -94,7 +95,7 @@ export default function ToDoPage() {
   useEffect(() => {
     const fetchDataTag = () => {
       setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
+        dataListTag?.data.data.data.map((itemTag: DataDocumentTags) => ({
           label: itemTag.name,
           value: itemTag.id,
         }))

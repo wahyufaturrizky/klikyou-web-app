@@ -32,11 +32,12 @@ import Link from "next/link";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export default function HistoryPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[] | undefined>([]);
 
   const [searchTagDocument, setSearchTagDocument] = useState<string>("");
 
@@ -87,7 +88,7 @@ export default function HistoryPage() {
   useEffect(() => {
     const fetchDataTag = () => {
       setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
+        dataListTag?.data.data.data.map((itemTag: DataDocumentTags) => ({
           label: itemTag.name,
           value: itemTag.id,
         }))

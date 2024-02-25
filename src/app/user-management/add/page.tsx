@@ -32,14 +32,6 @@ type FormProfileValues = {
   confirmPassword?: string;
 };
 
-interface TagType {
-  id: number;
-  code: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export default function AddProfilePage() {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();

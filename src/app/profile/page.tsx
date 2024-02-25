@@ -23,12 +23,13 @@ import { DefaultOptionType } from "antd/es/cascader";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export default function ProfilePage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
 
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[] | undefined>([]);
 
   const [searchRole, setSearchRole] = useState<string>("");
   const debounceSearchRole = useDebounce(searchRole, 800);
@@ -64,7 +65,7 @@ export default function ProfilePage() {
     },
   });
 
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags({});
 
   useEffect(() => {
     const fetchDataRole = () => {
@@ -78,7 +79,7 @@ export default function ProfilePage() {
 
     const fetchDataTag = () => {
       setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
+        dataListTag?.data.data.data.map((itemTag: DataDocumentTags) => ({
           label: itemTag.name,
           value: itemTag.id,
         }))

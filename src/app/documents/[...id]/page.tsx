@@ -52,12 +52,13 @@ import { Controller, useForm } from "react-hook-form";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import { UseBgColorAction } from "@/hook/useBgColorAction";
 import useDebounce from "@/hook/useDebounce";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();
   const { id } = params;
 
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[] | undefined>([]);
   const [dataInfo, setDataInfo] = useState<DataInfoDocumentType[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
@@ -150,7 +151,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   useEffect(() => {
     const fetchDataTag = () => {
       setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
+        dataListTag?.data.data.data.map((itemTag: DataDocumentTags) => ({
           label: itemTag.name,
           value: itemTag.id,
         }))

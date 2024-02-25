@@ -21,11 +21,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import useDebounce from "@/hook/useDebounce";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export default function AddDocumentPage() {
   const router = useRouter();
 
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[] | undefined>([]);
 
   const [isUploadFile, setIsUploadFile] = useState<boolean>(false);
 
@@ -105,7 +106,7 @@ export default function AddDocumentPage() {
   useEffect(() => {
     const fetchDataTag = () => {
       setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
+        dataListTag?.data.data.data.map((itemTag: DataDocumentTags) => ({
           label: itemTag.name,
           value: itemTag.id,
         }))

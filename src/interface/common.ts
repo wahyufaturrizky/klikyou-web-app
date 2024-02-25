@@ -13,14 +13,14 @@ export interface ApproveRejectProcessModal {
 }
 
 export interface QueryType {
-  search: string;
+  search?: string;
   filter_status?: string;
   role?: string;
   page?: number;
   limit?: number;
-  orderBy: string;
-  updated_at_start: string;
-  updated_at_end: string;
+  orderBy?: string;
+  updated_at_start?: string;
+  updated_at_end?: string;
   history?: number;
   filter_type?: string;
   filter_tag?: string;
@@ -32,14 +32,6 @@ export interface RoleType {
   createdAt: string;
   id: number;
   levelName: string;
-  updatedAt: string;
-}
-
-export interface TagType {
-  id: number;
-  code: string;
-  name: string;
-  createdAt: string;
   updatedAt: string;
 }
 
@@ -57,14 +49,6 @@ export type FormApproveRejectProcessValues = {
   supporting_document_note: string;
   supporting_document_path: any;
 };
-
-export interface TagType {
-  id: number;
-  code: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export interface UserType {
   id: number;

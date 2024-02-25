@@ -6,9 +6,11 @@ import Text from "@/components/Text";
 import { UseBgColorAction } from "@/hook/useBgColorAction";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
+import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
 import useDebounce from "@/hook/useDebounce";
 import { useOrderTableParams } from "@/hook/useOrderTableParams";
-import { FormFilterValues, RoleType, TagType } from "@/interface/common";
+import { FormFilterValues, RoleType } from "@/interface/common";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 import {
   DataResDocument,
   DeleteDocumentModal,
@@ -35,14 +37,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
 
 export default function DocumentsPage() {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[] | undefined>([]);
 
   const [searchTagDocument, setSearchTagDocument] = useState<string>("");
   const [searchRole, setSearchRole] = useState<string>("");
@@ -103,7 +104,7 @@ export default function DocumentsPage() {
   useEffect(() => {
     const fetchDataTag = () => {
       setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
+        dataListTag?.data.data.data.map((itemTag: DataDocumentTags) => ({
           label: itemTag.name,
           value: itemTag.id,
         }))

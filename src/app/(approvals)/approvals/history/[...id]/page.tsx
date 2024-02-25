@@ -6,6 +6,7 @@ import { UseBgColorAction } from "@/hook/useBgColorAction";
 import { UseBgColorStatus } from "@/hook/useBgColorStatus";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import { TagType, UserType } from "@/interface/common";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 import {
   DataInfoDocumentType,
   DataTypeActionHistory,
@@ -33,7 +34,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const router = useRouter();
   const { id } = params;
 
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[] | undefined>([]);
   const [stateViewNoteAndFileVersionModal, setStateViewNoteAndFileVersionModal] =
     useState<EditDocumentsModal>({
       open: false,
@@ -65,13 +66,13 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     },
   });
 
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags({});
   const { data: dataListUserList, isPending: isPendingUserList } = useUserList();
 
   useEffect(() => {
     const fetchDataTag = () => {
       setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
+        dataListTag?.data.data.data.map((itemTag: DataDocumentTags) => ({
           label: itemTag.name,
           value: itemTag.id,
         }))

@@ -28,12 +28,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 
 export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();
   const { id } = params;
 
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[] | undefined>([]);
   const [dataInfo, setDataInfo] = useState<DataInfoDocumentType[]>([]);
   const [stateViewNoteAndFileVersionModal, setStateViewNoteAndFileVersionModal] =
     useState<EditDocumentsModal>({
@@ -65,13 +66,14 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     },
   });
 
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags({});
+
   const { data: dataListUserList, isPending: isPendingUserList } = useUserList();
 
   useEffect(() => {
     const fetchDataTag = () => {
       setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
+        dataListTag?.data.data.data.map((itemTag: DataDocumentTags) => ({
           label: itemTag.name,
           value: itemTag.id,
         }))

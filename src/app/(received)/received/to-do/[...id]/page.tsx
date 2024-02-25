@@ -10,9 +10,9 @@ import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 import {
   ApproveRejectProcessModal,
   FormApproveRejectProcessValues,
-  TagType,
   UserType,
 } from "@/interface/common";
+import { DataDocumentTags } from "@/interface/documents-tag.interface";
 import {
   DataInfoDocumentType,
   DataTypeActionHistory,
@@ -20,9 +20,9 @@ import {
   DocumentCollaboratorsType,
   DocumentRecipientsType,
   DocumentTagsType,
+  EditDocumentsModal,
   FormDocumentValues,
   UserListType,
-  EditDocumentsModal,
 } from "@/interface/documents.interface";
 import { ColumnsType } from "@/interface/user-management.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
@@ -45,8 +45,8 @@ import {
   Table,
   TableProps,
   Upload,
-  message,
   UploadFile,
+  message,
 } from "antd";
 import { DefaultOptionType } from "antd/es/cascader";
 import Link from "next/link";
@@ -58,7 +58,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const router = useRouter();
   const { id } = params;
 
-  const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
+  const [dataTag, setDataTag] = useState<DefaultOptionType[] | undefined>([]);
   const [stateViewNoteAndFileVersionModal, setStateViewNoteAndFileVersionModal] =
     useState<EditDocumentsModal>({
       open: false,
@@ -113,13 +113,13 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
     },
   });
 
-  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags();
+  const { data: dataListTag, isPending: isPendingTag } = useDocumentTags({});
   const { data: dataListUserList, isPending: isPendingUserList } = useUserList();
 
   useEffect(() => {
     const fetchDataTag = () => {
       setDataTag(
-        dataListTag.data.data.data.map((itemTag: TagType) => ({
+        dataListTag?.data.data.data.map((itemTag: DataDocumentTags) => ({
           label: itemTag.name,
           value: itemTag.id,
         }))
