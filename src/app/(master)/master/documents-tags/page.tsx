@@ -11,6 +11,8 @@ import {
   DataDocumentTags,
   DeleteDocumentTagsModal,
   FormDocumentTagsValues,
+  ResUpdateDocumentTagType,
+  ResDeleteDocumentTagType,
 } from "@/interface/documents-tag.interface";
 import {
   useCreateDocumentTags,
@@ -243,8 +245,8 @@ export default function DocumentTagsPage() {
   const { mutate: deleteDocumentTags, isPending: isPendingDeleteDocumentTags }: any =
     useDeleteDocumentTags({
       options: {
-        onSuccess: (res: any) => {
-          if (res?.status === 200) {
+        onSuccess: (res: ResDeleteDocumentTagType) => {
+          if (res.status === 200) {
             messageApi.open({
               type: "success",
               content: "Success delete document tag",
@@ -287,10 +289,10 @@ export default function DocumentTagsPage() {
 
   const { mutate: updateDocumentTags, isPending: isPendingUpdateDocumentTags } =
     useUpdateDocumentTags({
-      id: stateAddAndEditModal.data?.id,
+      id: Number(stateAddAndEditModal.data?.id),
       options: {
-        onSuccess: (res: any) => {
-          if (res?.status === 200) {
+        onSuccess: (res: ResUpdateDocumentTagType) => {
+          if (res.status === 200) {
             messageApi.open({
               type: "success",
               content: "Success update document tag",
@@ -413,7 +415,7 @@ export default function DocumentTagsPage() {
             pagination={tableParams.pagination}
             onChange={handleTableChange}
             rowSelection={rowSelection}
-            rowKey={(record) => record.id}
+            rowKey={(record) => Number(record.id)}
           />
         </ConfigProvider>
       </div>

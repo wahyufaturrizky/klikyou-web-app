@@ -1,7 +1,12 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { UseMutationResult, UseQueryResult, useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client";
+import {
+  DataResponseDocumentTagType,
+  FormDocumentTagsValues,
+} from "@/interface/documents-tag.interface";
+import { QueryType } from "@/interface/common";
 
-const fetchDocumentTags = async ({ query = {} }) => {
+const fetchDocumentTags = async ({ query }: { query?: QueryType }) => {
   return client("/master-document-tags", {
     params: {
       ...query,
@@ -9,26 +14,32 @@ const fetchDocumentTags = async ({ query = {} }) => {
   }).then((data) => data);
 };
 
-const useDocumentTags = ({ query = {}, options }: any = {}) => {
+const useDocumentTags = ({
+  query,
+  options,
+}: {
+  query?: QueryType;
+  options?: any;
+}): UseQueryResult<DataResponseDocumentTagType, Error> => {
   return useQuery({
     queryKey: ["document-tags", query],
     queryFn: () => fetchDocumentTags({ query }),
     ...options,
-  }) as any;
+  });
 };
 
-function useCreateDocumentTags({ options }: any) {
+function useCreateDocumentTags({ options }: { options?: any }) {
   return useMutation({
-    mutationFn: (reqBody: any) =>
+    mutationFn: (reqBody: FormDocumentTagsValues) =>
       client("/master-document-tags", {
         method: "POST",
         data: reqBody,
       }),
     ...options,
-  }) as any;
+  }) as UseMutationResult<FormDocumentTagsValues, Error>;
 }
 
-function useUpdateDocumentTags({ options, id }: any) {
+function useUpdateDocumentTags({ options, id }: { options?: any; id: number }) {
   return useMutation({
     mutationFn: (updates) =>
       client(`/master-document-tags/${id}`, {
@@ -36,12 +47,12 @@ function useUpdateDocumentTags({ options, id }: any) {
         data: updates,
       }),
     ...options,
-  }) as any;
+  }) as UseMutationResult<FormDocumentTagsValues, Error>;
 }
 
-function useDeleteDocumentTags({ options }: any) {
+function useDeleteDocumentTags({ options }: { options?: any }) {
   return useMutation({
-    mutationFn: (query: any) =>
+    mutationFn: (query: { ids: string }) =>
       client(`/master-document-tags?ids=${query.ids}`, {
         method: "DELETE",
       }),
