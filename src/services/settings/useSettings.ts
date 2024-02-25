@@ -1,6 +1,7 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { UseMutationResult, UseQueryResult, useMutation, useQuery } from "@tanstack/react-query";
 import { client, clientFormData } from "../client";
 import { QueryType } from "@/interface/common";
+import { ResUpdateDocumentType, FormSettingsValues } from "@/interface/settings.interface";
 
 const fetchSettings = async ({ query = {} }) => {
   return client("/settings", {
@@ -18,15 +19,15 @@ const useSettings = ({
   query?: QueryType;
   options?: any;
   queryKey?: string;
-}) => {
+}): UseQueryResult<ResUpdateDocumentType, Error> => {
   return useQuery({
     queryKey: [queryKey, query],
     queryFn: () => fetchSettings({ query }),
     ...options,
-  }) as any;
+  });
 };
 
-function useCreateSettings({ options }: any) {
+function useUpdateSettings({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
       clientFormData("/settings", {
@@ -34,29 +35,7 @@ function useCreateSettings({ options }: any) {
         data: reqBody,
       }),
     ...options,
-  }) as any;
+  }) as UseMutationResult<FormSettingsValues, Error>;
 }
 
-function useUpdateSettings({ options }: any) {
-  return useMutation({
-    mutationFn: (updates) =>
-      client("/settings", {
-        method: "PUT",
-        data: updates,
-      }),
-    ...options,
-  }) as any;
-}
-
-function useDeleteSettings({ options }: any) {
-  return useMutation({
-    mutationFn: (updates) =>
-      client("/settings", {
-        method: "DELETE",
-        data: updates,
-      }),
-    ...options,
-  });
-}
-
-export { useCreateSettings, useDeleteSettings, useSettings, useUpdateSettings };
+export { useSettings, useUpdateSettings };

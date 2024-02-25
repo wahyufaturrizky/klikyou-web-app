@@ -4,7 +4,7 @@ import ImageNext from "@/components/Image";
 import Input from "@/components/Input";
 import InputTextArea from "@/components/InputTextArea";
 import Text from "@/components/Text";
-import { useCreateSettings, useSettings } from "@/services/settings/useSettings";
+import { useUpdateSettings, useSettings } from "@/services/settings/useSettings";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Spin, Upload, message } from "antd";
@@ -42,7 +42,7 @@ export default function SettingsPage() {
   });
 
   const { mutate: createUserManagement, isPending: isPendingCreateUserManagement } =
-    useCreateSettings({
+    useUpdateSettings({
       options: {
         onSuccess: (res: any) => {
           if (res?.status) {

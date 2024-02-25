@@ -1,3 +1,4 @@
+import { DataStatusMessageResponseType, CommonResponseType } from "@/interface/common";
 export interface CompanyProfileType {
   companyAddress: string;
   companyImagePath: string;
@@ -19,3 +20,11 @@ export type FormSettingsValues = {
   tel: string;
   email: string;
 };
+
+interface DataResRawSettings extends DataStatusMessageResponseType {
+  data: CompanyProfileType;
+}
+
+export interface ResUpdateDocumentType extends CommonResponseType {
+  data: DataResRawSettings;
+}
