@@ -145,7 +145,7 @@ export interface EditDocumentsModal {
   data?: any;
 }
 
-interface CreatedAndUpdateByDocumentType {
+export interface CreatedAndUpdateByDocumentType {
   id: number;
   roleId: number;
   avatarPath: string;

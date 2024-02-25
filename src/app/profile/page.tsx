@@ -5,10 +5,15 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Text from "@/components/Text";
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
+import useDebounce from "@/hook/useDebounce";
 import { RoleType, TagType } from "@/interface/common";
-import { DataMyProfileType, FormProfileValues } from "@/interface/my-profile.interface";
+import {
+  DataMyProfileType,
+  FormProfileValues,
+  ResUpdateMyProfileType,
+} from "@/interface/my-profile.interface";
 import { useDocumentTags } from "@/services/document-tags/useDocumentTags";
-import { useCreateProfile, useProfile } from "@/services/profile/useProfile";
+import { useProfile, useUpdateProfile } from "@/services/profile/useProfile";
 import { useRole } from "@/services/role/useRole";
 import { BackIcon, PencilIcon } from "@/style/icon";
 import { FileType, beforeUpload, getBase64 } from "@/utils/imageUpload";
@@ -18,13 +23,10 @@ import { DefaultOptionType } from "antd/es/cascader";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import useDebounce from "@/hook/useDebounce";
 
 export default function ProfilePage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
-
-  const [isUploadFile, setIsUploadFile] = useState<boolean>(false);
 
   const [dataTag, setDataTag] = useState<DefaultOptionType[]>([]);
 
@@ -42,7 +44,7 @@ export default function ProfilePage() {
       first_name: "",
       last_name: "",
       tags: [],
-      role_id: "",
+      role_id: 0,
       username: "",
       email: "",
       password: "",
@@ -50,7 +52,11 @@ export default function ProfilePage() {
     },
   });
 
-  const { data: dataProfile, refetch: refetchProfile, isPending: isPendingProfile } = useProfile();
+  const {
+    data: dataProfile,
+    refetch: refetchProfile,
+    isPending: isPendingProfile,
+  } = useProfile({});
 
   const { data: dataListRole, isPending: isPendingRole } = useRole({
     query: {
@@ -99,21 +105,22 @@ export default function ProfilePage() {
       setValue("role_id", dataRaw?.role.id);
       setValue("username", dataRaw?.username);
       setValue("email", dataRaw?.email);
-      setValue("password", dataRaw?.password);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataProfile]);
 
   const { mutate: createUserManagement, isPending: isPendingCreateUserManagement } =
-    useCreateProfile({
+    useUpdateProfile({
       options: {
-        onSuccess: () => {
-          messageApi.open({
-            type: "success",
-            content: "Success update profile",
-          });
+        onSuccess: (res: ResUpdateMyProfileType) => {
+          if (res.status === 200) {
+            messageApi.open({
+              type: "success",
+              content: "Success update profile",
+            });
 
-          refetchProfile();
+            refetchProfile();
+          }
         },
       },
     });
@@ -358,7 +365,7 @@ export default function ProfilePage() {
                           required: "tags is required",
                         }}
                         name="tags"
-                        render={({ field: { onChange, value } }) => (
+                        render={({ field: { onChange, value }, fieldState: { error } }) => (
                           <Select
                             mode="tags"
                             name="tags"
@@ -368,6 +375,7 @@ export default function ProfilePage() {
                             value={value}
                             styleSelect={{ width: "100%" }}
                             required
+                            error={error}
                             label="Tags"
                             classNameLabel="block text-xl font-semibold text-black"
                           />
@@ -382,7 +390,7 @@ export default function ProfilePage() {
                           required: "role is required",
                         }}
                         name="role_id"
-                        render={({ field: { onChange, value } }) => {
+                        render={({ field: { onChange, value }, fieldState: { error } }) => {
                           return (
                             <Select
                               name="role_id"
@@ -391,6 +399,7 @@ export default function ProfilePage() {
                               value={value}
                               styleSelect={{ width: "100%" }}
                               required
+                              error={error}
                               label="Role"
                               classNameLabel="block text-xl font-semibold text-black"
                               onBlur={() => {
@@ -418,7 +427,7 @@ export default function ProfilePage() {
                             "password",
                           ].includes(filtering)
                       )
-                      .map((mapping, index) => {
+                      .map((mapping) => {
                         const labelMap: any = {
                           first_name: "First name",
                           last_name: "Last name",
@@ -429,7 +438,7 @@ export default function ProfilePage() {
                         const valueMap: any = watch();
 
                         return (
-                          <div className="mb-6" key={mapping + index}>
+                          <div className="mb-6" key={labelMap[mapping]}>
                             <Text
                               label={labelMap[mapping]}
                               className="text-xl font-semibold text-black"
@@ -437,9 +446,9 @@ export default function ProfilePage() {
 
                             {mapping === "tags" ? (
                               <div className="flex gap-2 flex-wrap mt-2">
-                                {valueMap[mapping]?.map((item: string, indexTag: number) => (
+                                {valueMap[mapping]?.map((item: string) => (
                                   <Text
-                                    key={item + indexTag}
+                                    key={item}
                                     label={item}
                                     className="text-base font-normal text-white rounded-full py-2 px-4 bg-gray-dark"
                                   />

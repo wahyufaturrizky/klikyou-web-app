@@ -30,6 +30,8 @@ export async function client(
 
   return axios(config)
     .then(async (response: any) => {
+      console.log("@response", response);
+
       return response;
     })
     .catch((e: any) => {
@@ -67,6 +69,7 @@ export async function clientFormData(
 
   return axios(config)
     .then(async (response: any) => {
+      console.log("@response", response);
       return response;
     })
     .catch((e: any) => {

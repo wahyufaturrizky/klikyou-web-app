@@ -1,7 +1,9 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { FormProfileValues, DataResponseMyProfileType } from "@/interface/my-profile.interface";
+import { UseMutationResult, UseQueryResult, useMutation, useQuery } from "@tanstack/react-query";
 import { client, clientFormData } from "../client";
+import { QueryType } from "@/interface/common";
 
-const fetchProfile = async ({ query = {} }) => {
+const fetchProfile = async ({ query }: { query?: QueryType }) => {
   return client("/my-profile", {
     params: {
       ...query,
@@ -9,15 +11,21 @@ const fetchProfile = async ({ query = {} }) => {
   }).then((data) => data);
 };
 
-const useProfile = ({ query = {}, options }: any = {}) => {
+const useProfile = ({
+  query,
+  options,
+}: {
+  query?: QueryType;
+  options?: any;
+}): UseQueryResult<DataResponseMyProfileType, Error> => {
   return useQuery({
     queryKey: ["profile", query],
     queryFn: () => fetchProfile({ query }),
     ...options,
-  }) as any;
+  });
 };
 
-function useCreateProfile({ options }: any) {
+function useUpdateProfile({ options }: any) {
   return useMutation({
     mutationFn: (reqBody: any) =>
       clientFormData("/my-profile", {
@@ -25,18 +33,7 @@ function useCreateProfile({ options }: any) {
         data: reqBody,
       }),
     ...options,
-  }) as any;
+  }) as UseMutationResult<FormProfileValues, Error>;
 }
 
-function useUpdateProfile({ options }: any) {
-  return useMutation({
-    mutationFn: (updates) =>
-      client("/my-profile", {
-        method: "PUT",
-        data: updates,
-      }),
-    ...options,
-  }) as any;
-}
-
-export { useCreateProfile, useProfile, useUpdateProfile };
+export { useProfile, useUpdateProfile };

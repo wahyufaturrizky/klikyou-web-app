@@ -2,9 +2,9 @@
 import { LayoutInterface, MenuItem } from "@/interface/Layout";
 
 import UseConvertDateFormat from "@/hook/useConvertDateFormat";
+import { DataPureMyprofileType } from "@/interface/my-profile.interface";
 import { NotificationType } from "@/interface/notification.interface";
 import { CompanyProfileType } from "@/interface/settings.interface";
-import { DataUserManagementType } from "@/interface/user-management.interface";
 import { useLogOut } from "@/services/auth/useAuth";
 import {
   useNotification,
@@ -12,6 +12,7 @@ import {
   useNotificationMarkReadAll,
 } from "@/services/notification/useNotification";
 import { useProfile } from "@/services/profile/useProfile";
+import { useSettings } from "@/services/settings/useSettings";
 import {
   ApprovalsIcon,
   BackIcon,
@@ -44,7 +45,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
-import { useSettings } from "@/services/settings/useSettings";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
@@ -56,7 +56,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
   const { lg, xl, xxl, xs } = screens;
 
   const router = useRouter();
-  const [userProfile, setUserProfile] = useState<DataUserManagementType>();
+  const [userProfile, setUserProfile] = useState<DataPureMyprofileType>();
   const [companyProfile, setCompanyProfile] = useState<CompanyProfileType>();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -67,11 +67,11 @@ const Layout = ({ ...props }: LayoutInterface) => {
   const [openKeys, setOpenKeys] = useState<string[] | undefined>();
   const [notifId, setNotifId] = useState<string>();
 
-  const { data: dataProfile, isPending: isPendingProfile } = useProfile();
+  const { data: dataProfile, isPending: isPendingProfile } = useProfile({});
 
   useEffect(() => {
     const handleFetchUserProfile = () => {
-      setUserProfile(dataProfile?.data?.data);
+      setUserProfile(dataProfile?.data.data);
     };
 
     if (dataProfile) {
