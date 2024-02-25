@@ -14,7 +14,7 @@ const fetchDocument = async ({
   query?: QueryType;
   action?: "receival" | "approval" | "";
 }) => {
-  return client(action ? `/documents${action}` : "/documents", {
+  return client(action ? `/documents/${action}` : "/documents", {
     params: {
       ...query,
     },
