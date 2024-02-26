@@ -148,6 +148,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
     history: "History",
     "to-do": "To Do",
     processed: "Processed",
+    "internal-page": "Internal-Page",
   };
 
   const [isShowNotif, setIsShowNotif] = useState<boolean>(false);
