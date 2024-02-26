@@ -260,6 +260,27 @@ const IconUserTag = () => (
   </svg>
 );
 
+const IconInternalPage = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M21.3333 20.828C22.1581 20.828 22.8267 20.1594 22.8267 19.3346C22.8267 18.5099 22.1581 17.8413 21.3333 17.8413C20.5086 17.8413 19.84 18.5099 19.84 19.3346C19.84 20.1594 20.5086 20.828 21.3333 20.828Z"
+      fill="currentColor"
+    />
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M21.3333 22.0013C20.36 22.0013 18.4133 22.4813 18.3467 23.4413C19.0133 24.388 20.1067 25.0013 21.3333 25.0013C22.56 25.0013 23.6533 24.388 24.32 23.4413C24.2533 22.4813 22.3067 22.0013 21.3333 22.0013Z"
+      fill="currentColor"
+    />
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M22.6667 13.4546V7.02797L12.6667 2.66797L2.66667 7.02797V13.5746C2.66667 19.628 6.93333 25.2946 12.6667 26.668C13.4 26.4946 14.1067 26.2413 14.8 25.9346C16.24 27.988 18.6267 29.3346 21.3333 29.3346C25.7467 29.3346 29.3333 25.748 29.3333 21.3346C29.3333 17.3746 26.4533 14.0946 22.6667 13.4546ZM13.3333 21.3346C13.3333 22.0813 13.44 22.8146 13.64 23.4946C13.32 23.6413 13 23.788 12.6667 23.8946C8.44 22.5613 5.33333 18.2413 5.33333 13.5746V8.77464L12.6667 5.57464L20 8.77464V13.4546C16.2133 14.0946 13.3333 17.3746 13.3333 21.3346ZM21.3333 26.668C18.3867 26.668 16 24.2813 16 21.3346C16 18.388 18.3867 16.0013 21.3333 16.0013C24.28 16.0013 26.6667 18.388 26.6667 21.3346C26.6667 24.2813 24.28 26.668 21.3333 26.668Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
 export const DashboardIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={IconDashboard} {...props} />
 );
@@ -366,4 +387,8 @@ export const PeopleCheckIcon = (props: Partial<CustomIconComponentProps>) => (
 
 export const UserTagIcon = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={IconUserTag} {...props} />
+);
+
+export const InternalPageIcon = (props: Partial<CustomIconComponentProps>) => (
+  <Icon component={IconInternalPage} {...props} />
 );

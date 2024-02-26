@@ -28,6 +28,7 @@ import {
   ToReviewIcon,
   UserIcon,
   UserTagIcon,
+  InternalPageIcon,
 } from "@/style/icon";
 import type { MenuProps } from "antd";
 import {
@@ -212,6 +213,11 @@ const Layout = ({ ...props }: LayoutInterface) => {
       key: "user-management",
     },
     { icon: SettingIcon, label: <Link href="/settings">Settings</Link>, key: "settings" },
+    {
+      icon: InternalPageIcon,
+      label: <Link href="/internal-page">Internal Page</Link>,
+      key: "internal-page",
+    },
   ].map((item, index) => {
     const { icon, label, children } = item;
 
