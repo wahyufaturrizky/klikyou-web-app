@@ -260,6 +260,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
       key: "1",
       onClick: () => {
         localStorage.setItem("currentMenu", "");
+        localStorage.setItem("openKeys", JSON.stringify([]));
         router.push("/profile");
       },
     },
@@ -304,6 +305,11 @@ const Layout = ({ ...props }: LayoutInterface) => {
   }, [dataSettings]);
 
   const onClickMenu: MenuProps["onClick"] = (e) => {
+    if (!["3-1", "3-2", "4-1", "4-2", "5-1", "5-2"].includes(e.key)) {
+      setOpenKeys([]);
+      localStorage.setItem("openKeys", JSON.stringify([]));
+    }
+
     setCurrentMenu(e.key);
     localStorage.setItem("currentMenu", e.key);
   };
