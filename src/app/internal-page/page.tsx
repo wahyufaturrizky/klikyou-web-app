@@ -98,7 +98,7 @@ export default function InternalPage() {
                     value={value}
                     error={error}
                     styleSelect={{ width: "100%" }}
-                    label="Enable/disable features"
+                    label="Create, update, and delete data"
                     classNameLabel="block text-lg font-semibold text-black"
                   />
                 )}
