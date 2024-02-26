@@ -13,7 +13,7 @@ export default function InternalPage() {
 
   const { control, handleSubmit, setValue } = useForm<FormValueInternalPageType>({
     defaultValues: {
-      status: "",
+      status: "Active",
     },
   });
 
@@ -93,13 +93,12 @@ export default function InternalPage() {
                 render={({ field: { onChange, value }, fieldState: { error } }) => (
                   <Select
                     name="status"
-                    mode="multiple"
                     options={optionInternalPage}
                     onChange={onChange}
                     value={value}
                     error={error}
                     styleSelect={{ width: "100%" }}
-                    label="Status"
+                    label="Enable/disable features"
                     classNameLabel="block text-lg font-semibold text-black"
                   />
                 )}
