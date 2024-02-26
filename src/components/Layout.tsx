@@ -46,6 +46,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
+import {
+  DesktopOutlined,
+  FileOutlined,
+  PieChartOutlined,
+  TeamOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
@@ -232,7 +239,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
         return {
           key: String(index + 1) + "-" + String(indexChild + 1),
           icon: <div className="h-6 w-6">{createElement(icon)}</div>,
-          label: <Text label={subLabel} className="font-bold" />,
+          label: subLabel,
         };
       }) as MenuProps["items"],
     };
