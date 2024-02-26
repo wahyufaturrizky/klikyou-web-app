@@ -91,7 +91,9 @@ export default function InternalPage() {
     });
 
   const onSubmit = (data: FormValueInternalPageType) => {
-    updateInternalPage(data);
+    updateInternalPage({
+      status: data.status === "Active" ? true : false,
+    });
   };
 
   useEffect(() => {

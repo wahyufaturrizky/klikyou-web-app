@@ -3,7 +3,7 @@ import { UseQueryResult, useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client";
 
 const fetchInternalPage = async ({ query = {} }) => {
-  return client("/internal-page", {
+  return client("/internal-settings", {
     params: {
       ...query,
     },
@@ -12,17 +12,17 @@ const fetchInternalPage = async ({ query = {} }) => {
 
 const useInternalPage = ({ query = {}, options }: any = {}): UseQueryResult<any, Error> => {
   return useQuery({
-    queryKey: ["internal-page", query],
+    queryKey: ["internal-settings", query],
     queryFn: () => fetchInternalPage({ query }),
     ...options,
   });
 };
 
-function useUpdateInternalPage({ options, id }: any) {
+function useUpdateInternalPage({ options }: any) {
   return useMutation({
     mutationFn: (updates) =>
-      clientFormData(`/documents/${id}`, {
-        method: "PUT",
+      clientFormData("/internal-settings", {
+        method: "POST",
         data: updates,
       }),
     ...options,
