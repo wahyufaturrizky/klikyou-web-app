@@ -4,9 +4,48 @@ import Select from "@/components/Select";
 import Text from "@/components/Text";
 import { FormValueInternalPageType } from "@/interface/internal-page.interface";
 import { useInternalPage, useUpdateInternalPage } from "@/services/internal-page/useInternalPage";
-import { Spin, message } from "antd";
+import { Alert, GetProps, Spin, Tree, TreeDataNode, message } from "antd";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
+
+type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>;
+
+const { DirectoryTree } = Tree;
+
+const treeData: TreeDataNode[] = [
+  {
+    title: "Documents",
+    key: "0-0",
+  },
+  {
+    title: "Approvals",
+    key: "0-1",
+    children: [
+      { title: "To Review", key: "0-1-0", isLeaf: true },
+      { title: "History", key: "0-1-1", isLeaf: true },
+    ],
+  },
+  {
+    title: "Received",
+    key: "0-2",
+    children: [
+      { title: "To Do", key: "0-2-0", isLeaf: true },
+      { title: "Processed", key: "0-2-1", isLeaf: true },
+    ],
+  },
+  {
+    title: "Master",
+    key: "0-3",
+    children: [
+      { title: "Document tags", key: "0-3-0", isLeaf: true },
+      { title: "User tags", key: "0-3-1", isLeaf: true },
+    ],
+  },
+  {
+    title: "Settings",
+    key: "0-4",
+  },
+];
 
 export default function InternalPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -26,6 +65,14 @@ export default function InternalPage() {
       refetchOnWindowFocus: false,
     },
   });
+
+  const onSelect: DirectoryTreeProps["onSelect"] = (keys, info) => {
+    console.log("Trigger Select", keys, info);
+  };
+
+  const onExpand: DirectoryTreeProps["onExpand"] = (keys, info) => {
+    console.log("Trigger Expand", keys, info);
+  };
 
   const { mutate: updateInternalPage, isPending: isPendingUpdateInternalPage } =
     useUpdateInternalPage({
@@ -84,6 +131,14 @@ export default function InternalPage() {
 
           <div className="p-6 bg-white rounded-md mt-6">
             <div className="mb-6">
+              <Alert
+                message="Note: This settings will only affect non Superadmin user (Company Admin and Admin)"
+                type="warning"
+                showIcon
+              />
+            </div>
+
+            <div className="mb-6">
               <Controller
                 control={control}
                 rules={{
@@ -104,6 +159,16 @@ export default function InternalPage() {
                 )}
               />
             </div>
+
+            <Text label="Note: The affected menus are:" className="text-black" />
+
+            <DirectoryTree
+              multiple
+              defaultExpandAll
+              onSelect={onSelect}
+              onExpand={onExpand}
+              treeData={treeData}
+            />
           </div>
         </div>
       </div>
