@@ -34,7 +34,7 @@ export async function client(
 
   // If view mode true only can view only
   if (
-    viewOnly &&
+    !viewOnly &&
     ["POST", "PUT", "DELETE"].includes(config.method) &&
     !["/auth/logout", "/auth/login"].includes(endpoint as string) &&
     !["Super Admin"].includes(userProfile?.role?.levelName)
@@ -90,7 +90,7 @@ export async function clientFormData(
 
   // If view mode true only can view only
   if (
-    viewOnly &&
+    !viewOnly &&
     ["POST", "PUT", "DELETE"].includes(config.method) &&
     !["/auth/logout", "/auth/login"].includes(endpoint as string) &&
     !["Super Admin"].includes(userProfile?.role?.levelName)
