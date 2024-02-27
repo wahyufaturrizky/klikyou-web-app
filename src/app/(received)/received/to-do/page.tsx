@@ -258,8 +258,8 @@ export default function ToDoPage() {
       page: tableParams.pagination?.current,
       limit: tableParams.pagination?.pageSize,
       orderBy: useOrderTableParams(tableParams),
-      updated_at_start: useDateRangeFormat(getValuesFilter("date")[0] as any),
-      updated_at_end: useDateRangeFormat(getValuesFilter("date")[1] as any),
+      updated_at_start: useDateRangeFormat(getValuesFilter("date")?.[0] as any),
+      updated_at_end: useDateRangeFormat(getValuesFilter("date")?.[1] as any),
       history: 0,
     },
   });

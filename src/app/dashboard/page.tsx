@@ -128,8 +128,8 @@ export default function DashboardPage() {
   const { data: dataDashboard, isPending: isPendingDashboard } = useDashboard({
     query: {
       crtas: "tsadf",
-      filter_updated_at_start: useDateRangeFormat(watchFilter("date")[0] as any),
-      filter_updated_at_end: useDateRangeFormat(watchFilter("date")[1] as any),
+      filter_updated_at_start: useDateRangeFormat(watchFilter("date")?.[0] as any),
+      filter_updated_at_end: useDateRangeFormat(watchFilter("date")?.[1] as any),
     },
   });
 
