@@ -39,6 +39,7 @@ import {
   Layout as LayoutAntd,
   Menu,
   Spin,
+  message,
   theme,
 } from "antd";
 import Link from "next/link";
@@ -58,6 +59,7 @@ const userCannotAccess: any = {
 const userAccessMenu: any = {
   "Company Admin": [
     "dashboard",
+    "profile",
     "documents",
     "to-review",
     "history",
@@ -70,6 +72,7 @@ const userAccessMenu: any = {
   ],
   "Super Admin": [
     "dashboard",
+    "profile",
     "documents",
     "to-review",
     "history",
@@ -81,7 +84,7 @@ const userAccessMenu: any = {
     "user-management",
     "internal-page",
   ],
-  Admin: ["dashboard", "documents", "to-review", "history", "to-do", "processed"],
+  Admin: ["profile", "dashboard", "documents", "to-review", "history", "to-do", "processed"],
 };
 
 const { useBreakpoint } = Grid;
@@ -298,7 +301,11 @@ const Layout = ({ ...props }: LayoutInterface) => {
       }
 
       if (!userAccessMenu[userProfile?.role.levelName ?? "Super Admin"].includes(pathnameSplit)) {
-        router.back();
+        message.warning(`You don't have access to this page ${handleHeaderTitle()}`);
+
+        setTimeout(() => {
+          router.back();
+        }, 700);
       }
     };
 
