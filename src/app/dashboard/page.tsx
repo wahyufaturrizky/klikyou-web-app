@@ -1,5 +1,7 @@
 "use client";
 import Text from "@/components/Text";
+import { UseBgColorStatus } from "@/hook/useBgColorStatus";
+import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
 import {
   DataRawDashboardType,
   LowestHighestApprovalTimeType,
@@ -7,11 +9,13 @@ import {
 } from "@/interface/dashboard.interface";
 import { CompanyProfileType } from "@/interface/settings.interface";
 import { useDashboard } from "@/services/dashboard/useDashboard";
+import { useSettings } from "@/services/settings/useSettings";
 import { CheckIcon, FileIcon, RejectIcon, StopwatchIcon } from "@/style/icon";
 import { ConfigProvider, DatePicker, Grid, Spin, Table, TableProps } from "antd";
 import { useEffect, useState } from "react";
-import { UseBgColorStatus } from "@/hook/useBgColorStatus";
-import { useSettings } from "@/services/settings/useSettings";
+import { Controller, useForm } from "react-hook-form";
+import { FormFilterValues } from "@/interface/common";
+import Link from "next/link";
 
 const { useBreakpoint } = Grid;
 
@@ -22,6 +26,12 @@ export default function DashboardPage() {
 
   const [companyProfile, setCompanyProfile] = useState<CompanyProfileType>();
   const [dataRawDashboard, setDataRawDashboard] = useState<DataRawDashboardType>();
+
+  const { control: controlFilter, watch: watchFilter } = useForm<FormFilterValues>({
+    defaultValues: {
+      date: "",
+    },
+  });
 
   const { data: dataSettings, isPending: isPendingSettings } = useSettings({});
 
@@ -48,8 +58,13 @@ export default function DashboardPage() {
       title: "Document name",
       dataIndex: "name",
       key: "name",
-      render: (text: string) => {
-        return <Text label={text} className="text-base font-normal text-link" />;
+      render: (text: string, record: ShortestLongestProcessTimeType) => {
+        const { id } = record;
+        return (
+          <Link href={`/documents/view/${id}`}>
+            <Text label={text} className="text-base font-normal" />
+          </Link>
+        );
       },
     },
     {
@@ -60,7 +75,7 @@ export default function DashboardPage() {
         return (
           <Text
             label={text}
-            className={`text-base font-normal text-white p-2 rounded-full ${UseBgColorStatus(
+            className={`text-base inline-block font-normal text-white p-2 rounded-full ${UseBgColorStatus(
               text
             )}`}
           />
@@ -90,8 +105,14 @@ export default function DashboardPage() {
       title: "Document name",
       dataIndex: "name",
       key: "name",
-      render: (text: string) => {
-        return <Text label={text} className="text-base font-normal text-link" />;
+      render: (text: string, record: LowestHighestApprovalTimeType) => {
+        const { id } = record;
+
+        return (
+          <Link href={`/documents/view/${id}`}>
+            <Text label={text} className="text-base font-normal" />
+          </Link>
+        );
       },
     },
     {
@@ -107,6 +128,8 @@ export default function DashboardPage() {
   const { data: dataDashboard, isPending: isPendingDashboard } = useDashboard({
     query: {
       crtas: "tsadf",
+      filter_updated_at_start: useDateRangeFormat(watchFilter("date")[0] as any),
+      filter_updated_at_end: useDateRangeFormat(watchFilter("date")[1] as any),
     },
   });
 
@@ -261,7 +284,15 @@ export default function DashboardPage() {
 
         <div className={`${xs ? "" : "w-1/2"}`}>
           <div className="flex justify-end">
-            <DatePicker.RangePicker />
+            <Controller
+              control={controlFilter}
+              name="date"
+              render={({ field: { onChange, value } }: any) => {
+                return (
+                  <DatePicker.RangePicker value={value} format="YYYY/MM/DD" onChange={onChange} />
+                );
+              }}
+            />
           </div>
 
           <div className="p-2 bg-white rounded-md mt-6">
