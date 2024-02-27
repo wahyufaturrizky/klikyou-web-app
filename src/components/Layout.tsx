@@ -19,6 +19,7 @@ import {
   DashboardIcon,
   DocumentIcon,
   HistoryIcon,
+  InternalPageIcon,
   LogoutIcon,
   MasterIcon,
   NotifIcon,
@@ -28,7 +29,6 @@ import {
   ToReviewIcon,
   UserIcon,
   UserTagIcon,
-  InternalPageIcon,
 } from "@/style/icon";
 import type { MenuProps } from "antd";
 import {
@@ -46,15 +46,29 @@ import { usePathname, useRouter } from "next/navigation";
 import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
-import {
-  DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
 
 const { Header, Content, Footer, Sider } = LayoutAntd;
+
+const userCannotAccess: any = {
+  "Company Admin": ["internal-page"],
+  Admin: ["master", "user-management", "settings", "internal-page"],
+};
+
+const userAccessMenu: any = {
+  "Company Admin": [
+    "dashboard",
+    "documents",
+    "to-review",
+    "history",
+    "to-do",
+    "processed",
+    "settings",
+    "documents-tags",
+    "user-tags",
+    "user-management",
+  ],
+  Admin: ["dashboard", "documents", "to-review", "history", "to-do", "processed"],
+};
 
 const { useBreakpoint } = Grid;
 
@@ -226,24 +240,54 @@ const Layout = ({ ...props }: LayoutInterface) => {
       label: <Link href="/internal-page">Internal Page</Link>,
       key: "internal-page",
     },
-  ].map((item, index) => {
-    const { icon, label, children } = item;
+  ]
+    .filter(
+      (filterMenuItem) =>
+        !userCannotAccess[userProfile?.role.levelName ?? "Company Admin"].includes(
+          filterMenuItem.key
+        )
+    )
+    .map((item, index) => {
+      const { icon, label, children } = item;
 
-    return {
-      key: String(index + 1),
-      icon: <div className="h-6 w-6">{createElement(icon)}</div>,
-      label: <Text label={label} className="font-bold" />,
-      children: children?.map((child, indexChild) => {
-        const { icon, label: subLabel } = child;
+      return {
+        key: String(index + 1),
+        icon: <div className="h-6 w-6">{createElement(icon)}</div>,
+        label: <Text label={label} className="font-bold" />,
+        children: children?.map((child, indexChild) => {
+          const { icon, label: subLabel } = child;
 
-        return {
-          key: String(index + 1) + "-" + String(indexChild + 1),
-          icon: <div className="h-6 w-6">{createElement(icon)}</div>,
-          label: subLabel,
-        };
-      }) as MenuProps["items"],
+          return {
+            key: String(index + 1) + "-" + String(indexChild + 1),
+            icon: <div className="h-6 w-6">{createElement(icon)}</div>,
+            label: subLabel,
+          };
+        }) as MenuProps["items"],
+      };
+    });
+
+  useEffect(() => {
+    const handleUseAccess = () => {
+      let pathnameSplit;
+
+      if (
+        pathname.includes("master") ||
+        pathname.includes("approvals") ||
+        pathname.includes("received")
+      ) {
+        pathnameSplit = pathname.split("/")[2];
+      } else {
+        pathnameSplit = pathname.split("/")[1];
+      }
+
+      if (!userAccessMenu[userProfile?.role.levelName ?? "Company Admin"].includes(pathnameSplit)) {
+        router.back();
+      }
     };
-  });
+
+    handleUseAccess();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userProfile?.role.levelName]);
 
   useEffect(() => {
     function handleClickOutside(event: any) {
