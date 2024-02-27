@@ -52,6 +52,7 @@ const { Header, Content, Footer, Sider } = LayoutAntd;
 const userCannotAccess: any = {
   "Company Admin": ["internal-page"],
   Admin: ["master", "user-management", "settings", "internal-page"],
+  "Super Admin": [],
 };
 
 const userAccessMenu: any = {
@@ -66,6 +67,19 @@ const userAccessMenu: any = {
     "documents-tags",
     "user-tags",
     "user-management",
+  ],
+  "Super Admin": [
+    "dashboard",
+    "documents",
+    "to-review",
+    "history",
+    "to-do",
+    "processed",
+    "settings",
+    "documents-tags",
+    "user-tags",
+    "user-management",
+    "internal-page",
   ],
   Admin: ["dashboard", "documents", "to-review", "history", "to-do", "processed"],
 };
@@ -89,13 +103,18 @@ const Layout = ({ ...props }: LayoutInterface) => {
   const [openKeys, setOpenKeys] = useState<string[] | undefined>();
   const [notifId, setNotifId] = useState<string>();
 
-  const { data: dataProfile, isPending: isPendingProfile } = useProfile({
+  const {
+    data: dataProfile,
+    isPending: isPendingProfile,
+    isSuccess: isSuccessProfile,
+  } = useProfile({
     queryKey: "profile-layout",
   });
 
   useEffect(() => {
     const handleFetchUserProfile = () => {
       setUserProfile(dataProfile?.data.data);
+      localStorage.setItem("userProfile", JSON.stringify(dataProfile?.data.data));
     };
 
     if (dataProfile) {
@@ -243,9 +262,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
   ]
     .filter(
       (filterMenuItem) =>
-        !userCannotAccess[userProfile?.role.levelName ?? "Company Admin"].includes(
-          filterMenuItem.key
-        )
+        !userCannotAccess[userProfile?.role.levelName ?? "Super Admin"].includes(filterMenuItem.key)
     )
     .map((item, index) => {
       const { icon, label, children } = item;
@@ -280,14 +297,17 @@ const Layout = ({ ...props }: LayoutInterface) => {
         pathnameSplit = pathname.split("/")[1];
       }
 
-      if (!userAccessMenu[userProfile?.role.levelName ?? "Company Admin"].includes(pathnameSplit)) {
+      if (!userAccessMenu[userProfile?.role.levelName ?? "Super Admin"].includes(pathnameSplit)) {
         router.back();
       }
     };
 
-    handleUseAccess();
+    if (isSuccessProfile) {
+      handleUseAccess();
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userProfile?.role.levelName]);
+  }, [userProfile?.role.levelName, isSuccessProfile]);
 
   useEffect(() => {
     function handleClickOutside(event: any) {

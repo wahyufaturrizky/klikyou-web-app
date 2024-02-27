@@ -60,11 +60,7 @@ export default function InternalPage() {
     data: dataInternalPage,
     refetch: refetchInternalPage,
     isPending: isPendingInternalPage,
-  } = useInternalPage({
-    options: {
-      refetchOnWindowFocus: false,
-    },
-  });
+  } = useInternalPage({});
 
   const onSelect: DirectoryTreeProps["onSelect"] = (keys, info) => {
     console.log("Trigger Select", keys, info);
@@ -100,7 +96,9 @@ export default function InternalPage() {
     if (dataInternalPage) {
       const { data } = dataInternalPage.data;
 
-      setValue("status", data.status);
+      localStorage.setItem("viewOnly", JSON.stringify(data.status));
+
+      setValue("status", data.status ? "Active" : "Inactive");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataInternalPage]);

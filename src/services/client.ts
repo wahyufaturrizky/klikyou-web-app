@@ -6,6 +6,9 @@ export async function client(
   { data, method = "GET", params, headers: customHeaders, ...customConfig }: any = {}
 ) {
   const token = localStorage.getItem("access_token");
+  const viewOnly = JSON.parse(localStorage.getItem("viewOnly") as string);
+  const userProfile = JSON.parse(localStorage.getItem("userProfile") as string);
+
   const apiURL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const config = {
@@ -26,6 +29,18 @@ export async function client(
 
   if (data) {
     config.data = data;
+  }
+  console.log("@endpoint", endpoint);
+
+  // If view mode true only can view only
+  if (
+    viewOnly &&
+    ["POST", "PUT", "DELETE"].includes(config.method) &&
+    !["/auth/logout", "/auth/login"].includes(endpoint as string) &&
+    !["Super Admin"].includes(userProfile?.role?.levelName)
+  ) {
+    message.warning("💰💰💰You in view mode, subscribe our system to get full access 💰💰💰");
+    return;
   }
 
   return axios(config)
@@ -48,6 +63,9 @@ export async function clientFormData(
   { data, method = "GET", params, headers: customHeaders, ...customConfig }: any = {}
 ) {
   const token = localStorage.getItem("access_token");
+  const viewOnly = JSON.parse(localStorage.getItem("viewOnly") as string);
+  const userProfile = JSON.parse(localStorage.getItem("userProfile") as string);
+
   const apiURL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const config = {
@@ -68,6 +86,17 @@ export async function clientFormData(
 
   if (data) {
     config.data = data;
+  }
+
+  // If view mode true only can view only
+  if (
+    viewOnly &&
+    ["POST", "PUT", "DELETE"].includes(config.method) &&
+    !["/auth/logout", "/auth/login"].includes(endpoint as string) &&
+    !["Super Admin"].includes(userProfile?.role?.levelName)
+  ) {
+    message.warning("💰💰💰You in view mode, subscribe our system to get full access 💰💰💰");
+    return;
   }
 
   return axios(config)
