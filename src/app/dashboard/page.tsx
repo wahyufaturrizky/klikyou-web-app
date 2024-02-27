@@ -151,7 +151,7 @@ export default function DashboardPage() {
         />
       ),
       label: "Total documents",
-      value: dataRawDashboard?.dashboard_info.total_documents || "Loading...",
+      value: dataRawDashboard?.dashboard_info.total_documents,
     },
     {
       icon: (
@@ -163,7 +163,7 @@ export default function DashboardPage() {
         />
       ),
       label: "Pending",
-      value: dataRawDashboard?.dashboard_info.pending || "Loading...",
+      value: dataRawDashboard?.dashboard_info.pending,
     },
     {
       icon: (
@@ -176,7 +176,7 @@ export default function DashboardPage() {
         />
       ),
       label: "Approved",
-      value: dataRawDashboard?.dashboard_info.approved || "Loading...",
+      value: dataRawDashboard?.dashboard_info.approved,
     },
     {
       icon: (

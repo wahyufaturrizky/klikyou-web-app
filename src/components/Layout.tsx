@@ -265,7 +265,9 @@ const Layout = ({ ...props }: LayoutInterface) => {
   ]
     .filter(
       (filterMenuItem) =>
-        !userCannotAccess[userProfile?.role.levelName ?? "Super Admin"].includes(filterMenuItem.key)
+        !userCannotAccess[userProfile?.role?.levelName ?? "Super Admin"].includes(
+          filterMenuItem.key
+        )
     )
     .map((item, index) => {
       const { icon, label, children } = item;
@@ -300,7 +302,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
         pathnameSplit = pathname.split("/")[1];
       }
 
-      if (!userAccessMenu[userProfile?.role.levelName ?? "Super Admin"].includes(pathnameSplit)) {
+      if (!userAccessMenu[userProfile?.role?.levelName ?? "Super Admin"].includes(pathnameSplit)) {
         message.warning(`You don't have access to this page ${handleHeaderTitle()}`);
 
         setTimeout(() => {
@@ -314,7 +316,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userProfile?.role.levelName, isSuccessProfile]);
+  }, [userProfile?.role?.levelName, isSuccessProfile]);
 
   useEffect(() => {
     function handleClickOutside(event: any) {
