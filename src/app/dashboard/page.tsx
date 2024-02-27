@@ -189,7 +189,7 @@ export default function DashboardPage() {
         />
       ),
       label: "Rejected",
-      value: dataRawDashboard?.dashboard_info.rejected || "Loading...",
+      value: dataRawDashboard?.dashboard_info.rejected,
     },
   ];
 
