@@ -30,7 +30,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       numeric_remarks: undefined,
       status: "",
       document_tag_id: [],
-      action: "",
+      latestAction: "",
       document_collaborator_id: [],
       document_path: "",
       document_authorizer_id: [],
@@ -61,13 +61,13 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
         documentNote,
         status,
         id,
-        action,
+        latestAction,
         memoId,
       } = rawData;
 
       setValue("document_name", documentName);
       setValue("memoId", memoId);
-      setValue("action", action);
+      setValue("latestAction", latestAction);
       setValue("id", id);
       setValue("document_number", documentNumber);
       setValue("text_remarks", textRemarks);
@@ -151,7 +151,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                     "numeric_remarks",
                     "latestApproval",
                     "document_collaborator_id",
-                    "action",
+                    "latestAction",
                   ].includes(filtering)
               )
               .map((mapping) => {
