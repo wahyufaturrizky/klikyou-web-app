@@ -106,7 +106,7 @@ export type FormDocumentValues = {
   document_note: string;
   status?: string;
   id?: number;
-  action?: string;
+  latest_action?: string;
 };
 
 export interface UserListType {
@@ -162,6 +162,7 @@ export interface DataResDocument {
   id: number;
   userId: number;
   memoId: string;
+  latest_action: string;
   documentName: string;
   documentNumber: string;
   textRemarks: string;

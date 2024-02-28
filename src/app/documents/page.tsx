@@ -212,8 +212,8 @@ export default function DocumentsPage() {
     {
       title: "Latest Action",
       sorter: true,
-      dataIndex: "action",
-      key: "action",
+      dataIndex: "latest_action",
+      key: "latest_action",
       render: (text: string) => {
         return (
           <Text

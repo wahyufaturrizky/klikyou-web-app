@@ -117,7 +117,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       numeric_remarks: 0,
       status: "",
       document_tag_id: [],
-      action: "",
+      latest_action: "",
       document_collaborator_id: [],
       document_path: "",
       document_authorizer_id: [],
@@ -242,7 +242,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
   const onSubmit = (data: FormDocumentValues) => {
     delete data.status;
     delete data.id;
-    delete data.action;
+    delete data.latest_action;
 
     const {
       document_name,
@@ -305,7 +305,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
         documentPath,
         status,
         id,
-        action,
+        latest_action,
         documentLogs,
         createdBy,
         updatedBy,
@@ -330,7 +330,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
 
       setValue("document_name", documentName);
       setValue("memoId", memoId);
-      setValue("action", action);
+      setValue("latest_action", latest_action);
       setValue("id", id);
       setValue("document_number", documentNumber);
       setValue("text_remarks", textRemarks);
@@ -602,7 +602,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "document_recipient_id",
                         "document_path",
                         "document_note",
-                        "action",
+                        "latest_action",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -676,7 +676,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                       numeric_remarks: "Numeric remarks",
                       latestApproval: "Latest approval",
                       document_collaborator_id: "Collaborators",
-                      action: "Latest action",
+                      latest_action: "Latest action",
                     };
 
                     const valueMap: any = getValues();
@@ -705,7 +705,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                           <Text
                             label={valueMap[mapping]}
                             className={`${
-                              mapping === "action"
+                              mapping === "latest_action"
                                 ? `inline-block text-white rounded-full py-2 px-4 ${UseBgColorAction(
                                     valueMap[mapping]
                                   )}`
@@ -770,7 +770,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "document_collaborator_id",
                         "latestApproval",
                         "document_note",
-                        "action",
+                        "latest_action",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -853,7 +853,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "latestApproval",
                         "document_note",
                         "document_authorizer_id",
-                        "action",
+                        "latest_action",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
