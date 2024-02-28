@@ -197,8 +197,8 @@ export default function HistoryPage() {
     },
     {
       title: "Approval",
-      dataIndex: "action",
-      key: "action",
+      dataIndex: "latest_action",
+      key: "latest_action",
       render: (text: string) => {
         return (
           <Text
