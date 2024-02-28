@@ -1,5 +1,7 @@
 import { ButtonInterface } from "../interface/Button";
 
+// Author, Software Architect, Software Engineer, Software Developer : https://www.linkedin.com/in/wahyu-fatur-rizky
+
 const Button = ({ loading = false, ...props }: ButtonInterface) => {
   return (
     <button {...props}>

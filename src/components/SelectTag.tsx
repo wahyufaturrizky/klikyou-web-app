@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import "./SelectTag.css";
 import Text from "./Text";
 
+// Author, Software Architect, Software Engineer, Software Developer : https://www.linkedin.com/in/wahyu-fatur-rizky
+
 const SelectTag = ({
   label,
   name,

@@ -2,6 +2,8 @@ import { SelectInterface } from "@/interface/Select";
 import { Select as AntSelect, ConfigProvider } from "antd";
 import Text from "./Text";
 
+// Author, Software Architect, Software Engineer, Software Developer : https://www.linkedin.com/in/wahyu-fatur-rizky
+
 const Select = ({
   label,
   name,

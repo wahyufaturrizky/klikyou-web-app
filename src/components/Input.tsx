@@ -3,6 +3,8 @@ import { InputInterface } from "../interface/Input";
 import ImageNext from "./Image";
 import Text from "./Text";
 
+// Author, Software Architect, Software Engineer, Software Developer : https://www.linkedin.com/in/wahyu-fatur-rizky
+
 const Input = ({
   label,
   name,

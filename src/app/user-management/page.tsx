@@ -31,6 +31,8 @@ import Select from "@/components/Select";
 import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
 import { DataPureMyprofileType } from "@/interface/my-profile.interface";
 
+// Author, Software Architect, Software Engineer, Software Developer : https://www.linkedin.com/in/wahyu-fatur-rizky
+
 export default function UserManagementPage() {
   const router = useRouter();
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);

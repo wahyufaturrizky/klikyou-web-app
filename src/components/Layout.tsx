@@ -48,6 +48,8 @@ import { createElement, useEffect, useRef, useState } from "react";
 import ImageNext from "./Image";
 import Text from "./Text";
 
+// Author, Software Architect, Software Engineer, Software Developer : https://www.linkedin.com/in/wahyu-fatur-rizky
+
 const { Header, Content, Footer, Sider } = LayoutAntd;
 
 const userCannotAccess: any = {

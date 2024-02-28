@@ -13,6 +13,8 @@ import { Controller, useForm } from "react-hook-form";
 import { UploadChangeParam, UploadFile } from "antd/es/upload";
 import { FormSettingsValues } from "@/interface/settings.interface";
 
+// Author, Software Architect, Software Engineer, Software Developer : https://www.linkedin.com/in/wahyu-fatur-rizky
+
 export default function SettingsPage() {
   const [loadingImageAvatar, setLoadingImageAvatar] = useState<boolean>(false);
   const [avatarPathRaw, setAvatarPathRaw] = useState<UploadChangeParam<UploadFile<any>>>();

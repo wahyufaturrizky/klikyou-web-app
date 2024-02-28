@@ -35,6 +35,8 @@ import { Key, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useDateRangeFormat } from "@/hook/useDateRangeFormat";
 
+// Author, Software Architect, Software Engineer, Software Developer : https://www.linkedin.com/in/wahyu-fatur-rizky
+
 export default function DocumentTagsPage() {
   const [isShowModalFilter, setIsShowModalFilter] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);

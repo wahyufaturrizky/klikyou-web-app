@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
+// Author, Software Architect, Software Engineer, Software Developer : https://www.linkedin.com/in/wahyu-fatur-rizky
+
 export default function Home() {
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();

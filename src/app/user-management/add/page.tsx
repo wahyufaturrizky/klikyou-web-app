@@ -21,6 +21,8 @@ import { Controller, useForm } from "react-hook-form";
 import useDebounce from "@/hook/useDebounce";
 import { FormProfileValues } from "@/interface/my-profile.interface";
 
+// Author, Software Architect, Software Engineer, Software Developer : https://www.linkedin.com/in/wahyu-fatur-rizky
+
 export default function AddProfilePage() {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();

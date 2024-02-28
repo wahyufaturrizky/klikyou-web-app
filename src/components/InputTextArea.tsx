@@ -1,6 +1,8 @@
 import { InputTextArea } from "@/interface/InputTextArea";
 import Text from "./Text";
 
+// Author, Software Architect, Software Engineer, Software Developer : https://www.linkedin.com/in/wahyu-fatur-rizky
+
 const InputTextArea = ({
   label,
   name,
