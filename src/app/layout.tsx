@@ -30,7 +30,7 @@ export default function RootLayout({
               height={822}
               priority
               alt="logo-klikyou"
-              className="mx-auto h-[822px] w-auto"
+              className="mx-auto h-[822px] w-auto object-cover"
             />
           </AntdRegistry>
         </Providers>
