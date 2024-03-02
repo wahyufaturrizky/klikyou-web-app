@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <AntdRegistry>
-            <div className="bg-[#fa0240]">
+            <div className="bg-[url('https://i.ibb.co/D9pb4x0/Screenshot-2024-03-02-at-15-56-52.png')]">
               <ImageNext
                 src="https://i.ibb.co/56jY2KL/Whats-App-Image-2024-03-01-at-19-22-45.jpg"
                 width={611}
