@@ -50,7 +50,7 @@ const useNotificationById = ({
 };
 
 const fetchNotificationMarkReadAll = async ({ query }: { query?: QueryType }) => {
-  return client("/notifications/all", {
+  return client("/notifications/read-all", {
     params: {
       ...query,
     },
