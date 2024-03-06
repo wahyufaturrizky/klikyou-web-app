@@ -16,6 +16,8 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormFilterValues } from "@/interface/common";
 import Link from "next/link";
+import dayjs from "dayjs";
+import UseConvertDateFormat from "@/hook/useConvertDateFormat";
 
 const { useBreakpoint } = Grid;
 
@@ -29,7 +31,10 @@ export default function DashboardPage() {
 
   const { control: controlFilter, watch: watchFilter } = useForm<FormFilterValues>({
     defaultValues: {
-      date: "",
+      date: [
+        dayjs(UseConvertDateFormat(new Date()), "YYYY/MM/DD"),
+        dayjs(UseConvertDateFormat(new Date()), "YYYY/MM/DD"),
+      ],
     },
   });
 

@@ -30,7 +30,6 @@ export async function client(
   if (data) {
     config.data = data;
   }
-  console.log("@endpoint", endpoint);
 
   // If view mode true only can view only
   if (

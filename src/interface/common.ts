@@ -1,4 +1,5 @@
 import { DataResDocument } from "@/interface/documents.interface";
+import { Dayjs } from "dayjs";
 export interface OptionInterface {
   label: string;
   value: string;
@@ -37,7 +38,7 @@ export interface RoleType {
 
 export type FormFilterValues = {
   search?: string;
-  date: string;
+  date: string | Dayjs[];
   status?: string[];
   filter_approval?: string[];
   role?: string[];
