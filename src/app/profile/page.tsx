@@ -27,7 +27,6 @@ import { Controller, useForm } from "react-hook-form";
 
 // Author, Software Architect, Software Engineer, Software Developer : https://www.linkedin.com/in/wahyu-fatur-rizky
 
-
 export default function ProfilePage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [dataRole, setDataRole] = useState<DefaultOptionType[]>([]);
@@ -174,7 +173,10 @@ export default function ProfilePage() {
               alt="logo-klikyou"
               className="h-[32px] w-[32px] rounded-full object-cover"
             />
-            <Text label={text} className="text-base font-normal text-black" />
+            <Text
+              label={text.includes("undefined") ? "-" : text}
+              className="text-base font-normal text-black"
+            />
           </div>
         );
       },

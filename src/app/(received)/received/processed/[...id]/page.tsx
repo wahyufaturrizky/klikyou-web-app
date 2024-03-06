@@ -352,7 +352,10 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               className="h-[32px] w-[32px] rounded-full object-cover"
               priority
             />
-            <Text label={text} className="text-base font-normal text-black" />
+            <Text
+              label={text.includes("undefined") ? "-" : text}
+              className="text-base font-normal text-black"
+            />
           </div>
         );
       },
@@ -378,7 +381,10 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
               className="h-[32px] w-[32px] rounded-full object-cover"
               priority
             />
-            <Text label={text} className="text-base font-normal text-black" />
+            <Text
+              label={text.includes("undefined") ? "-" : text}
+              className="text-base font-normal text-black"
+            />
           </div>
         );
       },

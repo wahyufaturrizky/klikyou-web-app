@@ -131,7 +131,10 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
               alt="logo-klikyou"
               className="h-[32px] w-[32px] rounded-full object-cover"
             />
-            <Text label={text} className="text-base font-normal text-black" />
+            <Text
+              label={text.includes("undefined") ? "-" : text}
+              className="text-base font-normal text-black"
+            />
           </div>
         );
       },
@@ -157,7 +160,10 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
               alt="logo-klikyou"
               className="h-[32px] w-[32px] rounded-full object-cover"
             />
-            <Text label={text} className="text-base font-normal text-black" />
+            <Text
+              label={text.includes("undefined") ? "-" : text}
+              className="text-base font-normal text-black"
+            />
           </div>
         );
       },
@@ -247,7 +253,7 @@ export default function ViewEditProfile({ params }: Readonly<{ params: { id: str
       setValue("last_name", lastName);
       setValue(
         "tags",
-        userTag.map((itemUserTag: UserTagMyProfile) => itemUserTag.masterUserTagId)
+        userTag?.map((itemUserTag: UserTagMyProfile) => itemUserTag?.masterUserTagId)
       );
       setValue("role_id", role?.id);
       setValue("username", username);
