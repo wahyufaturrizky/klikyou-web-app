@@ -41,12 +41,7 @@ export default function Home() {
           router.push("/dashboard");
         }
       },
-      onError: () => {
-        messageApi.open({
-          type: "error",
-          content: "Email or password is incorrect",
-        });
-      },
+      onError: () => {},
     },
   });
 
