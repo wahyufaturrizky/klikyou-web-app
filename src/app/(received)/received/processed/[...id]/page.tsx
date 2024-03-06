@@ -727,23 +727,15 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                   <Button
                     type="button"
                     disabled={
-                      ![
-                        "Fully approved",
-                        "Partially approved",
-                        "Partially processed",
-                        "Fully processed",
-                      ]?.includes(getValues("status") as string)
+                      !["Fully approved", "Fully processed"]?.includes(
+                        getValues("status") as string
+                      )
                     }
                     onClick={() => window.open(`/certificate/${id[1]}`, "_blank")}
                     label="Certificate"
                     icon={<ProtectIcon />}
                     className={`${
-                      [
-                        "Fully approved",
-                        "Partially approved",
-                        "Partially processed",
-                        "Fully processed",
-                      ]?.includes(getValues("status") as string)
+                      ["Fully approved", "Fully processed"]?.includes(getValues("status") as string)
                         ? "bg-primary-blue"
                         : "bg-primary-gray"
                     } cursor-pointer gap-2 flex justify-center items-center rounded-md px-6 py-1.5 text-lg font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
