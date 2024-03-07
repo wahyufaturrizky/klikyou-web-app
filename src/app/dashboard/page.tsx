@@ -32,8 +32,8 @@ export default function DashboardPage() {
   const { control: controlFilter, watch: watchFilter } = useForm<FormFilterValues>({
     defaultValues: {
       date: [
-        dayjs(UseConvertDateFormat(new Date()), "YYYY/MM/DD"),
-        dayjs(UseConvertDateFormat(new Date()), "YYYY/MM/DD"),
+        dayjs(useDateRangeFormat(new Date()), "YYYY/MM/DD"),
+        dayjs(useDateRangeFormat(new Date()), "YYYY/MM/DD"),
       ],
     },
   });
