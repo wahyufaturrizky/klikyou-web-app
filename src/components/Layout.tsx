@@ -626,7 +626,7 @@ const Layout = ({ ...props }: LayoutInterface) => {
                       <Text className="text-black font-normal text-sm" label={itemNotif.title} />
                       <Text
                         className="text-primary-gray font-normal text-xs"
-                        label={UseConvertDateFormat(itemNotif.date)}
+                        label={String(UseConvertDateFormat(itemNotif.date))}
                       />
                     </div>
                   </div>
