@@ -98,6 +98,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       latestAction: "",
       document_collaborator_id: [],
       document_path: "",
+      latestSupportingFilePath: "",
       document_authorizer_id: [],
       document_recipient_id: [],
       document_note: "",
@@ -192,6 +193,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
         memoId,
         createdAt,
         updatedAt,
+        latestSupportingFilePath,
       } = rawData;
 
       setDataLogHistory(documentLogs);
@@ -216,6 +218,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
       setValue("text_remarks", textRemarks);
       setValue("numeric_remarks", numericRemarks);
       setValue("document_path", documentPath);
+      setValue("latestSupportingFilePath", latestSupportingFilePath);
       setValue("document_note", documentNote);
       setValue("status", status);
       setValue(
@@ -539,6 +542,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "document_path",
                         "document_note",
                         "latestAction",
+                        "latestSupportingFilePath",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -603,6 +607,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "status",
                         "document_tag_id",
                         "document_note",
+                        "latestSupportingFilePath",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -668,12 +673,34 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                     label="Latest document file"
                     className="mb-2 text-lg font-semibold text-black"
                   />
-                  <Link rel="noopener noreferrer" target="_blank" href={getValues("document_path")}>
+                  <Link
+                    rel="noopener noreferrer"
+                    className="break-words"
+                    target="_blank"
+                    href={getValues("document_path") ?? ""}
+                  >
                     {getValues("document_path")?.file?.name
                       ? getValues("document_path")?.file?.name
                       : getValues("document_path")?.split("/").pop()}
                   </Link>
                 </div>
+
+                {getValues("latestSupportingFilePath") && (
+                  <div>
+                    <Text
+                      label="Latest supporting files"
+                      className="mb-2 text-lg font-semibold text-black"
+                    />
+                    <Link
+                      rel="noopener noreferrer"
+                      className="break-words"
+                      target="_blank"
+                      href={getValues("latestSupportingFilePath") ?? ""}
+                    >
+                      {getValues("latestSupportingFilePath")?.split("/").pop()}
+                    </Link>
+                  </div>
+                )}
               </div>
 
               <div className="w-1/2">
@@ -695,6 +722,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "latestApproval",
                         "document_note",
                         "latestAction",
+                        "latestSupportingFilePath",
                       ].includes(filtering)
                   )
                   .map((mapping) => {
@@ -766,6 +794,7 @@ export default function ViewEditDocumentPage({ params }: Readonly<{ params: { id
                         "document_note",
                         "document_authorizer_id",
                         "latestAction",
+                        "latestSupportingFilePath",
                       ].includes(filtering)
                   )
                   .map((mapping) => {

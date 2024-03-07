@@ -108,6 +108,7 @@ export type FormDocumentValues = {
   id?: number;
   latest_action?: string;
   latestAction?: string;
+  latestSupportingFilePath: string;
 };
 
 export interface UserListType {
@@ -170,6 +171,7 @@ export interface DataResDocument {
   textRemarks: string;
   numericRemarks: number;
   documentPath: string;
+  latestSupportingFilePath: string;
   documentNote: string;
   action: string;
   createdAt: string;
